@@ -45,7 +45,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
         // Format date as a string
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-        holder.date.setText(sdf.format(event.getDate()));
+        holder.date.setText(sdf.format(event.getEventStartDate()));
 
         // need to load image with Glide/Coil if we add imageUri/Bitmap
         // Glide.with(holder.image.getContext()).load(event.getImageUri()).into(holder.image);

@@ -10,18 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ViewEntrantsViewModel extends ViewModel {
-    private final MutableLiveData<List<Entrant>> entrants;
+    //private final MutableLiveData<List<Entrant>> entrants;
 
-    public ViewEntrantsViewModel() {
-        entrants = new MutableLiveData<>();
-        List<Entrant> dummyData = new ArrayList<>();
-        dummyData.add(new Entrant("Name", "Role"));
-        dummyData.add(new Entrant("Name2", "Role2"));
-        dummyData.add(new Entrant("Name3", "Role3"));
-        entrants.setValue(dummyData);
-    }
+//    public ViewEntrantsViewModel() {
+//        entrants = new MutableLiveData<>();
+//        List<Entrant> dummyData = new ArrayList<>();
+//        dummyData.add(new Entrant("Name", "Role"));
+//        dummyData.add(new Entrant("Name2", "Role2"));
+//        dummyData.add(new Entrant("Name3", "Role3"));
+//        entrants.setValue(dummyData);
+//    }
 
-    public LiveData<List<Entrant>> getEntrants() {
-        return entrants;
-    }
+    //public LiveData<List<Entrant>> getEntrants() {
+     //   return entrants;
+   // }
 }
