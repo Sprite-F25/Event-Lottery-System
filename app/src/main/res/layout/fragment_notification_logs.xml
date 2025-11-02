@@ -15,7 +15,7 @@
         android:id="@+id/searchBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:hint="Search organizer's name" />
+        android:hint="Search organizer's name" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_notification_logs"
