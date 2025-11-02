@@ -63,7 +63,7 @@
         android:layout_height="wrap_content"
         app:backgroundTint="@color/green3"
         app:tint="@color/white"
-        android:src="@drawable/ic_notifications"
+        android:src="@drawable/ic_notifications_logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="24dp"
