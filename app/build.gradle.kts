@@ -1,12 +1,18 @@
 plugins {
     alias(libs.plugins.android.application)
-    //id("com.android.application")
     id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.example.sprite"
     compileSdk = 36
+
+    // added following 'test events were not received' error
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 
     defaultConfig {
         applicationId = "com.example.sprite"
@@ -56,4 +62,8 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation("com.google.firebase:firebase-analytics")
+    // Unit tests - JUnit5
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+
 }
