@@ -10,24 +10,26 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * This class handles lottery operations for events, including randomly selecting entrants
+ * from the waiting list and updating event participant data in Firebase.
+ * This class also handles cancellations and selecting the next entrant on the waitlist.
+ */
 public class LotteryService {
 
     private final Random random = new Random();
 
     //DatabaseService dbService = DatabaseService.getInstance();
-    private final DatabaseService dbService;
+    private final DatabaseService dbService = new DatabaseService();
 
-    public LotteryService(DatabaseService dbService) {
-        this.dbService = dbService;
-    }
-    /*
-    * Methods:
-    * runLottery (random draw + move entrants to lists (selected, cancelled or waitlisted) + send notifs)
-    * handleCancellation (take entrant from waitlisted list -> selected and resend notif + removes entrant from selected)
-    * helper: getNextFromWaitlist
-    * */
 
-    // Run the main lottery draw
+    /**
+     * Runs the main lottery draw for a given event.
+     * Entrants are randomly selected from the waiting list up to the event’s maximum
+     * attendee capacity. Selected entrants are moved to the selected list.
+     * @param event
+     *      The event object for which the lottery is being run.
+     */
     public void runLottery(Event event) {
         int availableSlots = event.getMaxAttendees();
 
@@ -60,6 +62,15 @@ public class LotteryService {
         });
     }
 
+    /**
+     * Handles an entrant cancellation for a specific event.
+     * The entrant is moved to the cancelled list, and the next entrant
+     * in the waiting list (if available) is promoted to the selected list.
+     * @param event
+     *      The event in which the cancellation occurred.
+     * @param cancelledEntrantId
+     *      The unique ID of the entrant who cancelled their participation.
+     */
     public void handleCancellation(Event event, String cancelledEntrantId) {
         Waitlist waitlistObject = new Waitlist(event);
 
@@ -67,7 +78,7 @@ public class LotteryService {
         waitlistObject.moveToCancelled(cancelledEntrantId);
 
         // promote the next in line from the waitlist to selected, if any
-        // TODO: confirm with team - if someone cancels ar they removed from selectedList. how about confirmed?
+        // TODO: confirm with team - if someone cancels, are they removed from selectedList. how about confirmed?
         String nextInLineId = getNextFromWaitlist(waitlistObject);
         if (nextInLineId != null) {
             waitlistObject.moveToSelected(nextInLineId);
@@ -81,6 +92,13 @@ public class LotteryService {
         });
     }
 
+    /**
+     * Helper function that retrieves the next Entrant from the waiting list to be promoted to selected.
+     * @param waitlist
+     *      The Waitlist object for the event
+     * @return
+     *      he ID of the next entrant in line, or null if the waiting list is empty.
+     */
     private String getNextFromWaitlist(Waitlist waitlist) {
         if (!waitlist.getWaitingList().isEmpty()) {
             return waitlist.getWaitingList().get(0);
