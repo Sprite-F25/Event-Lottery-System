@@ -45,6 +45,8 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation("androidx.cardview:cardview:1.0.0")
     implementation(libs.navigation.ui)
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
+
     // Use Firebase BoM to align versions across Firebase libraries
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-firestore")
@@ -53,4 +55,7 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation("com.google.firebase:firebase-analytics")
+
+    //QR code implementation
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }

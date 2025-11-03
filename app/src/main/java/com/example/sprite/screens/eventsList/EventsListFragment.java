@@ -35,20 +35,20 @@ public class EventsListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        // Link UI to view
+
         View view = inflater.inflate(R.layout.fragment_events_list, container, false);
         filterButton = view.findViewById(R.id.filter_button);
         recyclerView = view.findViewById(R.id.recycler_view_events);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // set up recyclerView adapter
+
         adapter = new EventAdapter(events);
         recyclerView.setAdapter(adapter);
 
-        // Set up ViewModel
+
         mViewModel = new ViewModelProvider(this).get(EventsListViewModel.class);
 
-        // observe LiveData - so that it automatically updates
+
         mViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
             adapter.setEvents(events);
             adapter.notifyDataSetChanged();
