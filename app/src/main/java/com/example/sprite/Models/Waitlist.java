@@ -23,6 +23,7 @@ public class Waitlist {
      */
     public Waitlist(Event event) {
         this.event = event;
+        // Below are references to the Event's list, not copies
         waitingList = event.getWaitingList();
         selectedList = event.getSelectedAttendees();
         cancelledList = event.getCancelledAttendees();
@@ -34,6 +35,7 @@ public class Waitlist {
      *      The unique ID of the entrant to be added to the waiting list
      * */
     public void addEntrantToWaitlist(String entrantId) {
+        // later: will implement list size cap
         if (!waitingList.contains(entrantId)) {
             waitingList.add(entrantId);
         }
@@ -48,7 +50,6 @@ public class Waitlist {
         if (!selectedList.contains(entrantId)) {
             selectedList.add(entrantId);
         }
-        event.getSelectedAttendees().add(entrantId);
         // sendNotification("selected for event")
     }
 
@@ -62,7 +63,6 @@ public class Waitlist {
         if (!cancelledList.contains(entrantId)) {
             cancelledList.add(entrantId);
         }
-        event.getCancelledAttendees().add(entrantId);
         // sendNotification("cancelled")
     }
 
@@ -75,7 +75,6 @@ public class Waitlist {
         if (!confirmedList.contains(entrantId)) {
             confirmedList.add(entrantId);
         }
-        event.getConfirmedAttendees().add(entrantId);
         // sendNotification("confirmed attendance for event")
     }
 
