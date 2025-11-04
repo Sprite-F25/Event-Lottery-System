@@ -1,9 +1,11 @@
 package com.example.sprite.Models;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 public class Event {
+    private  Date date;
     private String eventId;
     private String organizerId;
     private String title;
@@ -27,6 +29,15 @@ public class Event {
     private List<String> cancelledAttendees; // Users who declined or cancelled
     private List<String> waitingList; // All users who joined waiting list
 
+    private LocalDate registrationPeriod;  // not sure about the data type.. may need to edit later
+
+    private Boolean geolocation;
+
+    private int entrantLimit;
+
+
+    // need images...Bitmap, URI (String) or drawable(int for resource ID)?
+    // also need getters and setters for images
     public enum EventStatus {
         DRAFT,
         OPEN_FOR_REGISTRATION,
@@ -43,6 +54,10 @@ public class Event {
         this.eventId = eventId;
         this.organizerId = organizerId;
         this.title = title;
+        this.date =  new Date();
+
+        this.registrationPeriod = null;
+        this.geolocation = false;
         this.description = description;
         this.status = EventStatus.DRAFT;
         this.createdAt = new Date();
@@ -91,6 +106,14 @@ public class Event {
         this.location = location;
     }
 
+    public void setRegistrationPeriod(LocalDate registrationPeriod) {this.registrationPeriod = registrationPeriod;}
+    public LocalDate getRegistrationPeriod(LocalDate registrationPeriod) {return registrationPeriod;}
+
+    public void setGeolocation(Boolean geolocation) {this.geolocation = geolocation;}
+    public Boolean getGeolocation() {return geolocation;}
+
+    public void setEntrantLimit(int entrantLimit) {this.entrantLimit = entrantLimit;}
+    public int getEntrantLimit() {return entrantLimit;}
     public Date getEventStartDate() {
         return eventStartDate;
     }
