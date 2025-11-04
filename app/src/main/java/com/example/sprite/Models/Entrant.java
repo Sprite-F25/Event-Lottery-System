@@ -13,8 +13,8 @@ public class Entrant extends User{
 
 
 
-    public Entrant(String name, String userRole) {
-        super(name, userRole);
+    public Entrant(String userId, String email, String name) {
+        super(userId, email, name, UserRole.ENTRANT);
         registeredEvents = new ArrayList<>();
         // notifications = new ArrayList<>();
     }

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Event {
+    private  Date date;
     private String eventId;
     private String organizerId;
     private String title;
@@ -53,7 +54,7 @@ public class Event {
         this.eventId = eventId;
         this.organizerId = organizerId;
         this.title = title;
-        this.date = date;
+        this.date =  new Date();
 
         this.registrationPeriod = null;
         this.geolocation = false;
