@@ -16,7 +16,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="spaceBetween">
+            >
 
             <TextView
                 android:id="@+id/tv_title"
