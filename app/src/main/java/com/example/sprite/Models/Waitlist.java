@@ -1,5 +1,7 @@
 package com.example.sprite.Models;
 
+import com.example.sprite.Controllers.NotificationService;
+
 import java.util.List;
 
 /**
@@ -14,10 +16,11 @@ public class Waitlist {
     List<String> selectedList;
     List<String> cancelledList;
     List<String> confirmedList;
+    private NotificationService notificationService;
 
     /**
      * Constructs a Waitlist manager for a specific event.
-     * The waiting, selected, cancelled and confirmed lists are initialized based on the event’s existing attendee lists.
+     * The waiting, selected, cancelled and confirmed lists are initialized based on the event's existing attendee lists.
      * @param event
      *      The event whose participant lists are being managed.
      */
@@ -28,6 +31,7 @@ public class Waitlist {
         selectedList = event.getSelectedAttendees();
         cancelledList = event.getCancelledAttendees();
         confirmedList = event.getConfirmedAttendees();
+        this.notificationService = new NotificationService();
     }
 
     /** Adds an entrant to the waiting list.
@@ -50,7 +54,24 @@ public class Waitlist {
         if (!selectedList.contains(entrantId)) {
             selectedList.add(entrantId);
         }
-        // sendNotification("selected for event")
+        // Send notification to entrant that they have been selected from the waiting list
+        notificationService.notifySelectedFromWaitlist(
+            entrantId,
+            event.getEventId(),
+            event.getTitle(),
+            new NotificationService.NotificationCallback() {
+                @Override
+                public void onSuccess(com.example.sprite.Models.Notification notification) {
+                    // Notification created successfully
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    // Log error but don't fail the operation
+                    System.err.println("Failed to send notification: " + error);
+                }
+            }
+        );
     }
 
     /** Moves an entrant from selected list to cancelled list and sends a notification.

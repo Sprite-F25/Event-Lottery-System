@@ -57,7 +57,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-auth")
     implementation(libs.legacy.support.v4)
-    implementation(libs.fragment)
+    //implementation(libs.fragment)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -68,5 +68,7 @@ dependencies {
     //QR Code Generators
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.5.2")
+    implementation("com.google.firebase:firebase-messaging:24.0.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
 }

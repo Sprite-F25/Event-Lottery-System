@@ -6,7 +6,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.sprite.Controllers.Authentication_Service;
 
+/**
+ * Welcome activity that serves as the entry point of the application.
+ * Displays the welcome screen and handles navigation to sign-in or sign-up activities.
+ * Automatically redirects to MainActivity if the user is already logged in.
+ * 
+ * @author Angelo
+ */
 public class WelcomeActivity extends AppCompatActivity {
+    /**
+     * Initializes the welcome activity and sets up navigation to sign-in or sign-up screens.
+     * Checks if the user is already logged in and redirects to MainActivity if so.
+     * 
+     * @param savedInstanceState The saved instance state bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,11 +36,7 @@ public class WelcomeActivity extends AppCompatActivity {
         
         setContentView(R.layout.welcome_screen);
 
-        // Example: Go to MainActivity when "Continue as Guest" is pressed
-
-
-
-
+        // Set up button click listeners for navigation
         findViewById(R.id.btnSignIn).setOnClickListener(v -> {
             Intent intent = new Intent(WelcomeActivity.this, SignInActivity.class);
             startActivity(intent);
@@ -37,10 +46,5 @@ public class WelcomeActivity extends AppCompatActivity {
             Intent intent = new Intent(WelcomeActivity.this, SignUpActivity.class);
             startActivity(intent);
         });
-
-
-
     }
-
-
 }

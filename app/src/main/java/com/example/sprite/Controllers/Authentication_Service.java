@@ -9,6 +9,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class Authentication_Service {
     private static final String TAG = "AuthService";
@@ -22,6 +24,7 @@ public class Authentication_Service {
 
     public interface AuthCallback {
         void onSuccess(User user);
+
         void onFailure(String error);
     }
 
@@ -96,6 +99,7 @@ public class Authentication_Service {
                                 databaseService.createUser(user, task1 -> {
                                     if (task1.isSuccessful()) {
                                         callback.onSuccess(user);
+                                        updateFcmToken(user.getUserId());
                                     } else {
                                         callback.onFailure("Failed to create user profile");
                                     }
@@ -164,5 +168,23 @@ public class Authentication_Service {
                 callback.onFailure("Failed to update user profile");
             }
         });
+    }
+
+    public void updateFcmToken(String userId) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+
+                    String token = task.getResult();
+                    FirebaseFirestore.getInstance()
+                            .collection("users")
+                            .document(userId)
+                            .update("fcmToken", token)
+                            .addOnSuccessListener(aVoid -> Log.d("FCM", "FCM token updated for " + userId))
+                            .addOnFailureListener(e -> Log.e("FCM", "Failed to update FCM token", e));
+                });
     }
 }
