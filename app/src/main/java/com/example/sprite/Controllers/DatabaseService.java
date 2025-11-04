@@ -12,7 +12,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 public class DatabaseService {
     private static final String TAG = "DatabaseService";
-    private FirebaseFirestore db;
+    public FirebaseFirestore db;
 
     public DatabaseService() {
         db = FirebaseFirestore.getInstance();
