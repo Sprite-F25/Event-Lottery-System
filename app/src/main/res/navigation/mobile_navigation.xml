@@ -22,4 +22,14 @@
         android:name="com.example.sprite.screens.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+
+
+<!--this is how to add a fragment into the nav bar-->
+<!--    <fragment-->
+<!--        android:id="@+id/some_id"-->
+<!--        android:name="com.example.sprite.screens.some_fragment"-->
+<!--        android:label="some_fragment_label"-->
+<!--        tools:layout="@layout/actual_screen" />-->
+
+
 </navigation>

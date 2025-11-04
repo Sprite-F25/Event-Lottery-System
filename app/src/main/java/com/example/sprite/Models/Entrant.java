@@ -35,4 +35,7 @@ public class Entrant extends User{
     public void leaveEvent(Event event) {
         registeredEvents.remove(event);
     }
+    //public Entrant(String name, String userRole) {
+      //  super(name, userRole);
+    //}
 }
