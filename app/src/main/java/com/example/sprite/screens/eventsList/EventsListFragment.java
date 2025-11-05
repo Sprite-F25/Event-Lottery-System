@@ -15,13 +15,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sprite.Adapters.EventAdapter;
-import com.example.sprite.Models.Event;
 import com.example.sprite.Models.User;
 import com.example.sprite.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class EventsListFragment extends Fragment {
@@ -51,10 +51,14 @@ public class EventsListFragment extends Fragment {
         adapter.setOnItemClickListener(event -> {
             if (currentUser == null) return; // prevent click before user is loaded
 
-            switch (currentUser.getUserRole()) {  // use the Firestore-compatible getter
+            // pass the selected event
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("selectedEvent", (Serializable) event);
+
+            switch (currentUser.getUserRole()) {
                 case ENTRANT:
                     Navigation.findNavController(view)
-                            .navigate(R.id.fragment_event_details);
+                            .navigate(R.id.fragment_event_details, bundle);
                     break;
                 case ORGANIZER:
                     Navigation.findNavController(view)
@@ -62,7 +66,7 @@ public class EventsListFragment extends Fragment {
                     break;
                 case ADMIN:
                     Navigation.findNavController(view)
-                            .navigate(R.id.fragment_review_event);
+                            .navigate(R.id.fragment_review_event, bundle);
                     break;
             }
         });
@@ -70,6 +74,7 @@ public class EventsListFragment extends Fragment {
         mViewModel = new ViewModelProvider(this).get(EventsListViewModel.class);
 
         fetchCurrentUser();
+
 
         return view;
     }
@@ -90,45 +95,36 @@ public class EventsListFragment extends Fragment {
                     if (doc.exists()) {
                         User tempUser = doc.toObject(User.class);
                         if (tempUser != null) {
-                            // Firestore stores enum as string, convert safely
+                            tempUser.setUserId(doc.getId()); // ensure userId is set
+
                             String roleStr = doc.getString("userRole");
                             if (roleStr != null) {
                                 try {
                                     tempUser.setUserRole(User.UserRole.valueOf(roleStr));
                                 } catch (IllegalArgumentException e) {
-                                    Log.e("EventsListFragment", "Invalid role value: " + roleStr);
                                     tempUser.setUserRole(User.UserRole.ENTRANT);
                                 }
                             }
                             currentUser = tempUser;
-                            observeEvents();
+
+                            // NEW: Load events depending on role
+                            if (currentUser.getUserRole() == User.UserRole.ORGANIZER) {
+                                mViewModel.loadEventsForOrganizer(uid);
+                            } else {
+                                mViewModel.loadAllEvents();
+                            }
+
+                            // Observe LiveData
+                            mViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
+                                adapter.setEvents(events);
+                                adapter.notifyDataSetChanged();
+                            });
                         }
                     } else {
                         Log.e("EventsListFragment", "User document not found!");
                     }
                 })
                 .addOnFailureListener(e -> Log.e("EventsListFragment", "Error loading user", e));
-    }
-
-    private void observeEvents() {
-        mViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
-            if (currentUser == null) return;
-
-            // Filter events if user is an organizer
-            if (currentUser.getUserRole() == User.UserRole.ORGANIZER) {
-                ArrayList<Event> organizerEvents = new ArrayList<>();
-                for (Event e : events) {
-                    if (e.getOrganizerId() != null && e.getOrganizerId().equals(currentUser.getUserId())) {
-                        organizerEvents.add(e);
-                    }
-                }
-                adapter.setEvents(organizerEvents);
-            } else {
-                adapter.setEvents(events); // Entrant/Admin sees all events
-            }
-
-            adapter.notifyDataSetChanged();
-        });
     }
 
 }
