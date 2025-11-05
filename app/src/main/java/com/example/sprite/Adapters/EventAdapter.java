@@ -13,21 +13,24 @@ import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
     private List<Event> eventList;
+    private OnItemClickListener listener;
 
     public EventAdapter(List<Event> eventList) {
         this.eventList = eventList;
     }
 
-    public void setEvents(List<Event> events) {
+    public interface OnItemClickListener {
+        void onItemClick(Event event);
+    }
 
-        this.eventList = events;
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
@@ -45,19 +48,16 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         holder.description.setText(event.getDescription());
         holder.location.setText(event.getLocation());
 
-        // Format date as a string
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-
-        Date startDate = event.getEventStartDate();
-
-        if (startDate != null) {
-            holder.date.setText(sdf.format(startDate));
+        if (event.getEventStartDate() != null) {
+            holder.date.setText(sdf.format(event.getEventStartDate()));
         } else {
             holder.date.setText("No start date");
         }
 
-        // need to load image with Glide/Coil if we add imageUri/Bitmap
-        // Glide.with(holder.image.getContext()).load(event.getImageUri()).into(holder.image);
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onItemClick(event);
+        });
     }
 
     @Override
@@ -65,12 +65,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         return eventList != null ? eventList.size() : 0;
     }
 
-
-
-    // only calls findViewByID once for each view to increase performance
     static class EventViewHolder extends RecyclerView.ViewHolder {
-        ImageView image;
         TextView title, description, date, location;
+        ImageView image;
 
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -80,5 +77,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             date = itemView.findViewById(R.id.event_date);
             location = itemView.findViewById(R.id.event_location);
         }
+    }
+
+    public void setEvents(List<Event> events) {
+        this.eventList = events;
     }
 }
