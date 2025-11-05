@@ -163,7 +163,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/eventTitleView">
 
                 <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/fragmentContainerView2"
+                    android:id="@+id/fragment_event_info_view"
                     android:name="com.example.sprite.screens.organizer.eventDetails.EventInfoFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

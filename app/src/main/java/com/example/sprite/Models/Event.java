@@ -12,7 +12,8 @@ import java.util.List;
  * @author Angelo
  */
 public class Event {
-    private  Date date;
+    private Date date;
+    private Date time;
     private String eventId;
     private String organizerId;
     private String title;
@@ -36,7 +37,7 @@ public class Event {
     private List<String> cancelledAttendees; // Users who declined or cancelled
     private List<String> waitingList; // All users who joined waiting list
 
-    private LocalDate registrationPeriod;  // not sure about the data type.. may need to edit later
+    //private LocalDate registrationPeriod;  // not sure about the data type.. may need to edit later
 
     private Boolean geolocation;
 
@@ -95,9 +96,9 @@ public class Event {
         this.eventId = eventId;
         this.organizerId = organizerId;
         this.title = title;
-        this.date =  new Date();
+        this.date = new Date();
 
-        this.registrationPeriod = null;
+        //this.registrationPeriod = null;
         this.geolocation = false;
         this.description = description;
         this.status = EventStatus.DRAFT;
@@ -196,7 +197,7 @@ public class Event {
         this.location = location;
     }
 
-    public void setRegistrationPeriod(LocalDate registrationPeriod) {this.registrationPeriod = registrationPeriod;}
+    //public void setRegistrationPeriod(LocalDate registrationPeriod) {this.registrationPeriod = registrationPeriod;}
     public LocalDate getRegistrationPeriod(LocalDate registrationPeriod) {return registrationPeriod;}
 
     public void setGeolocation(Boolean geolocation) {this.geolocation = geolocation;}
@@ -276,6 +277,25 @@ public class Event {
         this.qrCodeUrl = qrCodeUrl;
     }
 
+    public Date getDate()
+    {
+        return date;
+    }
+
+    public void setDate(Date d)
+    {
+        this.date = d;
+    }
+
+    public Date getTime()
+    {
+        return time;
+    }
+
+    public void setTime(Date d)
+    {
+        this.time = d;
+    }
     /**
      * Gets the current status of this event.
      * 
