@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardRoot"
     android:layout_width="match_parent"
@@ -17,96 +18,96 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+
             <TextView
                 android:id="@+id/tvHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Filter"
+                android:layout_marginBottom="12dp"
+                android:text="@string/filter_title"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp" />
+                android:textStyle="bold" />
 
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Categories"
-                android:layout_marginBottom="6dp" />
+                android:layout_marginBottom="6dp"
+                android:text="@string/categories" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroupCategories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:singleSelection="false"
-                app:selectionRequired="false"
+                android:paddingBottom="12dp"
                 app:chipSpacing="8dp"
-                android:paddingBottom="12dp">
+                app:singleSelection="false"
+                app:selectionRequired="false">
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipSports"
                     style="@style/Widget.MaterialComponents.Chip.Filter"
-                    android:text="Sports" />
+                    android:text="@string/sports" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipMusic"
                     style="@style/Widget.MaterialComponents.Chip.Filter"
-                    android:text="Music" />
+                    android:text="@string/music" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipArt"
                     style="@style/Widget.MaterialComponents.Chip.Filter"
-                    android:text="Art" />
+                    android:text="@string/art" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipFood"
                     style="@style/Widget.MaterialComponents.Chip.Filter"
-                    android:text="Food" />
+                    android:text="@string/food" />
             </com.google.android.material.chip.ChipGroup>
 
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Time & Date"
-                android:layout_marginBottom="6dp" />
+                android:layout_marginBottom="6dp"
+                android:text="@string/time_and_date" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroupTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:singleSelection="true"
-                android:paddingBottom="8dp">
+                android:paddingBottom="8dp"
+                app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipToday"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:text="Today" />
+                    android:text="@string/today" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipTomorrow"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:text="Tomorrow" />
+                    android:text="@string/tomorrow" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipThisWeek"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:text="This week" />
+                    android:text="@string/this_week" />
             </com.google.android.material.chip.ChipGroup>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Choose from calendar">
+                android:hint="@string/choose_from_calendar">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
                     android:clickable="true"
-                    android:inputType="none"
-                    android:contentDescription="Open date picker" />
+                    android:focusable="false"
+                    android:contentDescription="@string/open_date_picker" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -114,14 +115,14 @@
                 android:id="@+id/tilLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Location"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="12dp"
+                android:hint="@string/location">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etLocation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:contentDescription="Enter location" />
+                    android:contentDescription="@string/enter_location" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -129,14 +130,14 @@
                 android:id="@+id/tvPriceLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Price range"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="16dp"
+                android:text="@string/price_range" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginBottom="4dp"
+                android:orientation="horizontal"
                 android:paddingStart="2dp"
                 android:paddingEnd="2dp">
 
@@ -145,40 +146,37 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="$20" />
+                    android:text="@string/price_20" />
 
                 <TextView
                     android:id="@+id/tvPriceMax"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="$120" />
+                    android:text="@string/price_120" />
             </LinearLayout>
 
             <com.google.android.material.slider.RangeSlider
                 android:id="@+id/sliderPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:valueFrom="0"
-                app:valueTo="200"
-                app:stepSize="5"
+                android:contentDescription="@string/select_price_range"
+                android:valueFrom="0"
+                android:valueTo="200"
                 app:values="@array/default_price_values"
-                app:labelBehavior="floating"
-                android:contentDescription="Select price range" />
-
+                app:labelBehavior="floating" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
                 android:gravity="center_vertical"
-                android:layout_marginTop="8dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Only show free events" />
-
+                    android:text="@string/only_show_free_events" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/switchFreeOnly"
@@ -190,8 +188,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnReset"
@@ -199,15 +197,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Reset" />
+                    android:text="@string/reset" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnApply"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginStart="12dp"
-                    android:text="Apply" />
+                    android:layout_weight="1"
+                    android:text="@string/apply" />
             </LinearLayout>
 
         </LinearLayout>
