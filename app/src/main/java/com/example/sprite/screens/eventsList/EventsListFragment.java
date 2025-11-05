@@ -17,6 +17,7 @@ import com.example.sprite.Adapters.EventAdapter;
 import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EventsListFragment extends Fragment {
@@ -42,7 +43,8 @@ public class EventsListFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // set up recyclerView adapter
-        adapter = new EventAdapter(events);
+        adapter = new EventAdapter(new ArrayList<>());
+        // adapter = new EventAdapter(events);
         recyclerView.setAdapter(adapter);
 
         // Set up ViewModel
@@ -52,7 +54,7 @@ public class EventsListFragment extends Fragment {
         mViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
             adapter.setEvents(events);
             adapter.notifyDataSetChanged();
-            filterButton.setText("Events count: " + events.size());
+            //filterButton.setText("Events count: " + events.size());
         });
 
         return view;

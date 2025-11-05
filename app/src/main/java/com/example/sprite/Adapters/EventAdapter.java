@@ -13,6 +13,7 @@ import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -25,6 +26,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     }
 
     public void setEvents(List<Event> events) {
+
         this.eventList = events;
     }
 
@@ -45,7 +47,14 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
         // Format date as a string
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-        holder.date.setText(sdf.format(event.getEventStartDate()));
+
+        Date startDate = event.getEventStartDate();
+
+        if (startDate != null) {
+            holder.date.setText(sdf.format(startDate));
+        } else {
+            holder.date.setText("No start date");
+        }
 
         // need to load image with Glide/Coil if we add imageUri/Bitmap
         // Glide.with(holder.image.getContext()).load(event.getImageUri()).into(holder.image);
@@ -53,8 +62,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     @Override
     public int getItemCount() {
-        return eventList.size();
+        return eventList != null ? eventList.size() : 0;
     }
+
 
 
     // only calls findViewByID once for each view to increase performance

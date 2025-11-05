@@ -10,6 +10,11 @@
         android:name="com.example.sprite.screens.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/nav_events_list"
+        android:name="com.example.sprite.screens.eventsList.EventsListFragment"
+        android:label="Events List"
+        tools:layout="@layout/fragment_events_list"/>
 
     <fragment
         android:id="@+id/nav_gallery"
