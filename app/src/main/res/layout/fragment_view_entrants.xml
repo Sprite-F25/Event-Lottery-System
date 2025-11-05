@@ -22,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Card with Dropdown -->
-    <com.google.android.material.card.MaterialCardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/dropdown_card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
             android:entries="@array/entrant_status_options"
             android:spinnerMode="dropdown"
             android:padding="8dp"/>
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.cardview.widget.CardView>
 
     <!-- RecyclerView for Entrants -->
     <androidx.recyclerview.widget.RecyclerView
@@ -57,30 +57,27 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Floating Action Button - Notifications -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <Button
         android:id="@+id/fab_send_notif"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:backgroundTint="@color/green3"
-        app:tint="@color/white"
-        android:src="@drawable/ic_notifications_logo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="Notify"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/green3"
         android:layout_margin="24dp"
-        app:elevation="8dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <!-- Floating Action Button - Export CSV -->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+    <Button
         android:id="@+id/fab_export_csv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="24dp"
         android:text="Export CSV"
         android:textColor="@color/white"
-        app:backgroundTint="@color/green3"
+        android:backgroundTint="@color/green3"
+        android:layout_margin="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:elevation="8dp" />
-
+        app:layout_constraintStart_toStartOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,8 +7,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.sprite.Controllers.DatabaseService;
 import com.example.sprite.Models.Entrant;
 import com.example.sprite.Models.Event;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,13 +60,13 @@ public class ViewEntrantsViewModel extends ViewModel {
                 entrantIds = new ArrayList<>();
         }
 
-        fetchEntrantsByIds(entrantIds);
+        fetchEntrants(entrantIds);
     }
 
     /**
      * Loads Entrant objects given their IDs using DatabaseService
      */
-    private void fetchEntrantsByIds(List<String> entrantIds) {
+    private void fetchEntrants(List<String> entrantIds) {
         if (entrantIds == null || entrantIds.isEmpty()) {
             currentEntrantList.setValue(new ArrayList<>());
             return;
@@ -75,19 +74,18 @@ public class ViewEntrantsViewModel extends ViewModel {
 
         List<Entrant> loadedEntrants = new ArrayList<>();
         for (String id : entrantIds) {
-            dbService.getUser(id, (OnCompleteListener<DocumentSnapshot>) task -> {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot doc = task.getResult();
-                    if (doc != null && doc.exists()) {
-                        Entrant entrant = doc.toObject(Entrant.class);
-                        if (entrant != null) {
-                            loadedEntrants.add(entrant);
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(id)
+                    .addSnapshotListener((doc, e) -> {
+                        if (doc != null && doc.exists()) {
+                            Entrant entrant = doc.toObject(Entrant.class);
+                            if (entrant != null) {
+                                loadedEntrants.add(entrant);
+                                currentEntrantList.setValue(new ArrayList<>(loadedEntrants));
+                            }
                         }
-                    }
-                }
-                // Update LiveData after each entrant loads (so UI updates progressively)
-                currentEntrantList.setValue(new ArrayList<>(loadedEntrants));
-            });
+                    });
         }
     }
 }

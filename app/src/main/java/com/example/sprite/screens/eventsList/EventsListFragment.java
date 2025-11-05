@@ -78,6 +78,7 @@ public class EventsListFragment extends Fragment {
 
         fetchCurrentUser();
 
+
         return view;
     }
 
