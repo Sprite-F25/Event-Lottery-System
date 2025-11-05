@@ -68,6 +68,13 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem item) {
                 int id = item.getItemId();
 
+                if (id == R.id.nav_profile){
+                    drawer.closeDrawers();
+                    NavController navController = Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment_content_main);
+                    navController.navigate(R.id.nav_profile);
+                    return true;
+                }
+
 //                // use this template to add navigation for fragments
 //                if (id == R.id.nav_some_item) {
 //                drawer.closeDrawers(); // Close the drawer first
