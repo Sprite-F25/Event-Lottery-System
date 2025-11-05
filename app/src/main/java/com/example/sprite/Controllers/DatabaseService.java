@@ -7,6 +7,7 @@ import com.example.sprite.Models.Event;
 import com.example.sprite.Models.User;
 import com.example.sprite.Models.Notification;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -43,9 +44,12 @@ public class DatabaseService {
 
     // Event operations
     public void createEvent(Event event, OnCompleteListener<Void> listener) {
-        db.collection("events")
-                .document(event.getEventId())
-                .set(event)
+        DocumentReference docRef;
+        // Auto-Generate event Id
+        docRef = db.collection("events").document();
+        event.setEventId(docRef.getId());
+        // Save Event to Firestore
+        docRef.set(event)
                 .addOnCompleteListener(listener);
     }
 
