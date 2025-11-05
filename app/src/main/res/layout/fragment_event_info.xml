@@ -21,7 +21,6 @@
         android:layout_height="24dp"
         android:layout_marginStart="4dp"
         android:background="@null"
-        android:gravity="center_vertical"
         android:textSize="12sp"
         android:inputType="textPostalAddress"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,15 +38,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/location_icon" />
 
-    <com.google.android.material.textfield.TextInputEditText
+    <TextView
         android:id="@+id/date_input"
         android:layout_width="0dp"
         android:layout_height="24dp"
         android:layout_marginStart="4dp"
-        android:background="@null"
         android:gravity="center_vertical"
         android:textSize="12sp"
-        android:inputType="date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/calender_icon"
         app:layout_constraintTop_toBottomOf="@+id/location_input" />
@@ -62,17 +59,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/calender_icon" />
 
-    <com.google.android.material.textfield.TextInputEditText
+    <TextView
         android:id="@+id/time_input"
         android:layout_width="0dp"
         android:layout_height="24dp"
         android:layout_marginStart="4dp"
-        android:background="@null"
         android:gravity="center_vertical"
         android:textSize="12sp"
-        android:inputType="time"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/clock_icon"
         app:layout_constraintTop_toBottomOf="@+id/date_input" />
 

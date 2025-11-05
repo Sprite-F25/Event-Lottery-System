@@ -17,15 +17,43 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Models.User;
 import com.example.sprite.databinding.ActivityMainBinding;
-//import com.example.sprite.screens.Notifications.NotificationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+/**
+ * {@code MainActivity} serves as the primary entry point for the Sprite app after authentication.
+ *
+ * <p>This activity initializes and manages the navigation drawer, toolbar, and
+ * navigation components. It dynamically adjusts the navigation menu based on
+ * the current user’s role (Entrant, Organizer, or Admin).</p>
+ *
+ * <h3>Responsibilities:</h3>
+ * <ul>
+ *     <li>Sets up the navigation drawer and toolbar.</li>
+ *     <li>Loads user profile data from Firestore via {@link Authentication_Service}.</li>
+ *     <li>Dynamically configures navigation menus based on user roles.</li>
+ *     <li>Handles sign-out and redirection to {@link WelcomeActivity}.</li>
+ * </ul>
+ *
+ * @see Authentication_Service
+ * @see User
+ */
 public class MainActivity extends AppCompatActivity {
 
+    /** App bar configuration for navigation handling. */
     private AppBarConfiguration mAppBarConfiguration;
+
+    /** View binding for the main layout. */
     private ActivityMainBinding binding;
 
+    /**
+     * Initializes the main activity.
+     *
+     * <p>Sets up navigation components, toolbar, and floating action button (FAB),
+     * then loads the appropriate navigation menu based on user role.</p>
+     *
+     * @param savedInstanceState The previously saved instance state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,185 +62,164 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        binding.appBarMain.fab.setOnClickListener(view ->
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
-                        .setAnchorView(R.id.fab).show();
-            }
-        });
+                        .setAnchorView(R.id.fab).show());
+
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
-        
-        // Load user profile and set menu based on role
+
+        // Load user profile and setup navigation menu
         loadUserProfileAndSetMenu(navigationView);
-        
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        //add the fragment ID to this
+
+        // Configure app bar navigation destinations
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                //R.id.some_nav
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,R.id.nav_notifications, R.id.nav_events_list)
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_notifications, R.id.nav_events_list)
                 .setOpenableLayout(drawer)
                 .build();
+
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        
-        // Setup navigation controller first
         NavigationUI.setupWithNavController(navigationView, navController);
-        
-        // Override navigation item selected listener to handle sign out
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
-                int id = item.getItemId();
 
-//                // use this template to add navigation for fragments
-//                if (id == R.id.nav_some_item) {
-//                drawer.closeDrawers(); // Close the drawer first
-//                Intent intent = new Intent(MainActivity.this, SomeActivity.class);
-//                startActivity(intent);
-//                // Don't call finish() if you want user to be able to go back
-//                return true;
-//}
+        // Handle menu item clicks (e.g., sign-out)
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
 
-                //Navigate to Create Event
-                if (id == R.id.nav_create_event) {
-                    drawer.closeDrawers();
-                    navController.navigate(R.id.nav_create_event);
-                    return true;
-                }
-
-//                if (id == R.id.nav_notifications) {
-//                    drawer.closeDrawers(); // Close the drawer first
-//                    Intent intent = new Intent(MainActivity.this, NotificationView.class);
-//                    startActivity(intent);
-//                    // Don't call finish() if you want user to be able to go back
-//                    return true;
-//                }
-
-                // Handle sign out separately
-                if (id == R.id.nav_signout) {
-                    // Close drawer
-                    drawer.closeDrawers();
-                    signOut();
-                    return true;
-                }
-                
-                // Let NavigationUI handle other navigation items normally
-                boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
-                if (handled) {
-                    drawer.closeDrawers();
-                }
-                return handled;
+            if (id == R.id.nav_profile) {
+                drawer.closeDrawers();
+                navController.navigate(R.id.nav_profile);
+                return true;
             }
+            if (id == R.id.nav_create_event) {
+                drawer.closeDrawers();
+                navController.navigate(R.id.nav_create_event);
+                return true;
+            }
+
+            if (id == R.id.nav_signout) {
+                drawer.closeDrawers();
+                signOut();
+                return true;
+            }
+
+            boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
+            if (handled) {
+                drawer.closeDrawers();
+            }
+            return handled;
         });
     }
-    
+
+    /**
+     * Loads the current user's profile and updates the navigation menu accordingly.
+     *
+     * @param navigationView The navigation drawer's {@link NavigationView}.
+     */
     private void loadUserProfileAndSetMenu(NavigationView navigationView) {
         Authentication_Service authService = new Authentication_Service();
-        
+
         if (!authService.isUserLoggedIn()) {
-            // User not logged in, default to entrant menu or redirect
             navigationView.getMenu().clear();
             navigationView.inflateMenu(R.menu.app_bar_entrant);
             return;
         }
-        
-        // Set default header with Firebase Auth info while loading profile
+
+        // Set temporary header while loading
         View headerView = navigationView.getHeaderView(0);
         TextView textViewName = headerView.findViewById(R.id.textViewName);
         TextView textViewEmail = headerView.findViewById(R.id.textViewEmail);
-        
+
         if (authService.getCurrentUser() != null) {
             String firebaseEmail = authService.getCurrentUser().getEmail();
             if (textViewEmail != null && firebaseEmail != null) {
                 textViewEmail.setText(firebaseEmail);
             }
             if (textViewName != null) {
-                // Extract name from email or show default
                 String displayName = firebaseEmail != null ? firebaseEmail.split("@")[0] : "User";
                 textViewName.setText(displayName);
             }
         }
-        
-        // Get current user ID and fetch profile
+
         String userId = authService.getCurrentUser().getUid();
         authService.getUserProfile(userId, new Authentication_Service.AuthCallback() {
             @Override
             public void onSuccess(User user) {
-                // Update nav header with user information
                 updateNavHeader(navigationView, user);
-                
-                // Switch menu based on user role
                 navigationView.getMenu().clear();
-                
-                if (user.getRole() == User.UserRole.ORGANIZER) {
-                    navigationView.inflateMenu(R.menu.app_bar_organizer);
-                } else if (user.getRole() == User.UserRole.ADMIN) {
-                    navigationView.inflateMenu(R.menu.app_bar_admin);
-                } else {
-                    // Default to ENTRANT or any other role
-                    navigationView.inflateMenu(R.menu.app_bar_entrant);
+
+                switch (user.getRole()) {
+                    case ORGANIZER:
+                        navigationView.inflateMenu(R.menu.app_bar_organizer);
+                        break;
+                    case ADMIN:
+                        navigationView.inflateMenu(R.menu.app_bar_admin);
+                        break;
+                    default:
+                        navigationView.inflateMenu(R.menu.app_bar_entrant);
+                        break;
                 }
             }
-            
+
             @Override
             public void onFailure(String error) {
-                // On failure, default to entrant menu
                 navigationView.getMenu().clear();
                 navigationView.inflateMenu(R.menu.app_bar_entrant);
-                
-                // Keep Firebase Auth email in header if profile load fails
-                View headerView = navigationView.getHeaderView(0);
-                TextView textViewEmail = headerView.findViewById(R.id.textViewEmail);
-                if (textViewEmail != null && authService.getCurrentUser() != null) {
-                    String firebaseEmail = authService.getCurrentUser().getEmail();
-                    if (firebaseEmail != null) {
-                        textViewEmail.setText(firebaseEmail);
-                    }
-                }
             }
         });
     }
-    
+
+    /**
+     * Updates the navigation drawer header with the user's name and email.
+     *
+     * @param navigationView The navigation drawer view.
+     * @param user           The {@link User} whose information is displayed.
+     */
     private void updateNavHeader(NavigationView navigationView, User user) {
-        // Get the header view
         View headerView = navigationView.getHeaderView(0);
-        
-        // Find TextViews in the header
         TextView textViewName = headerView.findViewById(R.id.textViewName);
         TextView textViewEmail = headerView.findViewById(R.id.textViewEmail);
-        
-        // Update with user's actual information
+
         if (textViewName != null) {
             textViewName.setText(user.getName() != null ? user.getName() : "User");
         }
-        
+
         if (textViewEmail != null) {
             textViewEmail.setText(user.getEmail() != null ? user.getEmail() : "No email");
         }
     }
-    
+
+    /**
+     * Signs the current user out and redirects them to the {@link WelcomeActivity}.
+     */
     private void signOut() {
         Authentication_Service authService = new Authentication_Service();
         authService.signOut();
-        
-        // Redirect to WelcomeActivity and clear back stack
+
         Intent intent = new Intent(this, WelcomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
 
+    /**
+     * Inflates the options menu in the app bar.
+     *
+     * @param menu The menu to inflate.
+     * @return {@code true} if the menu is displayed.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
+    /**
+     * Handles navigation when the user presses the Up button.
+     *
+     * @return {@code true} if navigation was successful.
+     */
     @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);

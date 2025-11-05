@@ -76,7 +76,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/createImageView" />
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/eventTitleInput"
+                android:id="@+id/event_title_Input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
@@ -98,10 +98,10 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="12dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/eventTitleInput">
+                app:layout_constraintTop_toBottomOf="@+id/event_title_Input">
 
                 <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/fragmentContainerView2"
+                    android:id="@+id/fragment_event_info_view"
                     android:name="com.example.sprite.screens.organizer.eventDetails.EventInfoFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -141,6 +141,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="12dp"
                 android:background="@null"
+                android:inputType="number"
                 app:layout_constraintEnd_toEndOf="@+id/maxEntrantsTextView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/maxEntrantsTextView" />
@@ -151,6 +152,7 @@
                 android:layout_height="20dp"
                 android:layout_marginTop="12dp"
                 android:background="@null"
+                android:inputType="number"
                 app:layout_constraintEnd_toEndOf="@+id/waitlingListTextView"
                 app:layout_constraintStart_toStartOf="@+id/waitlingListTextView"
                 app:layout_constraintTop_toBottomOf="@+id/maxEntrantsTextView" />
@@ -174,6 +176,7 @@
                 android:layout_height="20dp"
                 android:layout_marginTop="8dp"
                 android:background="@null"
+                android:inputType="numberDecimal"
                 app:layout_constraintEnd_toEndOf="@+id/maxEntrantsTextView"
                 app:layout_constraintStart_toStartOf="@+id/selectPriceTextView"
                 app:layout_constraintTop_toBottomOf="@+id/selectPriceTextView" />
@@ -197,14 +200,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/inter_bold"
-                android:text="Start Date"
+                android:text="End Date"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/waitlingListTextView"
                 app:layout_constraintTop_toBottomOf="@+id/price_input" />
 
 
-            <com.google.android.material.textfield.TextInputEditText
+            <TextView
                 android:id="@+id/start_date_input"
                 android:layout_width="0dp"
                 android:layout_height="20dp"
@@ -214,7 +217,7 @@
                 app:layout_constraintStart_toStartOf="@+id/start_date_title_text"
                 app:layout_constraintTop_toBottomOf="@+id/start_date_title_text" />
 
-            <com.google.android.material.textfield.TextInputEditText
+            <TextView
                 android:id="@+id/end_date_input"
                 android:layout_width="0dp"
                 android:layout_height="20dp"
