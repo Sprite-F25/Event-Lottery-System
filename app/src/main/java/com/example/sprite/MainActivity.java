@@ -77,6 +77,12 @@ public class MainActivity extends AppCompatActivity {
 //                return true;
 //}
 
+                //Navigate to Create Event
+                if (id == R.id.nav_create_event) {
+                    drawer.closeDrawers();
+                    navController.navigate(R.id.nav_create_event);
+                    return true;
+                }
 
 //                if (id == R.id.nav_notifications) {
 //                    drawer.closeDrawers(); // Close the drawer first

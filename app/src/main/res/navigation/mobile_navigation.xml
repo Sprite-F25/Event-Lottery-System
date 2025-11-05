@@ -52,6 +52,11 @@
         android:name="com.example.sprite.screens.admin.ReviewEventFragment"
         android:label="Review Event"
         tools:layout="@layout/fragment_review_event" />
+    <fragment
+        android:id="@+id/nav_create_event"
+        android:name="com.example.sprite.screens.createEvent.CreateEventFragment"
+        android:label="CreateEvent"
+        tools:layout="@layout/fragment_create_event" />
 
 
 <!--this is how to add a fragment into the nav bar-->
