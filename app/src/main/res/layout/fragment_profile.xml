@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:padding="0dp"
     android:background="@android:color/white"
-    tools:context=".SlideshowFragment">
+    tools:context=".UserProfileFragment">
 
     <TextView
         android:id="@+id/header_text"

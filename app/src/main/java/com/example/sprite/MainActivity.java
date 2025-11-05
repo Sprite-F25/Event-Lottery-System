@@ -17,6 +17,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Models.User;
 import com.example.sprite.databinding.ActivityMainBinding;
+//import com.example.sprite.screens.Notifications.NotificationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         //add the fragment ID to this
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 //R.id.some_nav
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,R.id.nav_notifications)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -82,6 +83,15 @@ public class MainActivity extends AppCompatActivity {
                     navController.navigate(R.id.nav_create_event);
                     return true;
                 }
+
+//                if (id == R.id.nav_notifications) {
+//                    drawer.closeDrawers(); // Close the drawer first
+//                    Intent intent = new Intent(MainActivity.this, NotificationView.class);
+//                    startActivity(intent);
+//                    // Don't call finish() if you want user to be able to go back
+//                    return true;
+//                }
+
                 // Handle sign out separately
                 if (id == R.id.nav_signout) {
                     // Close drawer
