@@ -3,13 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_events_list">
 
+    <!-- Nav bar fragments -->
     <fragment
         android:id="@+id/nav_home"
         android:name="com.example.sprite.screens.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/nav_events_list"
+        android:name="com.example.sprite.screens.eventsList.EventsListFragment"
+        android:label="Events List"
+        tools:layout="@layout/fragment_events_list"/>
 
     <fragment
         android:id="@+id/nav_gallery"
@@ -28,6 +34,24 @@
         android:label="@string/menu_notifications"
         tools:layout="@layout/fragment_notifications" />
 
+    <!-- Other fragments -->
+    <fragment
+        android:id="@+id/fragment_event_details"
+        android:name="com.example.sprite.screens.organizer.eventDetails.EventDetailsFragment"
+        android:label="Event Details"
+        tools:layout="@layout/fragment_event_details" />
+
+    <fragment
+        android:id="@+id/fragment_manage_event"
+        android:name="com.example.sprite.screens.createEvent.ManageEventFragment"
+        android:label="Manage Event"
+        tools:layout="@layout/fragment_manage_event" />
+
+    <fragment
+        android:id="@+id/fragment_review_event"
+        android:name="com.example.sprite.screens.admin.ReviewEventFragment"
+        android:label="Review Event"
+        tools:layout="@layout/fragment_review_event" />
     <fragment
         android:id="@+id/nav_create_event"
         android:name="com.example.sprite.screens.createEvent.CreateEventFragment"
