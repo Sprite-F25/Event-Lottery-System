@@ -1,5 +1,6 @@
 package com.example.sprite.screens.admin;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,20 +13,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.example.sprite.Models.Event;
 import com.example.sprite.R;
+import com.google.android.material.button.MaterialButton;
 
 public class ReviewEventFragment extends Fragment {
 
     private ReviewEventViewModel viewModel;
     private TextView titleView, descriptionView;
     private ImageView eventImageView;
-    private ImageButton backButton, removeImageButton;
+    private ImageButton removeImageButton;
 
-    public static ReviewEventFragment newInstance() {
-        return new ReviewEventFragment();
-    }
+    private Event selectedEvent;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -38,27 +39,62 @@ public class ReviewEventFragment extends Fragment {
         descriptionView = view.findViewById(R.id.editDescriptionTextView);
         eventImageView = view.findViewById(R.id.createImageView);
         removeImageButton = view.findViewById(R.id.removeImageButton);
+        MaterialButton deleteButton = view.findViewById(R.id.delete_button);
 
-        // Placeholder image (removeImageButton can just reset to default)
-        removeImageButton.setOnClickListener(v -> eventImageView.setImageResource(R.drawable.event_image));
+        // Placeholder functionality
+        removeImageButton.setOnClickListener(v ->
+                eventImageView.setImageResource(R.drawable.event_image)
+        );
 
+        // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(ReviewEventViewModel.class);
 
-        // Get Event from bundle
+        // Get event from arguments
         if (getArguments() != null) {
-            Event event = (Event) getArguments().getSerializable("selectedEvent");
-            viewModel.setSelectedEvent(event);
+            selectedEvent = (Event) getArguments().getSerializable("selectedEvent");
+            viewModel.setSelectedEvent(selectedEvent);
         }
 
-        // Observe LiveData
+        // Observe event data
         viewModel.getSelectedEvent().observe(getViewLifecycleOwner(), event -> {
             if (event != null) {
                 titleView.setText(event.getTitle());
                 descriptionView.setText(event.getDescription());
-                // For now, keep the placeholder image
+                // Placeholder until we load real image later
                 eventImageView.setImageResource(R.drawable.event_image);
             }
         });
+
+        // Handle delete button
+        deleteButton.setOnClickListener(v -> {
+            LayoutInflater popupInflater = LayoutInflater.from(requireContext());
+            View popupView = popupInflater.inflate(R.layout.fragment_confirm_popup, null);
+
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setView(popupView);
+
+            AlertDialog dialog = builder.create();
+
+            TextView title = popupView.findViewById(R.id.popupTitleTextView);
+            title.setText("Delete Event");
+
+            TextView confirmText = popupView.findViewById(R.id.textView3);
+            confirmText.setText("Are you sure you want to delete this event? This action cannot be undone.");
+
+            MaterialButton confirmBtn = popupView.findViewById(R.id.createEventButton2);
+            MaterialButton cancelBtn = popupView.findViewById(R.id.createEventButton);
+
+            confirmBtn.setOnClickListener(view1 -> {
+                viewModel.deleteEvent(selectedEvent);
+                dialog.dismiss();
+                Navigation.findNavController(requireView()).popBackStack(); // go back to list
+            });
+
+            cancelBtn.setOnClickListener(view12 -> dialog.dismiss());
+            dialog.show();
+        });
+
 
         return view;
     }
