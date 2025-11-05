@@ -82,7 +82,9 @@ public class Event {
     /**
      * Default constructor for Firestore deserialization.
      */
-    public Event() {}
+    public Event() {
+        this.date = new Date();
+    }
 
     /**
      * Constructs a new Event with the specified parameters.
