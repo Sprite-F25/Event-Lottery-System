@@ -124,6 +124,7 @@ public class EntrantAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void bind(Entrant entrant) {
             name.setText(entrant.getName());
             role.setText(entrant.getRole().name());
+            // When the cancel button is clicked, call the fragment's listener
             cancelButton.setOnClickListener(v -> {
                 if (cancelListener != null) cancelListener.onCancelClick(entrant);
             });

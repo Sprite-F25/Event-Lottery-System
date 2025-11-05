@@ -61,10 +61,8 @@ public class EventsListFragment extends Fragment {
                             .navigate(R.id.fragment_event_details, bundle);
                     break;
                 case ORGANIZER:
-//                    Navigation.findNavController(view)
-//                            .navigate(R.id.fragment_manage_event);
                     Navigation.findNavController(view)
-                            .navigate(R.id.fragment_view_entrants, bundle);
+                            .navigate(R.id.fragment_manage_event);
                     break;
                 case ADMIN:
                     Navigation.findNavController(view)

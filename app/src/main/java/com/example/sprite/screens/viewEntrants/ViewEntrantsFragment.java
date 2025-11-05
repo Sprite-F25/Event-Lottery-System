@@ -105,6 +105,10 @@ public class ViewEntrantsFragment extends Fragment {
             // TODO: Implement CSV export logic - part 4
         });
 
+        adapter.setOnCancelClickListener(entrant -> {
+            showConfirmPopup(entrant);
+        });
+
         return rootView;
     }
 
@@ -146,8 +150,8 @@ public class ViewEntrantsFragment extends Fragment {
         AlertDialog dialog = builder.create();
 
         // Set the title
-        builder.setTitle("Cancel Entrant");
         TextView title = popupView.findViewById(R.id.popupTitleTextView);
+        title.setText("Cancel Entrant");
 
         // Set the confirmation text
         TextView confirmText = popupView.findViewById(R.id.textView3);
@@ -157,7 +161,6 @@ public class ViewEntrantsFragment extends Fragment {
         MaterialButton cancelBtn = popupView.findViewById(R.id.createEventButton);
 
         confirmBtn.setOnClickListener(v -> {
-            // TODO: perform cancellation logic for this entrant
 
             mViewModel.cancelEntrant(currentEvent, entrant);
             dialog.dismiss();
@@ -167,7 +170,6 @@ public class ViewEntrantsFragment extends Fragment {
             mViewModel.cancelEntrant(currentEvent, entrant);
             dialog.dismiss();
         });
-
 
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
 
