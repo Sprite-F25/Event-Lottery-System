@@ -62,7 +62,7 @@ public class EntrantAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        return (mode == Mode.CANCELLED) ? 1 : 0;
+        return (mode == Mode.CHOSEN) ? 1 : 0;
     }
 
     @NonNull
@@ -109,7 +109,7 @@ public class EntrantAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    // Cancelled ViewHolder
+    // Cancelled ViewHolder - for 'selected list' where organizers can cancel users
     class CancelledViewHolder extends RecyclerView.ViewHolder {
         TextView name, role;
         Button cancelButton;

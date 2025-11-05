@@ -36,7 +36,7 @@ public class EventsListViewModel extends ViewModel {
         });
     }
 
-    // Load only events organized by this UID
+    // Load only events organized by this organizer's ID
     public void loadEventsForOrganizer(String organizerUid) {
         dbService.getEventsByOrganizer(organizerUid, task -> {
             if (task.isSuccessful() && task.getResult() != null) {

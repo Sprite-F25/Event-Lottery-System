@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sprite.Adapters.EventAdapter;
-import com.example.sprite.Models.Event;
 import com.example.sprite.Models.User;
 import com.example.sprite.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -128,29 +127,6 @@ public class EventsListFragment extends Fragment {
                     }
                 })
                 .addOnFailureListener(e -> Log.e("EventsListFragment", "Error loading user", e));
-    }
-
-
-
-    private void observeEvents() {
-        mViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
-            if (currentUser == null) return;
-
-            // Filter events if user is an organizer
-            if (currentUser.getUserRole() == User.UserRole.ORGANIZER) {
-                ArrayList<Event> organizerEvents = new ArrayList<>();
-                for (Event e : events) {
-                    if (e.getOrganizerId() != null && e.getOrganizerId().equals(currentUser.getUserId())) {
-                        organizerEvents.add(e);
-                    }
-                }
-                adapter.setEvents(organizerEvents);
-            } else {
-                adapter.setEvents(events); // Entrant/Admin sees all events
-            }
-
-            adapter.notifyDataSetChanged();
-        });
     }
 
 }

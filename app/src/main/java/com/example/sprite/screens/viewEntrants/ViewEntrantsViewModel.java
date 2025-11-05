@@ -1,5 +1,7 @@
 package com.example.sprite.screens.viewEntrants;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -7,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 import com.example.sprite.Controllers.DatabaseService;
 import com.example.sprite.Models.Entrant;
 import com.example.sprite.Models.Event;
+import com.example.sprite.Models.Waitlist;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -47,17 +50,14 @@ public class ViewEntrantsViewModel extends ViewModel {
             case "Chosen":
                 entrantIds = event.getSelectedAttendees();
                 break;
-            case "WaitingList":
-                entrantIds = event.getWaitingList();
-                break;
             case "Cancelled":
                 entrantIds = event.getCancelledAttendees();
                 break;
             case "Final":
                 entrantIds = event.getConfirmedAttendees();
                 break;
-            default:
-                entrantIds = new ArrayList<>();
+            default:    // WaitingList
+                entrantIds = event.getWaitingList();
         }
 
         fetchEntrants(entrantIds);
@@ -88,4 +88,26 @@ public class ViewEntrantsViewModel extends ViewModel {
                     });
         }
     }
+
+    public void cancelEntrant(Event event, Entrant entrant) {
+        Waitlist waitlist = new Waitlist(event);
+        waitlist.moveToCancelled(entrant.getUserId());
+
+        // Update Firebase
+        if (event.getEventId() != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("events")
+                    .document(event.getEventId())
+                    .update("selectedAttendees", event.getSelectedAttendees(),
+                            "cancelledAttendees", event.getCancelledAttendees())
+                    .addOnSuccessListener(aVoid -> {
+                        // Refresh UI
+                        selectList("Cancelled", event);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("CancelEntrant", "Error updating lists: " + e.getMessage());
+                    });
+        }
+    }
+
 }
