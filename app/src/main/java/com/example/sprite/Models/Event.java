@@ -1,5 +1,6 @@
 package com.example.sprite.Models;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  * 
  * @author Angelo
  */
-public class Event {
+public class Event implements Serializable {
     private  Date date;
     private String eventId;
     private String organizerId;

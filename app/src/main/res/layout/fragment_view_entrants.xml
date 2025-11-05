@@ -65,7 +65,7 @@
         app:tint="@color/white"
         android:src="@drawable/ic_notifications_logo"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         android:layout_margin="24dp"
         app:elevation="8dp" />
 

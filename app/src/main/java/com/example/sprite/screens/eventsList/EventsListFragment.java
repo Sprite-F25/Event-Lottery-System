@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class EventsListFragment extends Fragment {
@@ -51,18 +52,24 @@ public class EventsListFragment extends Fragment {
         adapter.setOnItemClickListener(event -> {
             if (currentUser == null) return; // prevent click before user is loaded
 
-            switch (currentUser.getUserRole()) {  // use the Firestore-compatible getter
+            // pass the selected event
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("selectedEvent", (Serializable) event);
+
+            switch (currentUser.getUserRole()) {
                 case ENTRANT:
                     Navigation.findNavController(view)
-                            .navigate(R.id.fragment_event_details);
+                            .navigate(R.id.fragment_event_details, bundle);
                     break;
                 case ORGANIZER:
+//                    Navigation.findNavController(view)
+//                            .navigate(R.id.fragment_manage_event);
                     Navigation.findNavController(view)
-                            .navigate(R.id.fragment_manage_event);
+                            .navigate(R.id.fragment_view_entrants, bundle);
                     break;
                 case ADMIN:
                     Navigation.findNavController(view)
-                            .navigate(R.id.fragment_review_event);
+                            .navigate(R.id.fragment_review_event, bundle);
                     break;
             }
         });
@@ -90,18 +97,30 @@ public class EventsListFragment extends Fragment {
                     if (doc.exists()) {
                         User tempUser = doc.toObject(User.class);
                         if (tempUser != null) {
-                            // Firestore stores enum as string, convert safely
+                            tempUser.setUserId(doc.getId()); // ensure userId is set
+
                             String roleStr = doc.getString("userRole");
                             if (roleStr != null) {
                                 try {
                                     tempUser.setUserRole(User.UserRole.valueOf(roleStr));
                                 } catch (IllegalArgumentException e) {
-                                    Log.e("EventsListFragment", "Invalid role value: " + roleStr);
                                     tempUser.setUserRole(User.UserRole.ENTRANT);
                                 }
                             }
                             currentUser = tempUser;
-                            observeEvents();
+
+                            // NEW: Load events depending on role
+                            if (currentUser.getUserRole() == User.UserRole.ORGANIZER) {
+                                mViewModel.loadEventsForOrganizer(uid);
+                            } else {
+                                mViewModel.loadAllEvents();
+                            }
+
+                            // Observe LiveData
+                            mViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
+                                adapter.setEvents(events);
+                                adapter.notifyDataSetChanged();
+                            });
                         }
                     } else {
                         Log.e("EventsListFragment", "User document not found!");
@@ -109,6 +128,8 @@ public class EventsListFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> Log.e("EventsListFragment", "Error loading user", e));
     }
+
+
 
     private void observeEvents() {
         mViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
