@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 
 /**
  * This class handles lottery operations for events, including randomly selecting entrants
@@ -19,8 +20,45 @@ public class LotteryService {
 
     private final Random random = new Random();
 
-    // DatabaseService dbService = DatabaseService.getInstance();
-    private final DatabaseService dbService = new DatabaseService();
+    private DatabaseService dbService;
+    private NotificationService notificationService;
+    private Function<Event, Waitlist> waitlistProvider; // NEW: inject Waitlist factory
+
+    /**
+     * Default constructor for LotteryService.
+     */
+    public LotteryService() {
+        this.notificationService = new NotificationService();
+        this.waitlistProvider = Waitlist::new;
+    }
+
+    /**
+     * Constructor that allows injecting mock services AND a Waitlist provider.
+     *
+     * @param dbService
+     *      The DatabaseService instance to use (can be mocked).
+     * @param notificationService
+     *      The NotificationService instance to use (can be mocked).
+     * @param waitlistProvider
+     *      Function to provide a Waitlist instance for the event (can be mocked).
+     */
+    public LotteryService(DatabaseService dbService, NotificationService notificationService,
+                          Function<Event, Waitlist> waitlistProvider) {
+        this.dbService = dbService;
+        this.notificationService = notificationService;
+        this.waitlistProvider = waitlistProvider;
+    }
+
+    /**
+     * Sets the NotificationService used by this LotteryService.
+     * Used for testing.
+     *
+     * @param notificationService
+     *      The mock NotificationService instance.
+     */
+    public void setNotificationService(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
 
     /**
@@ -40,8 +78,8 @@ public class LotteryService {
 
         int availableSlots = event.getMaxAttendees();
 
-        // shuffle existing waitlist for the event
-        Waitlist waitlistObject = new Waitlist(event);
+        // Use injected waitlist provider (mockable in tests)
+        Waitlist waitlistObject = waitlistProvider.apply(event);
         List<String> waitlist = waitlistObject.getWaitingList();
         Collections.shuffle(waitlist, random);
 
@@ -54,21 +92,18 @@ public class LotteryService {
             if (availableSlots > 0) {
                 waitlistObject.moveToSelected(entrantId);
                 availableSlots--;
-            } else {
-                // still on waitlist
-                // sendNotification(entrantId, "You have not been selected - still on waitlist")
             }
         }
         event.setStatus(Event.EventStatus.LOTTERY_COMPLETED);
 
-        // Firebase update for entire event at once - easier than handling sep lists
-        dbService.updateEvent(event, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("LotteryService", "Failed to update event: " + event, task.getException());
-            }
-        });
+        if (dbService != null) {
+            dbService.updateEvent(event, task -> {
+                if (!task.isSuccessful()) {
+                    Log.e("LotteryService", "Failed to update event: " + event, task.getException());
+                }
+            });
+        }
     }
-
 
     /**
      * Draws replacements for cancelled spots when organizer clicks the button on ManageEvents page.
@@ -79,7 +114,7 @@ public class LotteryService {
      *      true if at least one replacement was drawn, false otherwise
      */
     public boolean drawReplacements(Event event) {
-        Waitlist waitlist = new Waitlist(event);
+        Waitlist waitlist = waitlistProvider.apply(event);
 
         int openSlots = event.getCancelledAttendees().size();
         if (openSlots <= 0) return false;
@@ -95,13 +130,15 @@ public class LotteryService {
             } else break;
         }
 
-        dbService.updateEvent(event, task -> {
-            if (!task.isSuccessful()) {
-                Log.e("LotteryService", "Failed to update replacements for event: " + event.getEventId(), task.getException());
-            } else {
-                Log.i("LotteryService", "Replacements drawn successfully for event: " + event.getEventId());
-            }
-        });
+        if (dbService != null) {
+            dbService.updateEvent(event, task -> {
+                if (!task.isSuccessful()) {
+                    Log.e("LotteryService", "Failed to update replacements for event: " + event.getEventId(), task.getException());
+                } else {
+                    Log.i("LotteryService", "Replacements drawn successfully for event: " + event.getEventId());
+                }
+            });
+        }
 
         return drawnCount > 0;
     }
