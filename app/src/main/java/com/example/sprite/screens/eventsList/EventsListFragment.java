@@ -39,12 +39,25 @@ public class EventsListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+
         View view = inflater.inflate(R.layout.fragment_events_list, container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view_events);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new EventAdapter(new ArrayList<>());  // OK now with default constructor
+
+        adapter = new EventAdapter(events);
+        recyclerView.setAdapter(adapter);
+
+
+        mViewModel = new ViewModelProvider(this).get(EventsListViewModel.class);
+
+
+        mViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
+            adapter.setEvents(events);
+            adapter.notifyDataSetChanged();
+            filterButton.setText("Events count: " + events.size());
+        //adapter = new EventAdapter(new ArrayList<>());  // OK now with default constructor
         recyclerView.setAdapter(adapter);
 
         // Click listener for each event
@@ -71,7 +84,7 @@ public class EventsListFragment extends Fragment {
             }
         });
 
-        mViewModel = new ViewModelProvider(this).get(EventsListViewModel.class);
+        //mViewModel = new ViewModelProvider(this).get(EventsListViewModel.class);
 
         fetchCurrentUser();
 
