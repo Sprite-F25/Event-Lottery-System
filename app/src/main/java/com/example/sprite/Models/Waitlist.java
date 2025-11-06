@@ -34,6 +34,26 @@ public class Waitlist {
         this.notificationService = new NotificationService();
     }
 
+    /**
+     * Constructs a Waitlist manager for a specific event, using a custom NotificationService.
+     * This is useful for testing so that notifications can be mocked.
+     * The waiting, selected, cancelled, and confirmed lists are initialized based on the event's existing attendee lists.
+     *
+     * @param event
+     *      The event whose participant lists are being managed.
+     * @param notificationService
+     *      The NotificationService to use for sending notifications
+     */
+    public Waitlist(Event event, NotificationService notificationService) {
+        this.event = event;
+        // Below are references to the Event's list, not copies
+        waitingList = event.getWaitingList();
+        selectedList = event.getSelectedAttendees();
+        cancelledList = event.getCancelledAttendees();
+        confirmedList = event.getConfirmedAttendees();
+        this.notificationService = notificationService;
+    }
+
     /** Adds an entrant to the waiting list.
      * @param entrantId
      *      The unique ID of the entrant to be added to the waiting list

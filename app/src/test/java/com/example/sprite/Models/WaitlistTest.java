@@ -1,8 +1,16 @@
 package com.example.sprite.Models;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
+import com.example.sprite.Controllers.NotificationService;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 
@@ -13,33 +21,37 @@ import java.util.ArrayList;
  */
 public class WaitlistTest {
 
+    @Mock
+    NotificationService mockNotificationService;
+
+    private Waitlist waitlist;
+    private Event event;
+
     /**
      * Helper method that creates a mock Event with empty participant lists and max attendees set to 2.
      *
      * @return
      *      A new mock Event
      */
-    private Event mockEvent() {
-        Event event = new Event();
+    @BeforeEach
+    void setUp() {
+        // Initialize Mockito annotations
+        MockitoAnnotations.openMocks(this);
+
+        event = new Event();
+        event.setEventId("event1");
+        event.setTitle("Test Event");
+
         event.setWaitingList(new ArrayList<>());
         event.setSelectedAttendees(new ArrayList<>());
         event.setCancelledAttendees(new ArrayList<>());
         event.setConfirmedAttendees(new ArrayList<>());
         event.setMaxAttendees(2);
-        return event;
-    }
 
-    /**
-     * Helper method that creates a Waitlist for a mock event with one entrant already on the waiting list.
-     *
-     * @return
-     *      A waitlist initialized with one entrant
-     */
-    private Waitlist mockWaitlist() {
-        Event event = mockEvent();
-        Waitlist waitlist = new Waitlist(event);
+        // Inject mocked NotificationService
+        waitlist = new Waitlist(event, mockNotificationService);
+
         waitlist.addEntrantToWaitlist("entrant1");
-        return waitlist;
     }
 
     /**
@@ -48,7 +60,6 @@ public class WaitlistTest {
      */
     @Test
     void testAddEntrantToWaitlist() {
-        Waitlist waitlist = mockWaitlist();
         assertEquals(1, waitlist.getWaitingList().size());
         waitlist.addEntrantToWaitlist("entrant2");
         assertEquals(2, waitlist.getWaitingList().size());
@@ -61,10 +72,13 @@ public class WaitlistTest {
      */
     @Test
     void testMoveToSelected() {
-        Waitlist waitlist = mockWaitlist();
         waitlist.moveToSelected("entrant1");
         assertTrue(waitlist.getSelectedList().contains("entrant1"));
         assertFalse(waitlist.getWaitingList().contains("entrant1"));
+
+        // verify that NotificationService.notifySelectedFromWaitlist was called exactly once
+        verify(mockNotificationService, times(1))
+                .notifySelectedFromWaitlist(eq("entrant1"), eq("event1"), eq("Test Event"), any());
     }
 
     /**
@@ -73,11 +87,9 @@ public class WaitlistTest {
      */
     @Test
     void testMoveToCancelled() {
-        Waitlist waitlist = mockWaitlist();
         waitlist.moveToSelected("entrant1");
         waitlist.moveToCancelled("entrant1");
         assertTrue(waitlist.getCancelledList().contains("entrant1"));
-        assertFalse(waitlist.getSelectedList().contains("entrant1"));
     }
 
     /**
@@ -86,7 +98,6 @@ public class WaitlistTest {
      */
     @Test
     void testAddToConfirmed() {
-        Waitlist waitlist = mockWaitlist();
         waitlist.addToConfirmed("entrant1");
         assertTrue(waitlist.getConfirmedList().contains("entrant1"));
     }

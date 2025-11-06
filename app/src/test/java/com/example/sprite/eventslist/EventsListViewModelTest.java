@@ -17,7 +17,7 @@ public class EventsListViewModelTest {
         Event ev = new Event();
         ev.setEventId(id);
         ev.setOrganizerId(org);
-        ev.setEventName("E-"+id);
+        ev.setTitle("E-"+id);
         return ev;
     }
 
