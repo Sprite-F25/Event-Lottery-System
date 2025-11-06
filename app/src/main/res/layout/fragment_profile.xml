@@ -59,7 +59,7 @@
     <!-- Role -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/role_input_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -68,12 +68,13 @@
         android:hint="Role"
         app:layout_constraintTop_toBottomOf="@id/name_input_layout">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/role_edit_text"
+        <AutoCompleteTextView
+            android:id="@+id/role_auto_complete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Organizer"
-            android:inputType="textCapWords" />
+            android:inputType="none"
+            android:focusable="false"
+            android:entries="@array/roles" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Email -->
