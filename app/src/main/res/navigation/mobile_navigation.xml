@@ -65,6 +65,12 @@
         tools:layout="@layout/fragment_profile" />
 
     <fragment
+        android:id="@+id/nav_site_criteria"
+        android:name="com.example.sprite.screens.siteCriteria.SiteCriteriaFragment"
+        android:label="@string/site_criteria_title"
+        tools:layout="@layout/fragment_site_criteria" />
+
+    <fragment
         android:id="@+id/fragment_view_entrants"
         android:name="com.example.sprite.screens.viewEntrants.ViewEntrantsFragment"
         android:label="View Entrants"
