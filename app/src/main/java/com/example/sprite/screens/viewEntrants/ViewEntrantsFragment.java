@@ -33,6 +33,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Fragment that displays the list of entrants registered for a selected event.
+ * Uses ViewEntrantsViewModel    to load entrants and supports real-time updates.
+ * Typically accessed by organizers or admins for event management.
+ */
+
+
 public class ViewEntrantsFragment extends Fragment {
 
     private static final String TAG = "ViewEntrantsFragment";
