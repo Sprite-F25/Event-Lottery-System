@@ -39,7 +39,7 @@
         android:contentDescription="back button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/back_button"
+        tools:src="@drawable/back_button_1"
         />
 
     <ScrollView

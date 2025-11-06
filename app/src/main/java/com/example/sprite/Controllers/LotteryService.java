@@ -19,7 +19,7 @@ public class LotteryService {
 
     private final Random random = new Random();
 
-    //DatabaseService dbService = DatabaseService.getInstance();
+    // DatabaseService dbService = DatabaseService.getInstance();
     private final DatabaseService dbService = new DatabaseService();
 
 
@@ -31,6 +31,13 @@ public class LotteryService {
      *      The event object for which the lottery is being run.
      */
     public void runLottery(Event event) {
+
+        // if already complete
+        if (event.getStatus() == Event.EventStatus.LOTTERY_COMPLETED) {
+            Log.i("LotteryService", "Lottery already completed for event: " + event.getEventId());
+            return;
+        }
+
         int availableSlots = event.getMaxAttendees();
 
         // shuffle existing waitlist for the event
@@ -62,48 +69,42 @@ public class LotteryService {
         });
     }
 
+
     /**
-     * Handles an entrant cancellation for a specific event.
-     * The entrant is moved to the cancelled list, and the next entrant
-     * in the waiting list (if available) is promoted to the selected list.
+     * Draws replacements for cancelled spots when organizer clicks the button on ManageEvents page.
+     * Fills open slots (if any) from the waiting list.
      * @param event
-     *      The event in which the cancellation occurred.
-     * @param cancelledEntrantId
-     *      The unique ID of the entrant who cancelled their participation.
+     *      The event object for which replacements are being drawn.
+     * @return
+     *      true if at least one replacement was drawn, false otherwise
      */
-    public void handleCancellation(Event event, String cancelledEntrantId) {
-        Waitlist waitlistObject = new Waitlist(event);
+    public boolean drawReplacements(Event event) {
+        Waitlist waitlist = new Waitlist(event);
 
-        // add entrant to cancelled list
-        waitlistObject.moveToCancelled(cancelledEntrantId);
+        int maxSlots = event.getMaxAttendees();
+        int currentSelected = waitlist.getSelectedList().size();
+        int openSlots = Math.max(0, maxSlots - currentSelected);
 
-        // promote the next in line from the waitlist to selected, if any
-        // TODO: confirm with team - if someone cancels, are they removed from selectedList. how about confirmed?
-        String nextInLineId = getNextFromWaitlist(waitlistObject);
-        if (nextInLineId != null) {
-            waitlistObject.moveToSelected(nextInLineId);
+        List<String> waitlistCopy = new ArrayList<>(waitlist.getWaitingList());
+        Collections.shuffle(waitlistCopy, random); // optional randomness
+
+        int drawnCount = 0;
+        for (String entrantId : waitlistCopy) {
+            if (openSlots > 0) {
+                waitlist.moveToSelected(entrantId);
+                openSlots--;
+                drawnCount++;
+            } else break;
         }
 
-        // Firebase update
         dbService.updateEvent(event, task -> {
             if (!task.isSuccessful()) {
-                Log.e("LotteryService", "Failed to update event: " + event, task.getException());
+                Log.e("LotteryService", "Failed to update replacements for event: " + event.getEventId(), task.getException());
+            } else {
+                Log.i("LotteryService", "Replacements drawn successfully for event: " + event.getEventId());
             }
         });
-    }
 
-    /**
-     * Helper function that retrieves the next Entrant from the waiting list to be promoted to selected.
-     * @param waitlist
-     *      The Waitlist object for the event
-     * @return
-     *      he ID of the next entrant in line, or null if the waiting list is empty.
-     */
-    private String getNextFromWaitlist(Waitlist waitlist) {
-        if (!waitlist.getWaitingList().isEmpty()) {
-            return waitlist.getWaitingList().get(0);
-        }
-        return null;
+        return drawnCount > 0;
     }
-
 }

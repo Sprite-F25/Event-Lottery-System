@@ -15,22 +15,37 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sprite.Adapters.EventAdapter;
+import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Models.Event;
 import com.example.sprite.Models.User;
 import com.example.sprite.R;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Fragment that displays a list of events based on the current user's role.
+ * 
+ * <p>For organizers, it shows only events they created. For entrants and admins,
+ * it shows all available events.</p>
+ * 
+ * @author Angelo
+ */
 public class EventsListFragment extends Fragment {
 
+    private static final String TAG = "EventsListFragment";
+    
     private EventsListViewModel mViewModel;
     private RecyclerView recyclerView;
     private EventAdapter adapter;
     private User currentUser;
 
+    /**
+     * Creates a new instance of EventsListFragment.
+     * 
+     * @return A new EventsListFragment instance
+     */
     public static EventsListFragment newInstance() {
         return new EventsListFragment();
     }
@@ -38,97 +53,112 @@ public class EventsListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_events_list, container, false);
 
-        recyclerView = view.findViewById(R.id.recycler_view_events);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        adapter = new EventAdapter(new ArrayList<>());  // OK now with default constructor
-        recyclerView.setAdapter(adapter);
-
-        // Click listener for each event
-        adapter.setOnItemClickListener(event -> {
-            if (currentUser == null) return; // prevent click before user is loaded
-
-            switch (currentUser.getUserRole()) {  // use the Firestore-compatible getter
-                case ENTRANT:
-                    Navigation.findNavController(view)
-                            .navigate(R.id.fragment_event_details);
-                    break;
-                case ORGANIZER:
-                    Navigation.findNavController(view)
-                            .navigate(R.id.fragment_manage_event);
-                    break;
-                case ADMIN:
-                    Navigation.findNavController(view)
-                            .navigate(R.id.fragment_review_event);
-                    break;
-            }
-        });
-
-        mViewModel = new ViewModelProvider(this).get(EventsListViewModel.class);
-
+        initializeViews(view);
+        setupViewModel();
+        setupRecyclerView();
+        setupEventClickListener(view);
         fetchCurrentUser();
 
         return view;
     }
 
-    private void fetchCurrentUser() {
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser == null) {
-            Log.e("EventsListFragment", "No logged-in user found!");
-            return;
-        }
-
-        String uid = firebaseUser.getUid();
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(uid)
-                .get()
-                .addOnSuccessListener(doc -> {
-                    if (doc.exists()) {
-                        User tempUser = doc.toObject(User.class);
-                        if (tempUser != null) {
-                            // Firestore stores enum as string, convert safely
-                            String roleStr = doc.getString("userRole");
-                            if (roleStr != null) {
-                                try {
-                                    tempUser.setUserRole(User.UserRole.valueOf(roleStr));
-                                } catch (IllegalArgumentException e) {
-                                    Log.e("EventsListFragment", "Invalid role value: " + roleStr);
-                                    tempUser.setUserRole(User.UserRole.ENTRANT);
-                                }
-                            }
-                            currentUser = tempUser;
-                            observeEvents();
-                        }
-                    } else {
-                        Log.e("EventsListFragment", "User document not found!");
-                    }
-                })
-                .addOnFailureListener(e -> Log.e("EventsListFragment", "Error loading user", e));
+    /**
+     * Initializes view references from the layout.
+     * 
+     * @param view The root view of the fragment
+     */
+    private void initializeViews(View view) {
+        recyclerView = view.findViewById(R.id.recycler_view_events);
     }
 
-    private void observeEvents() {
+    /**
+     * Sets up the ViewModel for managing events data.
+     */
+    private void setupViewModel() {
+        mViewModel = new ViewModelProvider(this).get(EventsListViewModel.class);
+        
+        // Observe events LiveData
         mViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
-            if (currentUser == null) return;
-
-            // Filter events if user is an organizer
-            if (currentUser.getUserRole() == User.UserRole.ORGANIZER) {
-                ArrayList<Event> organizerEvents = new ArrayList<>();
-                for (Event e : events) {
-                    if (e.getOrganizerId() != null && e.getOrganizerId().equals(currentUser.getUserId())) {
-                        organizerEvents.add(e);
-                    }
-                }
-                adapter.setEvents(organizerEvents);
-            } else {
-                adapter.setEvents(events); // Entrant/Admin sees all events
+            if (events != null) {
+                adapter.setEvents(events);
+                adapter.notifyDataSetChanged();
             }
-
-            adapter.notifyDataSetChanged();
         });
     }
 
+    /**
+     * Configures the RecyclerView with layout manager and adapter.
+     */
+    private void setupRecyclerView() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new EventAdapter(new ArrayList<>());
+        recyclerView.setAdapter(adapter);
+    }
+
+    /**
+     * Sets up click listener for event items in the RecyclerView.
+     * 
+     * @param view The root view for navigation
+     */
+    private void setupEventClickListener(View view) {
+        adapter.setOnItemClickListener(event -> {
+            if (currentUser == null) {
+                Log.w(TAG, "Cannot navigate: currentUser is null");
+                return;
+            }
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("selectedEvent", (Serializable) event);
+
+            switch (currentUser.getUserRole()) {
+                case ENTRANT:
+                    Navigation.findNavController(view)
+                            .navigate(R.id.fragment_event_details, bundle);
+                    break;
+                case ORGANIZER:
+                    Navigation.findNavController(view)
+                            .navigate(R.id.fragment_manage_event, bundle);
+                    break;
+                case ADMIN:
+                    Navigation.findNavController(view)
+                            .navigate(R.id.fragment_review_event, bundle);
+                    break;
+            }
+        });
+    }
+
+    /**
+     * Fetches the current user's profile and loads appropriate events based on their role.
+     */
+    private void fetchCurrentUser() {
+        Authentication_Service authService = new Authentication_Service();
+        
+        if (!authService.isUserLoggedIn()) {
+            Log.e(TAG, "No logged-in user found!");
+            return;
+        }
+
+        String uid = authService.getCurrentUser().getUid();
+        
+        authService.getUserProfile(uid, new Authentication_Service.AuthCallback() {
+            @Override
+            public void onSuccess(User user) {
+                currentUser = user;
+                
+                // Load events based on user role
+                if (currentUser.getUserRole() == User.UserRole.ORGANIZER) {
+                    mViewModel.loadEventsForOrganizer(uid);
+                } else {
+                    mViewModel.loadAllEvents();
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e(TAG, "Error loading user profile: " + error);
+            }
+        });
+    }
 }

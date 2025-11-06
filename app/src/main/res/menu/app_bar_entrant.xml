@@ -5,7 +5,7 @@
 
     <group android:checkableBehavior="single">
         <item android:id="@+id/nav_events_list"
-            android:icon="@android:drawable/ic_menu_my_calendar"
+            android:icon="@drawable/ic_manage_events"
             android:title="Events" />
 
         <item android:id="@+id/nav_profile"
@@ -27,6 +27,10 @@
         <item android:id="@+id/nav_site_criteria"
             android:icon="@drawable/ic_site"
             android:title="Site Criteria" />
+
+        <item android:id="@+id/nav_notification_test"
+            android:icon="@drawable/ic_notifications_logo"
+            android:title="Test Notifications" />
 
         <item android:id="@+id/nav_signout"
             android:icon="@drawable/ic_signout"

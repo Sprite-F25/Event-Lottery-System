@@ -1,19 +1,18 @@
 package com.example.sprite.Controllers;
 
 import android.util.Log;
-import okhttp3.*;
-import java.io.IOException;
 import com.example.sprite.Models.Notification;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -88,21 +87,15 @@ public class NotificationService {
             notification.setNotificationId(UUID.randomUUID().toString());
         }
 
+        // Ensure isRead is explicitly set to false
+        notification.setRead(false);
+        
         db.collection(COLLECTION_NAME)
                 .document(notification.getNotificationId())
                 .set(notification)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "Notification created successfully: " + notification.getNotificationId());
-
-                    // Fetch the entrant’s FCM token and send the push
-                    db.collection("users").document(notification.getEntrantId()).get()
-                            .addOnSuccessListener(doc -> {
-                                if (doc.exists()) {
-                                    String fcmToken = doc.getString("fcmToken");
-                                    sendPushNotification(notification, fcmToken);
-                                }
-                            });
-
+                    Log.d(TAG, "Notification created successfully: " + notification.getNotificationId() + 
+                        " with isRead=" + notification.isRead());
                     callback.onSuccess(notification);
                 })
                 .addOnFailureListener(e -> {
@@ -146,7 +139,6 @@ public class NotificationService {
     public void getNotificationsForEntrant(String entrantId, NotificationListCallback callback) {
         db.collection(COLLECTION_NAME)
                 .whereEqualTo("entrantId", entrantId)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -157,6 +149,16 @@ public class NotificationService {
                                 Notification notification = document.toObject(Notification.class);
                                 notifications.add(notification);
                             }
+                            // Sort by createdAt descending (newest first) in memory
+                            Collections.sort(notifications, new Comparator<Notification>() {
+                                @Override
+                                public int compare(Notification n1, Notification n2) {
+                                    if (n1.getCreatedAt() == null && n2.getCreatedAt() == null) return 0;
+                                    if (n1.getCreatedAt() == null) return 1;
+                                    if (n2.getCreatedAt() == null) return -1;
+                                    return n2.getCreatedAt().compareTo(n1.getCreatedAt()); // Descending
+                                }
+                            });
                             Log.d(TAG, "Retrieved " + notifications.size() + " notifications for entrant: " + entrantId);
                             callback.onSuccess(notifications);
                         } else {
@@ -175,22 +177,51 @@ public class NotificationService {
      * @param callback The callback to handle the result
      */
     public void getUnreadNotificationsForEntrant(String entrantId, NotificationListCallback callback) {
+        // First, get all notifications for this entrant, then filter in memory
+        // This avoids Firestore query issues with boolean fields
         db.collection(COLLECTION_NAME)
                 .whereEqualTo("entrantId", entrantId)
-                .whereEqualTo("isRead", false)
-                .orderBy("createdAt", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            List<Notification> notifications = new ArrayList<>();
+                            List<Notification> allNotifications = new ArrayList<>();
+                            List<Notification> unreadNotifications = new ArrayList<>();
+                            
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 Notification notification = document.toObject(Notification.class);
-                                notifications.add(notification);
+                                allNotifications.add(notification);
+                                
+                                // Debug: Log the isRead status
+                                Boolean isReadValue = document.getBoolean("isRead");
+                                Log.d(TAG, "Notification " + notification.getNotificationId() + 
+                                    " - isRead from doc: " + isReadValue + 
+                                    ", isRead from object: " + notification.isRead());
+                                
+                                // Filter unread notifications - check both the object and the document
+                                if (isReadValue == null || !isReadValue) {
+                                    // If field doesn't exist (null) or is false, treat as unread
+                                    if (!notification.isRead()) {
+                                        unreadNotifications.add(notification);
+                                    }
+                                }
                             }
-                            Log.d(TAG, "Retrieved " + notifications.size() + " unread notifications for entrant: " + entrantId);
-                            callback.onSuccess(notifications);
+                            
+                            Log.d(TAG, "Total notifications for entrant " + entrantId + ": " + allNotifications.size());
+                            Log.d(TAG, "Unread notifications found: " + unreadNotifications.size());
+                            
+                            // Sort by createdAt descending (newest first) in memory
+                            Collections.sort(unreadNotifications, new Comparator<Notification>() {
+                                @Override
+                                public int compare(Notification n1, Notification n2) {
+                                    if (n1.getCreatedAt() == null && n2.getCreatedAt() == null) return 0;
+                                    if (n1.getCreatedAt() == null) return 1;
+                                    if (n2.getCreatedAt() == null) return -1;
+                                    return n2.getCreatedAt().compareTo(n1.getCreatedAt()); // Descending
+                                }
+                            });
+                            callback.onSuccess(unreadNotifications);
                         } else {
                             Log.e(TAG, "Error getting unread notifications", task.getException());
                             callback.onFailure("Failed to retrieve unread notifications: " + 
@@ -233,6 +264,43 @@ public class NotificationService {
                     public void onFailure(Exception e) {
                         Log.e(TAG, "Error marking notification as read", e);
                         callback.onFailure("Failed to mark notification as read: " + e.getMessage());
+                    }
+                });
+    }
+
+    /**
+     * Marks a notification as unread.
+     * 
+     * @param notificationId The unique identifier of the notification
+     * @param callback The callback to handle the result
+     */
+    public void markAsUnread(String notificationId, NotificationCallback callback) {
+        db.collection(COLLECTION_NAME)
+                .document(notificationId)
+                .update("isRead", false)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Notification marked as unread: " + notificationId);
+                        // Retrieve the updated notification
+                        db.collection(COLLECTION_NAME)
+                                .document(notificationId)
+                                .get()
+                                .addOnCompleteListener(task -> {
+                                    if (task.isSuccessful() && task.getResult() != null) {
+                                        Notification notification = task.getResult().toObject(Notification.class);
+                                        callback.onSuccess(notification);
+                                    } else {
+                                        callback.onSuccess(null);
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e(TAG, "Error marking notification as unread", e);
+                        callback.onFailure("Failed to mark notification as unread: " + e.getMessage());
                     }
                 });
     }
@@ -292,55 +360,6 @@ public class NotificationService {
                         callback.onFailure("Failed to delete notification: " + e.getMessage());
                     }
                 });
-    }
-
-    /**
-     * Sends a push notification to a specific device using FCM.
-     *
-     * @param notification The notification data
-     * @param fcmToken     The recipient's FCM token
-     */
-    private void sendPushNotification(Notification notification, String fcmToken) {
-        if (fcmToken == null || fcmToken.isEmpty()) {
-            Log.w(TAG, "Cannot send push: missing FCM token");
-            return;
-        }
-
-        OkHttpClient client = new OkHttpClient();
-
-        String json = "{"
-                + "\"to\":\"" + fcmToken + "\","
-                + "\"notification\":{"
-                + "\"title\":\"" + notification.getEventTitle() + "\","
-                + "\"body\":\"" + notification.getMessage() + "\""
-                + "},"
-                + "\"data\":{"
-                + "\"eventId\":\"" + notification.getEventId() + "\","
-                + "\"type\":\"" + notification.getType().name() + "\""
-                + "}"
-                + "}";
-
-        RequestBody body = RequestBody.create(
-                json, MediaType.get("application/json; charset=utf-8"));
-
-        Request request = new Request.Builder()
-                .url("https://fcm.googleapis.com/fcm/send")
-                .addHeader("Authorization", "key=YOUR_SERVER_KEY_HERE")
-                .addHeader("Content-Type", "application/json")
-                .post(body)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e(TAG, "Failed to send FCM notification", e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, "FCM response: " + response.body().string());
-            }
-        });
     }
 
 }
