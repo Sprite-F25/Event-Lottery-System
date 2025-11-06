@@ -7,29 +7,7 @@
     tools:context=".screens.organizer.eventDetails.EventInfoFragment">
 
     <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/clock_icon"
-        app:layout_constraintEnd_toStartOf="@+id/timeTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView4" />
-
-    <TextView
-        android:id="@+id/timeTextView"
-        android:layout_width="0dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="4dp"
-        android:gravity="center_vertical"
-        android:text="1:00PM - 2:00PM"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/imageView5"
-        app:layout_constraintTop_toBottomOf="@+id/dateTextView" />
-
-    <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/location_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:scaleType="centerInside"
@@ -37,37 +15,59 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/locationTextView"
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/location_input"
         android:layout_width="0dp"
         android:layout_height="24dp"
         android:layout_marginStart="4dp"
-        android:gravity="center_vertical"
-        android:text="Location"
+        android:background="@null"
+        android:textSize="12sp"
+        android:inputType="textPostalAddress"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/location_icon"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/calender_icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:scaleType="centerInside"
         android:src="@drawable/calendar_icon"
-        app:layout_constraintBottom_toTopOf="@+id/imageView5"
-        app:layout_constraintEnd_toStartOf="@+id/dateTextView"
+        app:layout_constraintBottom_toTopOf="@+id/clock_icon"
+        app:layout_constraintEnd_toStartOf="@+id/date_input"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintTop_toBottomOf="@+id/location_icon" />
 
     <TextView
-        android:id="@+id/dateTextView"
+        android:id="@+id/date_input"
         android:layout_width="0dp"
         android:layout_height="24dp"
         android:layout_marginStart="4dp"
         android:gravity="center_vertical"
-        android:text="November 19, 2025"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView4"
-        app:layout_constraintTop_toBottomOf="@+id/locationTextView" />
+        app:layout_constraintStart_toEndOf="@+id/calender_icon"
+        app:layout_constraintTop_toBottomOf="@+id/location_input" />
+
+    <ImageView
+        android:id="@+id/clock_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/clock_icon"
+        app:layout_constraintEnd_toStartOf="@+id/time_input"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calender_icon" />
+
+    <TextView
+        android:id="@+id/time_input"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="4dp"
+        android:gravity="center_vertical"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/clock_icon"
+        app:layout_constraintTop_toBottomOf="@+id/date_input" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

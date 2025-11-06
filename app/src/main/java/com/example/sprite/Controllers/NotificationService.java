@@ -100,6 +100,7 @@ public class NotificationService {
                                 if (doc.exists()) {
                                     String fcmToken = doc.getString("fcmToken");
                                     sendPushNotification(notification, fcmToken);
+                                    Log.e(TAG, "notification sent");
                                 }
                             });
 

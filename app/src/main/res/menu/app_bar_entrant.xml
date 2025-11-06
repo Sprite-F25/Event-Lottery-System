@@ -4,6 +4,10 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_events_list"
+            android:icon="@drawable/ic_manage_events"
+            android:title="Events" />
+
         <item android:id="@+id/nav_profile"
             android:icon="@drawable/ic_profile"
             android:title="Profile" />

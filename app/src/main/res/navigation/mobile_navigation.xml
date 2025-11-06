@@ -3,13 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_events_list">
 
+    <!-- Nav bar fragments -->
     <fragment
         android:id="@+id/nav_home"
         android:name="com.example.sprite.screens.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/nav_events_list"
+        android:name="com.example.sprite.screens.eventsList.EventsListFragment"
+        android:label="Events List"
+        tools:layout="@layout/fragment_events_list"/>
 
     <fragment
         android:id="@+id/nav_gallery"
@@ -32,6 +38,42 @@
         android:name="com.example.sprite.screens.userProfile.UserProfileFragment"
         android:label="@string/menu_profile"
         tools:layout="@layout/fragment_profile" />
+
+    <!-- Other fragments -->
+    <fragment
+        android:id="@+id/fragment_event_details"
+        android:name="com.example.sprite.screens.organizer.eventDetails.EventDetailsFragment"
+        android:label="Event Details"
+        tools:layout="@layout/fragment_event_details" />
+
+    <fragment
+        android:id="@+id/fragment_manage_event"
+        android:name="com.example.sprite.screens.createEvent.ManageEventFragment"
+        android:label="Manage Event"
+        tools:layout="@layout/fragment_manage_event" />
+
+    <fragment
+        android:id="@+id/fragment_review_event"
+        android:name="com.example.sprite.screens.admin.ReviewEventFragment"
+        android:label="Review Event"
+        tools:layout="@layout/fragment_review_event" />
+    <fragment
+        android:id="@+id/nav_create_event"
+        android:name="com.example.sprite.screens.createEvent.CreateEventFragment"
+        android:label="CreateEvent"
+        tools:layout="@layout/fragment_create_event" />
+
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.example.sprite.screens.Profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/fragment_view_entrants"
+        android:name="com.example.sprite.screens.viewEntrants.ViewEntrantsFragment"
+        android:label="View Entrants"
+        tools:layout="@layout/fragment_view_entrants" />
 
 
 <!--this is how to add a fragment into the nav bar-->

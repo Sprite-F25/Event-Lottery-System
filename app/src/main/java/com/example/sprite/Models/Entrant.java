@@ -11,6 +11,9 @@ public class Entrant extends User{
     private ArrayList<Event> registeredEvents;
     private ArrayList<Notification> notifications;
 
+    public Entrant() {
+    }
+
     /**
      * Constructs a new Entrant with the specified user information.
      * 
