@@ -14,6 +14,10 @@ import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Unit tests for ManageEventViewModel.
+ * Tests setting and observing the selected event and updating lottery status.
+ */
 public class ManageEventViewModelTest {
 
     @Rule
@@ -26,6 +30,9 @@ public class ManageEventViewModelTest {
         viewModel = new ManageEventViewModel();
     }
 
+    /**
+     * Tests that a selected event can be set and observed correctly.
+     */
     @Test
     public void testSetAndGetSelectedEvent() {
         Event event = new Event();
@@ -40,6 +47,10 @@ public class ManageEventViewModelTest {
         assertEquals("Test Event", observedEvent.get().getTitle());
     }
 
+    /**
+     * Tests marking the lottery as completed for an event.
+     * Verifies that the status is updated.
+     */
     @Test
     public void testSetStatusLotteryComplete() {
         Event event = new Event();

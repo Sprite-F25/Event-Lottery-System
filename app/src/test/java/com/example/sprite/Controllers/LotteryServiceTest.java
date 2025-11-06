@@ -35,6 +35,9 @@ public class LotteryServiceTest {
 
     private Waitlist mockWaitlist;
 
+    /**
+     * Sets up mocks and initializes the LotteryService before each test.
+     */
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -63,32 +66,33 @@ public class LotteryServiceTest {
         return e;
     }
 
+    /**
+     * Tests that running the lottery selects attendees and updates event status.
+     */
     @Test
     void testRunLottery() {
         Event e = createMockEvent();
 
-        // Setup mock waitlist behavior
         List<String> waitlistList = new ArrayList<>(e.getWaitingList());
         when(mockWaitlist.getWaitingList()).thenReturn(waitlistList);
 
         lotteryService.runLottery(e);
 
-        // Verify moveToSelected called on mock waitlist
         verify(mockWaitlist, atLeastOnce()).moveToSelected(anyString());
 
-        // Event status updated
         assertEquals(Event.EventStatus.LOTTERY_COMPLETED, e.getStatus());
     }
 
+    /**
+     * Tests that drawing replacements fills cancelled spots with waiting list attendees.
+     */
     @Test
     void testDrawReplacements() {
         Event e = createMockEvent();
 
-        // Setup mock waitlist behavior
         List<String> waitlistList = new ArrayList<>(e.getWaitingList());
         when(mockWaitlist.getWaitingList()).thenReturn(waitlistList);
 
-        // Simulate a cancellation
         e.getCancelledAttendees().add("selected1");
 
         boolean replacementsDrawn = lotteryService.drawReplacements(e);

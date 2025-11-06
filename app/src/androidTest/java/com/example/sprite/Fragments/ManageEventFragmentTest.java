@@ -25,6 +25,10 @@ import com.example.sprite.screens.createEvent.ManageEventFragment;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/**
+ * Instrumented tests for ManageEventFragment.
+ * Verifies UI displays, button clicks, and navigation behavior.
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class ManageEventFragmentTest {
@@ -56,6 +60,9 @@ public class ManageEventFragmentTest {
         );
     }
 
+    /**
+     * Tests that the fragment displays the event title and description correctly.
+     */
     @Test
     public void testFragmentDisplaysEvent() {
         Event event = new Event();
@@ -69,6 +76,10 @@ public class ManageEventFragmentTest {
     }
 
 
+    /**
+     * Tests clicking the "Run Lottery" button.
+     * Verifies button can be clicked without crashing. The logic is handled in the ViewModel class.
+     */
     @Test
     public void testRunLotteryButton() {
         Event event = new Event();
@@ -79,8 +90,10 @@ public class ManageEventFragmentTest {
         onView(withId(R.id.runLotteryButton)).perform(click());
     }
 
-
-
+    /**
+     * Tests clicking the "Draw Replacements" button.
+     * Verifies button can be clicked without crashing.
+     */
     @Test
     public void testDrawReplacementsButton() {
         Event event = new Event();
@@ -91,6 +104,10 @@ public class ManageEventFragmentTest {
         onView(withId(R.id.drawReplacementsButton)).perform(click());
     }
 
+    /**
+     * Tests clicking the "View Entrants" button.
+     * Verifies navigation to the entrants fragment occurs.
+     */
     @Test
     public void testViewEntrantsButton() {
         Event event = new Event();

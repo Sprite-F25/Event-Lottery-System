@@ -19,6 +19,13 @@ import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 import com.google.android.material.button.MaterialButton;
 
+/**
+ * Fragment for managing a single event as an organizer.
+ * Displays event details and provides buttons for running the lottery, drawing replacement entrants,
+ * viewing registered entrants, and viewing the event map.
+ *
+ * Interacts with ManageEventViewModel for updating event status.
+ */
 public class ManageEventFragment extends Fragment {
 
     private ManageEventViewModel viewModel;
@@ -29,6 +36,21 @@ public class ManageEventFragment extends Fragment {
     private ImageView eventImageView;
 
     private Event selectedEvent;
+
+    /**
+     * Inflates the layout for this fragment, binds views, sets up the ViewModel,
+     * and initializes button listeners.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
 
     @Nullable
     @Override
@@ -51,13 +73,12 @@ public class ManageEventFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(ManageEventViewModel.class);
         lotteryService = new LotteryService();
 
-        // Get Event from arguments (like ReviewEventFragment)
+        // Get event from arguments
         if (getArguments() != null) {
             selectedEvent = (Event) getArguments().getSerializable("selectedEvent");
             viewModel.setSelectedEvent(selectedEvent);
         }
 
-        // Observe the selected event
         viewModel.getSelectedEvent().observe(getViewLifecycleOwner(), event -> {
             if (event != null) {
                 selectedEvent = event;
@@ -73,6 +94,10 @@ public class ManageEventFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Sets up click listeners for fragment buttons.
+     * Handles lottery running, replacements, entrant viewing, and map display.
+     */
     private void setupButtonListeners() {
 
         runLotteryButton.setOnClickListener(v -> {
@@ -123,22 +148,5 @@ public class ManageEventFragment extends Fragment {
         viewMapButton.setOnClickListener(v ->
                 Toast.makeText(requireContext(), "Map feature in project part 4!", Toast.LENGTH_SHORT).show()
         );
-    }
-
-    /** Getter method for the event
-     *
-     * @return
-     *      The event that is selected and displayed in this fragment.
-     */
-    public Event getSelectedEvent() {
-        return this.selectedEvent;
-    }
-
-    public void setLotteryService(LotteryService mockService) {
-        this.lotteryService = mockService;
-    }
-
-    public LotteryService getLotteryService() {
-        return lotteryService;
     }
 }
