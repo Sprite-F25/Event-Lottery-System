@@ -5,6 +5,7 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="EventsListFragmentTest">
       <SelectionState runConfigName="NotificationDeliveryTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

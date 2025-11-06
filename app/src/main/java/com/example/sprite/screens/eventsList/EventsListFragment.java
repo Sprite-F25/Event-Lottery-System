@@ -1,3 +1,9 @@
+/**
+ * Fragment that displays a list of events retrieved from Firestore.
+ * Observes the EventsListViewModel to update the UI in real time and
+ * handles navigation based on the current user's role (entrant, organizer, or admin).
+ */
+
 package com.example.sprite.screens.eventsList;
 
 import android.os.Bundle;
@@ -81,10 +87,50 @@ public class EventsListFragment extends Fragment {
         
         // Observe events LiveData
         mViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
+  //current change
             if (events != null) {
                 adapter.setEvents(events);
                 adapter.notifyDataSetChanged();
             }
+          
+          
+            filterButton.setText("Events count: " + events.size());
+            //adapter = new EventAdapter(new ArrayList<>());  // OK now with default constructor
+            
+            }
+            // Click listener for each event
+//             adapter.setOnItemClickListener(event -> {
+//                 if (currentUser == null) return; // prevent click before user is loaded
+
+//                 // pass the selected event
+//                 Bundle bundle = new Bundle();
+//                 bundle.putSerializable("selectedEvent", (Serializable) event);
+
+//                 switch (currentUser.getUserRole()) {
+//                     case ENTRANT:
+//                         Navigation.findNavController(view)
+//                                 .navigate(R.id.fragment_event_details, bundle);
+//                         break;
+//                     case ORGANIZER:
+//                         Navigation.findNavController(view)
+//                                 .navigate(R.id.fragment_manage_event);
+//                         break;
+//                     case ADMIN:
+//                         Navigation.findNavController(view)
+//                                 .navigate(R.id.fragment_review_event, bundle);
+//                         break;
+//                 }
+//             });
+
+            //mViewModel = new ViewModelProvider(this).get(EventsListViewModel.class);
+
+            //fetchCurrentUser();
+
+            //return view;
+          
+       
+//incoming change
+           
         });
     }
 
@@ -127,7 +173,7 @@ public class EventsListFragment extends Fragment {
                     break;
             }
         });
-    }
+    }//end of incoming change
 
     /**
      * Fetches the current user's profile and loads appropriate events based on their role.

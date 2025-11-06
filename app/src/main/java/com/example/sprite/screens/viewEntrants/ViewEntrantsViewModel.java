@@ -14,6 +14,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+/**
+ * ViewModel that manages retrieval of entrants from the repository layer.
+ * Exposes LiveData to the ViewEntrantsFragment for reactive UI updates.
+ */
 
 public class ViewEntrantsViewModel extends ViewModel {
 
