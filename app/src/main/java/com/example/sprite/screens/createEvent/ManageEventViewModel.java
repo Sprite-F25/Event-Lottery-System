@@ -17,4 +17,15 @@ public class ManageEventViewModel extends ViewModel {
     public void setSelectedEvent(Event event) {
         selectedEvent.setValue(event);
     }
+
+    /**
+     * Mark the lottery as completed for the given event.
+     *
+     */
+    public void setStatusLotteryComplete(Event event) {
+        if (event == null) return;
+
+        event.setStatus(Event.EventStatus.LOTTERY_COMPLETED);
+        setSelectedEvent(event);
+    }
 }

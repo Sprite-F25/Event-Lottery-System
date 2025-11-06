@@ -87,8 +87,9 @@ public class ManageEventFragment extends Fragment {
             }
 
             lotteryService.runLottery(selectedEvent);
-            selectedEvent.setStatus(Event.EventStatus.LOTTERY_COMPLETED);
+            // selectedEvent.setStatus(Event.EventStatus.LOTTERY_COMPLETED);
             viewModel.setSelectedEvent(selectedEvent);
+            viewModel.setStatusLotteryComplete(selectedEvent);
 
             Toast.makeText(requireContext(), "Lottery run successfully!", Toast.LENGTH_SHORT).show();
         });
@@ -122,5 +123,22 @@ public class ManageEventFragment extends Fragment {
         viewMapButton.setOnClickListener(v ->
                 Toast.makeText(requireContext(), "Map feature in project part 4!", Toast.LENGTH_SHORT).show()
         );
+    }
+
+    /** Getter method for the event
+     *
+     * @return
+     *      The event that is selected and displayed in this fragment.
+     */
+    public Event getSelectedEvent() {
+        return this.selectedEvent;
+    }
+
+    public void setLotteryService(LotteryService mockService) {
+        this.lotteryService = mockService;
+    }
+
+    public LotteryService getLotteryService() {
+        return lotteryService;
     }
 }
