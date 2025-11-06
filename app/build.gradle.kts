@@ -74,6 +74,8 @@ dependencies {
     // Mockito
     testImplementation("org.mockito:mockito-core:5.5.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
+    // UI tests
+    androidTestImplementation ("org.hamcrest:hamcrest:2.2")
     //QR Code Generators
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.5.2")
