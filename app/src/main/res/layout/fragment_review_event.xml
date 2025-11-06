@@ -6,7 +6,7 @@
     android:id="@+id/mainConstraint"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".screens.createEvent.CreateEvent">
+    tools:context=".screens.createEvent.CreateEventFragment">
 
     <ImageButton
         android:id="@+id/imageButton"
@@ -23,32 +23,14 @@
         tools:ignore="ImageContrastCheck" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/viewEntrantsButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginBottom="16dp"
-        android:fontFamily="@font/inter_bold"
-        android:text="View Entrants"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:backgroundTint="@color/green3"
-        app:cornerRadius="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/viewMapButton"
+        android:id="@+id/delete_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
         android:fontFamily="@font/inter_bold"
-        android:text="View Map"
+        android:text="Delete Event"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@android:color/white"
@@ -58,7 +40,7 @@
         app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/viewEntrantsButton" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 
     <ScrollView
@@ -128,7 +110,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/fragmentContainerView5">
 
                 <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/fragmentContainerView2"
+                    android:id="@+id/fragment_event_info_view"
                     android:name="com.example.sprite.screens.organizer.eventDetails.EventInfoFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

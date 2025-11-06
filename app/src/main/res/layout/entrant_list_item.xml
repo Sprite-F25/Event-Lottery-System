@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -15,24 +15,21 @@
         android:layout_width="match_parent"
         android:padding="16dp">
 
-            <!-- Entrant Name -->
-            <TextView
-                android:id="@+id/entrant_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Name"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:ellipsize="end"
-                android:maxLines="1" />
+        <TextView
+            android:id="@+id/entrant_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:ellipsize="end"
+            android:maxLines="1" />
 
-            <!-- Entrant User Role -->
-            <TextView
-                android:id="@+id/entrant_user_role"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="User Role"
-                android:textSize="14sp" />
-
+        <TextView
+            android:id="@+id/entrant_user_role"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Role"
+            android:textSize="14sp" />
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+</androidx.cardview.widget.CardView>

@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+<!--    <com.google.android.material.appbar.MaterialToolbar-->
+<!--        android:id="@+id/toolbar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:title="Notifications" />-->
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_search_notifications"
@@ -46,6 +51,32 @@
             android:text="@string/notifications_chip_events" />
     </com.google.android.material.chip.ChipGroup>
 
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Enable notifications"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
+
+        <!-- ✅ Updated MaterialSwitch -->
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switch_opt_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOn=""
+            android:textOff=""
+            android:checked="false" />
+    </LinearLayout>
+
+<!--    <com.google.android.material.search.SearchBar-->
+<!--        android:id="@+id/searchBar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        />-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_notifications"

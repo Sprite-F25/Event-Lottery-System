@@ -1,6 +1,5 @@
 package com.example.sprite.Controllers;
 
-
 import android.util.Log;
 
 import com.example.sprite.Models.User;
@@ -9,160 +8,210 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
+/**
+ * {@code Authentication_Service} manages all authentication-related operations,
+ * including signing in, creating users, signing out, and managing FCM tokens.
+ *
+ * <p>It integrates Firebase Authentication with Firestore for user profile management,
+ * and ensures users have synchronized profiles upon login or registration.</p>
+ *
+ * @author Angelo
+ * @version 1.0
+ */
 public class Authentication_Service {
+
     private static final String TAG = "AuthService";
     private FirebaseAuth mAuth;
     private DatabaseService databaseService;
 
+    /** Initializes a new {@code Authentication_Service} with Firebase and Firestore connections. */
     public Authentication_Service() {
         mAuth = FirebaseAuth.getInstance();
         databaseService = new DatabaseService();
     }
 
+    /**
+     * Callback interface for authentication results.
+     */
     public interface AuthCallback {
         void onSuccess(User user);
         void onFailure(String error);
     }
 
+    /**
+     * Retrieves the currently signed-in Firebase user.
+     *
+     * @return The current {@link FirebaseUser}, or {@code null} if none is logged in.
+     */
     public FirebaseUser getCurrentUser() {
         return mAuth.getCurrentUser();
     }
 
+    /**
+     * Checks whether a user is currently logged in.
+     *
+     * @return {@code true} if a user is authenticated, {@code false} otherwise.
+     */
     public boolean isUserLoggedIn() {
         return mAuth.getCurrentUser() != null;
     }
 
+    /**
+     * Signs in the user anonymously using Firebase Authentication.
+     *
+     * @param callback The {@link AuthCallback} to handle success or failure.
+     */
     public void signInAnonymously(AuthCallback callback) {
         mAuth.signInAnonymously()
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "signInAnonymously:success");
-                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                            if (firebaseUser != null) {
-                                // Create or get user profile
-                                getUserProfile(firebaseUser.getUid(), callback);
-                            }
-                        } else {
-                            Log.w(TAG, "signInAnonymously:failure", task.getException());
-                            callback.onFailure(task.getException().getMessage());
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "signInAnonymously: success");
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        if (firebaseUser != null) {
+                            getUserProfile(firebaseUser.getUid(), callback);
                         }
+                    } else {
+                        Log.w(TAG, "signInAnonymously: failure", task.getException());
+                        callback.onFailure(task.getException().getMessage());
                     }
                 });
     }
 
+    /**
+     * Signs in an existing user using email and password credentials.
+     *
+     * @param email    The user's email.
+     * @param password The user's password.
+     * @param callback Callback for authentication result.
+     */
     public void signInWithEmail(String email, String password, AuthCallback callback) {
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                            if (firebaseUser != null) {
-                                // Ensure auth token is ready before accessing Firestore
-                                firebaseUser.getIdToken(true).addOnCompleteListener(tokenTask -> {
-                                    if (tokenTask.isSuccessful()) {
-                                        Log.d(TAG, "Auth token refreshed, getting user profile");
-                                        getUserProfile(firebaseUser.getUid(), callback);
-                                    } else {
-                                        Log.e(TAG, "Failed to get auth token", tokenTask.getException());
-                                        // Still try to get user profile even if token refresh fails
-                                        getUserProfile(firebaseUser.getUid(), callback);
-                                    }
-                                });
-                            }
-                        } else {
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            callback.onFailure(task.getException().getMessage());
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        if (firebaseUser != null) {
+                            firebaseUser.getIdToken(true).addOnCompleteListener(tokenTask -> {
+                                if (tokenTask.isSuccessful()) {
+                                    getUserProfile(firebaseUser.getUid(), callback);
+                                } else {
+                                    Log.e(TAG, "Failed to get auth token", tokenTask.getException());
+                                    getUserProfile(firebaseUser.getUid(), callback);
+                                }
+                            });
                         }
+                    } else {
+                        callback.onFailure(task.getException().getMessage());
                     }
                 });
     }
 
+    /**
+     * Creates a new user account with email and password, and stores their profile in Firestore.
+     *
+     * @param email    The user's email address.
+     * @param password The chosen password.
+     * @param name     The user's display name.
+     * @param role     The user's role (see {@link User.UserRole}).
+     * @param callback Callback for result handling.
+     */
     public void createUserWithEmail(String email, String password, String name, User.UserRole role, AuthCallback callback) {
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                            if (firebaseUser != null) {
-                                // Create user profile
-                                User user = new User(firebaseUser.getUid(), email, name, role);
-                                databaseService.createUser(user, task1 -> {
-                                    if (task1.isSuccessful()) {
-                                        callback.onSuccess(user);
-                                    } else {
-                                        callback.onFailure("Failed to create user profile");
-                                    }
-                                });
-                            }
-                        } else {
-                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            callback.onFailure(task.getException().getMessage());
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        if (firebaseUser != null) {
+                            User user = new User(firebaseUser.getUid(), email, name, role);
+                            databaseService.createUser(user, task1 -> {
+                                if (task1.isSuccessful()) {
+                                    callback.onSuccess(user);
+                                    updateFcmToken(user.getUserId());
+                                } else {
+                                    callback.onFailure("Failed to create user profile");
+                                }
+                            });
                         }
+                    } else {
+                        callback.onFailure(task.getException().getMessage());
                     }
                 });
     }
 
+    /** Signs out the currently authenticated user. */
     public void signOut() {
         mAuth.signOut();
     }
 
+    /**
+     * Fetches a user's profile from Firestore or creates one if it doesn't exist.
+     *
+     * @param userId   The Firebase user ID.
+     * @param callback Callback triggered with user data or an error.
+     */
     public void getUserProfile(String userId, AuthCallback callback) {
-        Log.d(TAG, "Getting user profile for userId: " + userId);
         databaseService.getUser(userId, task -> {
-            if (task.isSuccessful()) {
-                Log.d(TAG, "Task successful, document exists: " + task.getResult().exists());
-                if (task.getResult().exists()) {
-                    User user = task.getResult().toObject(User.class);
-                    if (user != null) {
-                        Log.d(TAG, "User profile loaded successfully: " + user.getName());
-                        callback.onSuccess(user);
-                    } else {
-                        Log.e(TAG, "Failed to parse user data - user object is null");
-                        callback.onFailure("Failed to parse user data");
-                    }
+            if (task.isSuccessful() && task.getResult().exists()) {
+                User user = task.getResult().toObject(User.class);
+                if (user != null) {
+                    callback.onSuccess(user);
                 } else {
-                    Log.w(TAG, "User document does not exist for userId: " + userId);
-                    // Create new user profile for anonymous user or missing profile
-                    FirebaseUser firebaseUser = mAuth.getCurrentUser();
-                    if (firebaseUser != null) {
-                        User newUser = new User(userId, firebaseUser.getEmail() != null ? firebaseUser.getEmail() : "anonymous@example.com", "Anonymous User", User.UserRole.ENTRANT);
-                        Log.d(TAG, "Creating new user profile for userId: " + userId);
-                        databaseService.createUser(newUser, task1 -> {
-                            if (task1.isSuccessful()) {
-                                callback.onSuccess(newUser);
-                            } else {
-                                Log.e(TAG, "Failed to create user profile", task1.getException());
-                                callback.onFailure("Failed to create user profile: " + (task1.getException() != null ? task1.getException().getMessage() : "Unknown error"));
-                            }
-                        });
-                    } else {
-                        Log.e(TAG, "FirebaseUser is null, cannot create profile");
-                        callback.onFailure("User not authenticated");
-                    }
+                    callback.onFailure("Failed to parse user data");
                 }
             } else {
-                Exception exception = task.getException();
-                Log.e(TAG, "Failed to get user profile", exception);
-                String errorMessage = exception != null ? exception.getMessage() : "Unknown error";
-                callback.onFailure("Failed to get user profile: " + errorMessage);
+                FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                if (firebaseUser != null) {
+                    User newUser = new User(
+                            userId,
+                            firebaseUser.getEmail() != null ? firebaseUser.getEmail() : "anonymous@example.com",
+                            "Anonymous User",
+                            User.UserRole.ENTRANT
+                    );
+                    databaseService.createUser(newUser, task1 -> {
+                        if (task1.isSuccessful()) callback.onSuccess(newUser);
+                        else callback.onFailure("Failed to create user profile");
+                    });
+                } else {
+                    callback.onFailure("User not authenticated");
+                }
             }
         });
     }
 
+    /**
+     * Updates a user's Firestore profile.
+     *
+     * @param user     The updated {@link User}.
+     * @param callback Callback triggered when update completes.
+     */
     public void updateUserProfile(User user, AuthCallback callback) {
         databaseService.updateUser(user, task -> {
-            if (task.isSuccessful()) {
-                callback.onSuccess(user);
-            } else {
-                callback.onFailure("Failed to update user profile");
-            }
+            if (task.isSuccessful()) callback.onSuccess(user);
+            else callback.onFailure("Failed to update user profile");
         });
+    }
+
+    /**
+     * Updates the user's FCM registration token in Firestore.
+     *
+     * @param userId The user ID whose token should be updated.
+     */
+    public void updateFcmToken(String userId) {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+
+                    String token = task.getResult();
+                    FirebaseFirestore.getInstance()
+                            .collection("users")
+                            .document(userId)
+                            .update("fcmToken", token)
+                            .addOnSuccessListener(aVoid -> Log.d("FCM", "FCM token updated for " + userId))
+                            .addOnFailureListener(e -> Log.e("FCM", "Failed to update FCM token", e));
+                });
     }
 }
