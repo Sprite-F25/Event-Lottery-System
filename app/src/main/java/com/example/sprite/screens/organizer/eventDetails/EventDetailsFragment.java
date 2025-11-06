@@ -15,6 +15,7 @@ import com.example.sprite.R;
 public class EventDetailsFragment extends Fragment {
 
     private EventDetailsViewModel mViewModel;
+    private EventDetailsBottomScreen bottomScreenFragment;
 
     public static EventDetailsFragment newInstance() {
         return new EventDetailsFragment();
@@ -24,14 +25,19 @@ public class EventDetailsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(EventDetailsViewModel.class);
-        // TODO: Use the ViewModel
+
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_event_details, container, false);
+        View view =  inflater.inflate(R.layout.fragment_event_details, container, false);
+        bottomScreenFragment =
+                (EventDetailsBottomScreen) getChildFragmentManager()
+                        .findFragmentById(R.id.bottom_screen_fragment);
+        bottomScreenFragment.setArguments(this.getArguments());
+        return view;
     }
 
 }
