@@ -80,7 +80,7 @@ public class Waitlist {
      *      The unique ID of the entrant
      */
     public void moveToCancelled(String entrantId) {
-        selectedList.remove(entrantId);
+        // selectedList.remove(entrantId);
         if (!cancelledList.contains(entrantId)) {
             cancelledList.add(entrantId);
         }
