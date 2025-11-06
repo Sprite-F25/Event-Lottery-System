@@ -81,12 +81,10 @@ public class LotteryService {
     public boolean drawReplacements(Event event) {
         Waitlist waitlist = new Waitlist(event);
 
-        int maxSlots = event.getMaxAttendees();
-        int currentSelected = waitlist.getSelectedList().size();
-        int openSlots = Math.max(0, maxSlots - currentSelected);
+        int openSlots = event.getCancelledAttendees().size();
+        if (openSlots <= 0) return false;
 
         List<String> waitlistCopy = new ArrayList<>(waitlist.getWaitingList());
-        Collections.shuffle(waitlistCopy, random); // optional randomness
 
         int drawnCount = 0;
         for (String entrantId : waitlistCopy) {
