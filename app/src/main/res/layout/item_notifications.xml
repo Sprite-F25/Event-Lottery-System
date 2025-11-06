@@ -62,12 +62,7 @@
             android:textSize="12sp"
             android:textColor="?android:textColorSecondary" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_unread"
-            style="@style/Widget.Material3.Chip.Assist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Unread" />
+
     </LinearLayout>
 
     <!-- Message preview -->
