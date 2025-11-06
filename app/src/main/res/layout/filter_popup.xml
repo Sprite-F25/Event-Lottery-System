@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,7 +17,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="ExtraText">
 
 
             <TextView
@@ -110,9 +112,10 @@
                     android:contentDescription="@string/open_date_picker" />
               
             </com.google.android.material.textfield.TextInputLayout>
-                    app:chipSpacingHorizontal="8dp"
-                    app:chipSpacingVertical="8dp"
-                    app:singleSelection="false">
+<!--                    android:chipSpacingHorizontal="8dp"-->
+<!--                    android:chipSpacingVertical="8dp"-->
+<!--                    android:singleSelection="false"-->
+
 
                     <com.google.android.material.chip.Chip
                         android:layout_width="wrap_content"
@@ -137,7 +140,7 @@
                         android:layout_height="wrap_content"
                         android:text="Food"
                         />
-                </com.google.android.material.chip.ChipGroup>
+
 
 
             <com.google.android.material.textfield.TextInputLayout

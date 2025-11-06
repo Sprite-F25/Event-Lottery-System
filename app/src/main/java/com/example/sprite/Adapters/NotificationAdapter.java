@@ -109,7 +109,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.tv_title);
-            message = itemView.findViewById(R.id.tv_body);
+            message = itemView.findViewById(R.id.tv_message);
         }
     }
 }

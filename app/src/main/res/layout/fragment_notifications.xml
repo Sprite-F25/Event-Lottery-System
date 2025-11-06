@@ -1,96 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-<!--    <com.google.android.material.appbar.MaterialToolbar-->
-<!--        android:id="@+id/toolbar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:title="Notifications" />-->
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_search_notifications"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:hint="@string/notifications_search_hint">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_search_notifications"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chips_notifications"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginBottom="8dp"
-        app:singleSelection="false">
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/ch_unread"
-            style="@style/Widget.Material3.Chip.Assist"
-            android:text="@string/notifications_chip_unread" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/ch_system"
-            style="@style/Widget.Material3.Chip.Assist"
-            android:text="@string/notifications_chip_system" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/ch_events"
-            style="@style/Widget.Material3.Chip.Assist"
-            android:text="@string/notifications_chip_events" />
-    </com.google.android.material.chip.ChipGroup>
-
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="12dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Enable notifications"
-            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
-
-        <!-- ✅ Updated MaterialSwitch -->
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/switch_opt_in"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textOn=""
-            android:textOff=""
-            android:checked="false" />
-    </LinearLayout>
-
-<!--    <com.google.android.material.search.SearchBar-->
-<!--        android:id="@+id/searchBar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        />-->
-
+    <!-- Notifications list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_notifications"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:padding="12dp"
+        android:clipToPadding="false" />
 
-
+    <!-- Empty state message -->
     <TextView
-        android:id="@+id/tv_notifications_empty"
+        android:id="@+id/tv_empty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="12dp"
+        android:padding="24dp"
         android:text="@string/notifications_empty"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:visibility="gone" />
+
 </LinearLayout>
