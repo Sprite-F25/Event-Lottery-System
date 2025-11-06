@@ -19,6 +19,7 @@ import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Models.Event;
 import com.example.sprite.Models.User;
 import com.example.sprite.R;
+import com.google.android.material.button.MaterialButton;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class EventsListFragment extends Fragment {
     private RecyclerView recyclerView;
     private EventAdapter adapter;
     private User currentUser;
+    private MaterialButton filterButton;
 
     /**
      * Creates a new instance of EventsListFragment.
@@ -72,6 +74,7 @@ public class EventsListFragment extends Fragment {
      */
     private void initializeViews(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_events);
+        filterButton = view.findViewById(R.id.filter_button);
     }
 
     /**
@@ -85,6 +88,11 @@ public class EventsListFragment extends Fragment {
             if (events != null) {
                 adapter.setEvents(events);
                 adapter.notifyDataSetChanged();
+                
+                // Update filter button text with event count
+                if (filterButton != null) {
+                    filterButton.setText("Filter (" + events.size() + ")");
+                }
             }
         });
     }
