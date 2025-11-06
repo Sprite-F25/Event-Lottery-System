@@ -64,6 +64,12 @@
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
 
+    <fragment
+        android:id="@+id/fragment_view_entrants"
+        android:name="com.example.sprite.screens.viewEntrants.ViewEntrantsFragment"
+        android:label="View Entrants"
+        tools:layout="@layout/fragment_view_entrants" />
+
 
 <!--this is how to add a fragment into the nav bar-->
 <!--    <fragment-->

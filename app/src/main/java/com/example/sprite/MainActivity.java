@@ -3,7 +3,6 @@ package com.example.sprite;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,7 +17,6 @@ import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Models.User;
 import com.example.sprite.databinding.ActivityMainBinding;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 
 /**
  * {@code MainActivity} serves as the primary entry point for the Sprite app after authentication.
@@ -62,10 +60,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(view ->
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .setAnchorView(R.id.fab).show());
 
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
@@ -75,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Configure app bar navigation destinations
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_notifications, R.id.nav_events_list)
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_notifications, R.id.nav_events_list, R.id.nav_create_event, R.id.nav_profile)
                 .setOpenableLayout(drawer)
                 .build();
 
@@ -95,6 +89,12 @@ public class MainActivity extends AppCompatActivity {
             if (id == R.id.nav_create_event) {
                 drawer.closeDrawers();
                 navController.navigate(R.id.nav_create_event);
+                return true;
+            }
+
+            if (id == R.id.nav_events_list) {
+                drawer.closeDrawers();
+                navController.navigate(R.id.nav_events_list);
                 return true;
             }
 
