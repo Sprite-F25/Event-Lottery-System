@@ -57,40 +57,40 @@ public class EventsListFragment extends Fragment {
             adapter.setEvents(events);
             adapter.notifyDataSetChanged();
             filterButton.setText("Events count: " + events.size());
-        //adapter = new EventAdapter(new ArrayList<>());  // OK now with default constructor
-        recyclerView.setAdapter(adapter);
+            //adapter = new EventAdapter(new ArrayList<>());  // OK now with default constructor
+            recyclerView.setAdapter(adapter);
 
-        // Click listener for each event
-        adapter.setOnItemClickListener(event -> {
-            if (currentUser == null) return; // prevent click before user is loaded
+            // Click listener for each event
+            adapter.setOnItemClickListener(event -> {
+                if (currentUser == null) return; // prevent click before user is loaded
 
-            // pass the selected event
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("selectedEvent", (Serializable) event);
+                // pass the selected event
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("selectedEvent", (Serializable) event);
 
-            switch (currentUser.getUserRole()) {
-                case ENTRANT:
-                    Navigation.findNavController(view)
-                            .navigate(R.id.fragment_event_details, bundle);
-                    break;
-                case ORGANIZER:
-                    Navigation.findNavController(view)
-                            .navigate(R.id.fragment_manage_event);
-                    break;
-                case ADMIN:
-                    Navigation.findNavController(view)
-                            .navigate(R.id.fragment_review_event, bundle);
-                    break;
-            }
-        });
+                switch (currentUser.getUserRole()) {
+                    case ENTRANT:
+                        Navigation.findNavController(view)
+                                .navigate(R.id.fragment_event_details, bundle);
+                        break;
+                    case ORGANIZER:
+                        Navigation.findNavController(view)
+                                .navigate(R.id.fragment_manage_event);
+                        break;
+                    case ADMIN:
+                        Navigation.findNavController(view)
+                                .navigate(R.id.fragment_review_event, bundle);
+                        break;
+                }
+            });
 
-        //mViewModel = new ViewModelProvider(this).get(EventsListViewModel.class);
+            //mViewModel = new ViewModelProvider(this).get(EventsListViewModel.class);
 
-        fetchCurrentUser();
+            fetchCurrentUser();
 
+            return view;
+        }
 
-        return view;
-    }
 
     private void fetchCurrentUser() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
