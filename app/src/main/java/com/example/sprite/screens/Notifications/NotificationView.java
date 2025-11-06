@@ -17,6 +17,26 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * Activity that displays a list of notifications for the currently logged-in user.
+ * 
+ * <p>This activity retrieves notifications from Firestore via {@link DatabaseService}
+ * and displays them in a RecyclerView. It handles empty states by showing a message
+ * when no notifications are available.</p>
+ * 
+ * <h3>Features:</h3>
+ * <ul>
+ *     <li>Displays all notifications for the current user</li>
+ *     <li>Shows empty state message when no notifications exist</li>
+ *     <li>Automatically updates the list when notifications are loaded</li>
+ * </ul>
+ * 
+ * @author Angelo
+ * @see DatabaseService
+ * @see Notification
+ * @see NotificationAdapter
+ */
 public class NotificationView extends AppCompatActivity{
 
 
@@ -26,6 +46,14 @@ public class NotificationView extends AppCompatActivity{
     private List<Notification> notificationsList;
     private DatabaseService databaseService;
 
+    /**
+     * Initializes the notification view activity.
+     * 
+     * <p>Sets up the RecyclerView, loads notifications for the current user,
+     * and handles empty states appropriately.</p>
+     * 
+     * @param savedInstanceState The saved instance state bundle
+     */
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
