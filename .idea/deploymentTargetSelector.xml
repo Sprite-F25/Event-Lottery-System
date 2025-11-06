@@ -4,6 +4,13 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="EventsListFragmentTest">
+      <SelectionState runConfigName="NotificationDeliveryTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="MainActivityTest">
+        <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2025-11-06T16:39:24.223705600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
@@ -13,10 +20,13 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="LotteryServiceTest">
+      <SelectionState runConfigName="Tests in 'com.example.sprite'">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="Tests in 'com.example.sprite.Controllers'">
+      <SelectionState runConfigName="testGetCurrentUser()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="Authentication_ServiceTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

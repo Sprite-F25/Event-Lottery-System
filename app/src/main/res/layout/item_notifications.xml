@@ -28,7 +28,9 @@
                 android:text="Registration update"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:ellipsize="end"/>
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_unread"
@@ -55,17 +57,19 @@
             android:id="@+id/tv_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="12:34"
             android:textSize="12sp"
-            android:textColor="?android:textColorSecondary"
-            android:text="12:34" />
+            android:textColor="?android:textColorSecondary" />
+
+
     </LinearLayout>
 
-
+    <!-- Message preview -->
     <TextView
         android:id="@+id/tv_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:text="Message preview goes here…" />
-
 </LinearLayout>

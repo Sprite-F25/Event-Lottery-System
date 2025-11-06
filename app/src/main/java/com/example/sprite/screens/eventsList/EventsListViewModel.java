@@ -1,3 +1,8 @@
+/**
+ * ViewModel responsible for managing event data and providing filtered event lists
+ * to the EventsListFragment. Connects with Firestore to fetch event updates.
+ */
+
 package com.example.sprite.screens.eventsList;
 
 import androidx.lifecycle.LiveData;
