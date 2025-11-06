@@ -86,10 +86,7 @@ public class SignInActivity extends AppCompatActivity {
      * This implements the device identification feature for remember me functionality.
      */
     private void checkDeviceBasedLogin() {
-        String deviceId = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            deviceId = String.valueOf(getDeviceId());
-        }
+        String deviceId = getDeviceId(getContentResolver());
         String savedDeviceId = sharedPreferences.getString(KEY_DEVICE_ID, null);
         
         // If device ID matches and user is already logged in, redirect to MainActivity
@@ -136,10 +133,7 @@ public class SignInActivity extends AppCompatActivity {
             public void onSuccess(User user) {
                 // Handle Remember Me functionality
                 if (rememberMeCheckBox.isChecked()) {
-                    String deviceId = null;
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                        deviceId = String.valueOf(getDeviceId());
-                    }
+                    String deviceId = getDeviceId(getContentResolver());
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString(KEY_DEVICE_ID, deviceId);
                     editor.putBoolean(KEY_REMEMBER_ME, true);

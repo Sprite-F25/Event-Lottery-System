@@ -76,6 +76,12 @@
         android:label="View Entrants"
         tools:layout="@layout/fragment_view_entrants" />
 
+    <fragment
+        android:id="@+id/nav_notification_test"
+        android:name="com.example.sprite.screens.Notifications.NotificationTestFragment"
+        android:label="Test Notifications"
+        tools:layout="@layout/fragment_notification_test" />
+
 
 <!--this is how to add a fragment into the nav bar-->
 <!--    <fragment-->

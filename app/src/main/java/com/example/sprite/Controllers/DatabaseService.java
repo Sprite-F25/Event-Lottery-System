@@ -1,6 +1,5 @@
 package com.example.sprite.Controllers;
 
-import okhttp3.*;
 import com.example.sprite.Models.Event;
 import com.example.sprite.Models.User;
 import com.example.sprite.Models.Notification;
@@ -203,9 +202,9 @@ public class DatabaseService {
     }
 
     /**
-     * Retrieves all notifications for a given user.
+     * Retrieves all notifications for a given user (entrant).
      *
-     * @param userId   The recipient user ID.
+     * @param userId   The entrant user ID.
      * @param listener Callback triggered with query results.
      */
     public void getNotificationsForUser(String userId, OnCompleteListener<QuerySnapshot> listener) {
@@ -215,8 +214,7 @@ public class DatabaseService {
         }
 
         db.collection("notifications")
-                .whereEqualTo("recipientId", userId)
-                .orderBy("createdAt")
+                .whereEqualTo("entrantId", userId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (listener != null) listener.onComplete(task);
@@ -249,49 +247,6 @@ public class DatabaseService {
                 .addOnCompleteListener(listener);
     }
 
-    /**
-     * Sends a push notification directly via Firebase Cloud Messaging (for testing only).
-     *
-     * <p><b>Warning:</b> Do not include your FCM server key in production apps.
-     * This is intended for backend or local test use only.</p>
-     *
-     * @param notification The {@link Notification} object containing title, body, and target info.
-     */
-    public void sendPushNotification(Notification notification) {
-        new Thread(() -> {
-            try {
-                OkHttpClient client = new OkHttpClient();
-
-                // ⚠ Replace with your FCM server key securely in backend
-                String serverKey = "YOUR_FCM_SERVER_KEY";
-
-                String json = "{"
-                        + "\"to\": \"/topics/" + notification.getEntrantId() + "\","
-                        + "\"notification\": {"
-                        + "\"title\": \"" + notification.getEventTitle() + "\","
-                        + "\"body\": \"" + notification.getMessage() + "\""
-                        + "}"
-                        + "}";
-
-                RequestBody body = RequestBody.create(
-                        json,
-                        MediaType.parse("application/json; charset=utf-8")
-                );
-
-                Request request = new Request.Builder()
-                        .url("https://fcm.googleapis.com/fcm/send")
-                        .addHeader("Authorization", "key=" + serverKey)
-                        .addHeader("Content-Type", "application/json")
-                        .post(body)
-                        .build();
-
-                Response response = client.newCall(request).execute();
-                System.out.println("FCM Response: " + response.body().string());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-    }
 }
 
 
