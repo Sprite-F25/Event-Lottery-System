@@ -27,6 +27,13 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 
+/**
+ * Fragment that displays the list of entrants registered for a selected event.
+ * Uses ViewEntrantsViewModel    to load entrants and supports real-time updates.
+ * Typically accessed by organizers or admins for event management.
+ */
+
+
 public class ViewEntrantsFragment extends Fragment {
 
     private ViewEntrantsViewModel mViewModel;

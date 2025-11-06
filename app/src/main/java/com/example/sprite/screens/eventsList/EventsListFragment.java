@@ -1,3 +1,9 @@
+/**
+ * Fragment that displays a list of events retrieved from Firestore.
+ * Observes the EventsListViewModel to update the UI in real time and
+ * handles navigation based on the current user's role (entrant, organizer, or admin).
+ */
+
 package com.example.sprite.screens.eventsList;
 
 import android.os.Bundle;
