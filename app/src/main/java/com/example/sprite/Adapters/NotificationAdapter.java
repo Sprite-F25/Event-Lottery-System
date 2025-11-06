@@ -1,5 +1,6 @@
 package com.example.sprite.Adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,8 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.sprite.Controllers.NotificationService;
 import com.example.sprite.Models.Notification;
 import com.example.sprite.R;
+import com.google.android.material.chip.Chip;
 
 import java.util.List;
 
@@ -33,8 +36,28 @@ import java.util.List;
  */
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.ViewHolder> {
 
+    private static final String TAG = "NotificationAdapter";
+
     /** The list of notifications to display. */
     private final List<Notification> notifications;
+    
+    /** Service for notification operations. */
+    private final NotificationService notificationService;
+    
+    /** Callback for when a notification is marked as read. */
+    private OnNotificationReadListener readListener;
+
+    /**
+     * Interface for listening to notification read events.
+     */
+    public interface OnNotificationReadListener {
+        /**
+         * Called when a notification has been marked as read.
+         * 
+         * @param notification The notification that was marked as read
+         */
+        void onNotificationRead(Notification notification);
+    }
 
     /**
      * Constructs a new {@code NotificationAdapter}.
@@ -43,6 +66,16 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
      */
     public NotificationAdapter(List<Notification> notifications) {
         this.notifications = notifications;
+        this.notificationService = new NotificationService();
+    }
+
+    /**
+     * Sets the listener for notification read events.
+     * 
+     * @param listener The listener to set
+     */
+    public void setOnNotificationReadListener(OnNotificationReadListener listener) {
+        this.readListener = listener;
     }
 
     /**
@@ -77,6 +110,49 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         holder.title.setText(eventTitle != null ? eventTitle : "");
         holder.message.setText(message != null ? message : "");
+        
+        // Show/hide unread chip based on read status
+        if (notification.isRead()) {
+            holder.chipUnread.setVisibility(View.GONE);
+        } else {
+            holder.chipUnread.setVisibility(View.VISIBLE);
+        }
+        
+        // Set click listener to mark notification as read when clicked
+        holder.itemView.setOnClickListener(v -> {
+            if (!notification.isRead() && notification.getNotificationId() != null) {
+                markNotificationAsRead(notification, position);
+            }
+        });
+    }
+
+    /**
+     * Marks a notification as read.
+     * 
+     * @param notification The notification to mark as read
+     * @param position The position of the notification in the list
+     */
+    private void markNotificationAsRead(Notification notification, int position) {
+        notificationService.markAsRead(notification.getNotificationId(), 
+            new NotificationService.NotificationCallback() {
+                @Override
+                public void onSuccess(Notification updatedNotification) {
+                    Log.d(TAG, "Notification marked as read: " + notification.getNotificationId());
+                    // Update the notification in the list
+                    notification.setRead(true);
+                    notifyItemChanged(position);
+                    
+                    // Notify listener
+                    if (readListener != null) {
+                        readListener.onNotificationRead(notification);
+                    }
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    Log.e(TAG, "Failed to mark notification as read: " + error);
+                }
+            });
     }
 
     /**
@@ -100,6 +176,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         /** TextView displaying the notification message body. */
         TextView message;
+        
+        /** Chip displaying unread status. */
+        Chip chipUnread;
 
         /**
          * Constructs a new {@code ViewHolder}.
@@ -109,7 +188,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.tv_title);
-            message = itemView.findViewById(R.id.tv_body);
+            message = itemView.findViewById(R.id.tv_message);
+            chipUnread = itemView.findViewById(R.id.chip_unread);
         }
     }
 }

@@ -68,6 +68,23 @@ Nam sed arcu dapibus, dapibus ex a, volutpat risus. Praesent rhoncus interdum au
         <string name="reset">Reset</string>
         <string name="apply">Apply</string>
 
+        <!-- Site Criteria -->
+        <string name="site_criteria_title">Site Criteria</string>
+        <string name="waiting_list_explanation">Entrants join an event\'s waiting list during the registration period. Once it closes, the system randomly selects participants from the pool and notifies them through the app. If selected entrants decline, new ones are drawn until all spots are filled.</string>
+        <string name="geolocation_heading">Geolocation</string>
+        <string name="geolocation_description">Geolocation ensures entrants match event regions. Certain events require geolocation to join the waiting list.</string>
+        <string name="enable_location_tracking">Enable Location Tracking</string>
+        <string name="location_privacy_note">Location data is used only to confirm eligibility for events and is not shared with other users.</string>
 
+        <!-- Notification Popup -->
+        <string name="notification_popup_title">New Notification</string>
+        <string name="notification_dismiss">Dismiss</string>
+        <string name="notification_view">View</string>
+
+        <!-- Notify Entrants Dialog -->
+        <string name="notify_entrants_dialog_title">Send Notification To</string>
+        <string name="notify_selected_entrants">All Selected Entrants</string>
+        <string name="notify_cancelled_entrants">All Cancelled Entrants</string>
+        <string name="notify_waiting_entrants">All Waiting List Entrants</string>
 
 </resources>

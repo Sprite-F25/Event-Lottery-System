@@ -9,11 +9,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 /**
  * {@code Authentication_Service} manages all authentication-related operations,
- * including signing in, creating users, signing out, and managing FCM tokens.
+ * including signing in, creating users, signing out, and user profile management.
  *
  * <p>It integrates Firebase Authentication with Firestore for user profile management,
  * and ensures users have synchronized profiles upon login or registration.</p>
@@ -127,7 +126,6 @@ public class Authentication_Service {
                             databaseService.createUser(user, task1 -> {
                                 if (task1.isSuccessful()) {
                                     callback.onSuccess(user);
-                                    updateFcmToken(user.getUserId());
                                 } else {
                                     callback.onFailure("Failed to create user profile");
                                 }
@@ -192,26 +190,4 @@ public class Authentication_Service {
         });
     }
 
-    /**
-     * Updates the user's FCM registration token in Firestore.
-     *
-     * @param userId The user ID whose token should be updated.
-     */
-    public void updateFcmToken(String userId) {
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Log.w("FCM", "Fetching FCM registration token failed", task.getException());
-                        return;
-                    }
-
-                    String token = task.getResult();
-                    FirebaseFirestore.getInstance()
-                            .collection("users")
-                            .document(userId)
-                            .update("fcmToken", token)
-                            .addOnSuccessListener(aVoid -> Log.d("FCM", "FCM token updated for " + userId))
-                            .addOnFailureListener(e -> Log.e("FCM", "Failed to update FCM token", e));
-                });
-    }
 }
