@@ -18,6 +18,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.example.sprite.Controllers.NotificationService;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.After;
@@ -26,12 +27,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(AndroidJUnit4.class)
 public class ProfileTest {
     private FirebaseFirestore db;
     private FirebaseAuth auth;
+    
+    // Test user credentials
+    private static final String TEST_EMAIL_DISPLAY = "display.test@ualberta.ca";
+    private static final String TEST_EMAIL_UPDATE = "update.test@ualberta.ca";
+    private static final String TEST_EMAIL_DELETE = "delete.test@ualberta.ca";
+    private static final String TEST_PASSWORD = "testpass123";
 
     @Rule
     public ActivityScenarioRule<WelcomeActivity> activityRule =
@@ -48,11 +58,81 @@ public class ProfileTest {
             auth.signOut();
         }
 
+        // Delete test user accounts if they exist
+        deleteTestUser(TEST_EMAIL_DISPLAY, TEST_PASSWORD);
+        deleteTestUser(TEST_EMAIL_UPDATE, TEST_PASSWORD);
+        deleteTestUser(TEST_EMAIL_DELETE, TEST_PASSWORD);
+
         // wait for activity to be ready
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Helper method to delete a test user account from both Firebase Auth and Firestore.
+     * Attempts to sign in, and if successful, deletes the user.
+     *
+     * @param email The email of the test user to delete
+     * @param password The password of the test user to delete
+     */
+    private void deleteTestUser(String email, String password) {
+        try {
+            CountDownLatch latch = new CountDownLatch(1);
+            
+            // Try to sign in with the test credentials
+            auth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(signInTask -> {
+                        if (signInTask.isSuccessful() && auth.getCurrentUser() != null) {
+                            FirebaseUser user = auth.getCurrentUser();
+                            String userId = user.getUid();
+                            
+                            // Delete from Firestore first
+                            db.collection("users").document(userId).delete()
+                                    .addOnCompleteListener(deleteFirestoreTask -> {
+                                        // Delete from Firebase Auth
+                                        user.delete()
+                                                .addOnCompleteListener(deleteAuthTask -> {
+                                                    auth.signOut();
+                                                    latch.countDown();
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    // If deletion fails, just sign out
+                                                    auth.signOut();
+                                                    latch.countDown();
+                                                });
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        // If Firestore deletion fails, still try to delete from Auth
+                                        user.delete()
+                                                .addOnCompleteListener(deleteAuthTask -> {
+                                                    auth.signOut();
+                                                    latch.countDown();
+                                                })
+                                                .addOnFailureListener(e2 -> {
+                                                    auth.signOut();
+                                                    latch.countDown();
+                                                });
+                                    });
+                        } else {
+                            // User doesn't exist or sign in failed, which is fine
+                            latch.countDown();
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        // Sign in failed (user doesn't exist), which is fine
+                        latch.countDown();
+                    });
+            
+            // Wait for deletion to complete (with timeout)
+            latch.await(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            // If interrupted, continue anyway
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            // If any other error occurs, continue - the user might not exist
         }
     }
 
@@ -148,10 +228,10 @@ public class ProfileTest {
     @Test
     public void testDisplayProfile() throws InterruptedException {
         Thread.sleep(2000);
-        String testEmail = "display.test@ualberta.ca";
+        String testEmail = TEST_EMAIL_DISPLAY;
         String testName = "Display Test Name";
 
-        signUp(testEmail, testName, "testpass123");
+        signUp(testEmail, testName, TEST_PASSWORD);
         navigateToProfile();
 
         // check if name and email are displayed
@@ -167,12 +247,12 @@ public class ProfileTest {
     @Test
     public void testUpdateProfile() throws InterruptedException {
         Thread.sleep(2000);
-        String testEmail = "update.test@ualberta.ca";
+        String testEmail = TEST_EMAIL_UPDATE;
         String originalName = "Original Name";
         String updatedName = "Updated Name";
 
         // create account
-        signUp(testEmail, originalName, "testpass123");
+        signUp(testEmail, originalName, TEST_PASSWORD);
 
         // navigate to profile
         navigateToProfile();
@@ -188,7 +268,7 @@ public class ProfileTest {
 
         // sign out and sign in
         signOut();
-        signIn(testEmail, "testpass123");
+        signIn(testEmail, TEST_PASSWORD);
         navigateToProfile();
 
         // verify updated name is displayed
@@ -202,10 +282,10 @@ public class ProfileTest {
     @Test
     public void testDeleteProfile() throws InterruptedException {
         Thread.sleep(2000);
-        String testEmail = "delete.test@ualberta.ca";
+        String testEmail = TEST_EMAIL_DELETE;
         String testName = "Delete Test Name";
 
-        signUp(testEmail, testName, "testpass123");
+        signUp(testEmail, testName, TEST_PASSWORD);
 
         navigateToProfile();
 
@@ -225,7 +305,7 @@ public class ProfileTest {
         Thread.sleep(200);
 
         onView(withId(R.id.inputPassword))
-                .perform(ViewActions.typeText("testpass123"), ViewActions.closeSoftKeyboard());
+                .perform(ViewActions.typeText(TEST_PASSWORD), ViewActions.closeSoftKeyboard());
         Thread.sleep(200);
 
         onView(withId(R.id.btnSignIn)).perform(click());
