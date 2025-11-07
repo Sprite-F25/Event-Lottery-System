@@ -8,6 +8,9 @@
     android:layout_height="match_parent"
     tools:context=".screens.createEvent.CreateEventFragment">
 
+    <!-- ScrollView now constrained inside this parent -->
+
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/create_event_button"
         android:layout_width="0dp"
@@ -92,7 +95,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/createImageView" />
 
             <FrameLayout
-                android:id="@+id/eventInfoFrame"
+                android:id="@+id/event_info_frame"
                 android:layout_width="211dp"
                 android:layout_height="76dp"
                 android:layout_marginStart="32dp"
@@ -119,7 +122,7 @@
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/eventInfoFrame" />
+                app:layout_constraintTop_toBottomOf="@+id/event_info_frame" />
 
             <TextView
                 android:id="@+id/waitlingListTextView"
@@ -132,7 +135,7 @@
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/maxEntrantsTextView"
-                app:layout_constraintTop_toBottomOf="@+id/eventInfoFrame" />
+                app:layout_constraintTop_toBottomOf="@+id/event_info_frame" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/max_entrants_input"

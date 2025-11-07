@@ -14,8 +14,19 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 
 /**
- * Represents an admin user with elevated privileges
- * such as removing users, events, or viewing organizer logs.
+ * Represents an admin user with elevated privileges in the system.
+ * 
+ * <p>Admins have the ability to:
+ * <ul>
+ *     <li>Remove users from the system</li>
+ *     <li>Remove events from the system</li>
+ *     <li>View organizer logs and system-wide information</li>
+ *     <li>Perform administrative actions on any user or event</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>This class extends {@link User} and provides administrative methods
+ * that interact with the database service to perform privileged operations.</p>
  */
 public class Admin extends User {
 

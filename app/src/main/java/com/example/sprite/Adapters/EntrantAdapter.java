@@ -14,6 +14,21 @@ import com.example.sprite.R;
 
 import java.util.List;
 
+/**
+ * Adapter for displaying a list of entrants in a RecyclerView.
+ * 
+ * <p>This adapter supports different display modes based on the entrant list type:
+ * <ul>
+ *     <li><b>WAITING_LIST:</b> Shows entrants on the waiting list</li>
+ *     <li><b>CHOSEN:</b> Shows selected entrants</li>
+ *     <li><b>CANCELLED:</b> Shows cancelled entrants</li>
+ *     <li><b>FINAL:</b> Shows final confirmed attendees</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>The adapter provides click listeners for canceling entrants and handles
+ * different UI layouts based on the current mode.</p>
+ */
 public class EntrantAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void setListType(String currentListType) {

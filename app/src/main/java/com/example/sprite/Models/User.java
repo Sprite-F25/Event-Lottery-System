@@ -7,7 +7,15 @@ import java.util.List;
  * Represents a user in the system. This is the base class for all user types
  * (Entrant, Organizer, Admin). Contains common user information and properties.
  * 
- * @author Angelo
+ * <p>All users in the system share common attributes such as:
+ * <ul>
+ *     <li>User ID and authentication information</li>
+ *     <li>Contact information (name, email, phone)</li>
+ *     <li>Account metadata (creation date, last login)</li>
+ *     <li>Notification preferences</li>
+ *     <li>Event history</li>
+ * </ul>
+ * </p>
  */
 public class User {
     private String name;

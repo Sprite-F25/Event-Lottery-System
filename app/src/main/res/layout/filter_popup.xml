@@ -1,51 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    app:cardCornerRadius="24dp"
+    app:cardUseCompatPadding="true">
 
-    <com.google.android.material.card.MaterialCardView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp">
+        android:layout_height="wrap_content">
 
-        <ScrollView
+        <!-- ROOT CONTENT COLUMN -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fillViewport="true">
+            android:orientation="vertical"
+            tools:ignore="ExtraText">
 
-            <LinearLayout
+            <!-- Header -->
+            <TextView
+                android:id="@+id/tvHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="@string/filter_title"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <!-- Categories -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:text="@string/categories" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupCategories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:paddingBottom="12dp"
+                app:chipSpacing="8dp"
+                app:singleSelection="false"
+                app:selectionRequired="false">
 
-                <TextView
-                    android:id="@+id/tv_filter_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Filter"
-                    android:textStyle="bold"
-                    android:textSize="20sp" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipSports"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:text="@string/sports" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Categories" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipMusic"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:text="@string/music" />
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chipGroup_categories"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipArt"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:text="@string/art" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFood"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:text="@string/food" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Time & Date -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:text="@string/time_and_date" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipToday"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:text="@string/today" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipTomorrow"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:text="@string/tomorrow" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipThisWeek"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:text="@string/this_week" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/choose_from_calendar">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:chipSpacingHorizontal="8dp"
-                    app:chipSpacingVertical="8dp"
-                    app:singleSelection="false">
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:contentDescription="@string/open_date_picker" />
+            </com.google.android.material.textfield.TextInputLayout>
+<!--                    android:chipSpacingHorizontal="8dp"-->
+<!--                    android:chipSpacingVertical="8dp"-->
+<!--                    android:singleSelection="false"-->
+
 
                     <com.google.android.material.chip.Chip
                         android:layout_width="wrap_content"
@@ -70,119 +140,110 @@
                         android:layout_height="wrap_content"
                         android:text="Food"
                         />
-                </com.google.android.material.chip.ChipGroup>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="Time &amp; Date" />
 
-                <com.google.android.material.button.MaterialButtonToggleGroup
-                    android:id="@+id/toggle_time"
+
+            <!-- Location -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/location">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLocation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:singleSelection="true">
+                    android:contentDescription="@string/enter_location" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_today"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Today" />
+            <!-- Price -->
+            <TextView
+                android:id="@+id/tvPriceLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/price_range" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_tomorrow"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Tomorrow" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:orientation="horizontal"
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_this_week"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="This week" />
-                </com.google.android.material.button.MaterialButtonToggleGroup>
+                <TextView
+                    android:id="@+id/tvPriceMin"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/price_20" />
+
+                <TextView
+                    android:id="@+id/tvPriceMax"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/price_120" />
+            </LinearLayout>
+
+            <com.google.android.material.slider.RangeSlider
+                android:id="@+id/sliderPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/select_price_range"
+                android:valueFrom="0"
+                android:valueTo="200"
+                app:values="@array/default_price_values"
+                app:labelBehavior="floating" />
+
+            <!-- Free only toggle row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/only_show_free_events" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switchFreeOnly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_pick_date"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/btnReset"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Choose from calendar"
-                    app:icon="@null" />
+                    android:layout_weight="1"
+                    android:text="@string/reset" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnApply"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Location" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/til_location"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:endIconMode="custom"
-                    app:endIconDrawable="@null">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_location"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="New York, USA" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Select price range" />
-
-                    <TextView
-                        android:id="@+id/tv_price_value"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="$20–$120" />
-                </LinearLayout>
-
-                <com.google.android.material.slider.RangeSlider
-                    android:id="@+id/slider_price"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:valueFrom="0"
-                    android:valueTo="200" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:gravity="end"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_reset"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="RESET" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_apply"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:text="APPLY" />
-                </LinearLayout>
-
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:text="@string/apply" />
             </LinearLayout>
-        </ScrollView>
-    </com.google.android.material.card.MaterialCardView>
-</LinearLayout>
+
+        </LinearLayout>
+        <!-- END ROOT CONTENT COLUMN -->
+
+    </ScrollView>
+</com.google.android.material.card.MaterialCardView>

@@ -2,6 +2,7 @@ package com.example.sprite.screens.createEvent;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -13,6 +14,16 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * ViewModel for managing event creation data and operations.
+ * 
+ * <p>This ViewModel holds the state of event creation form fields and handles
+ * the creation of new events in the database. It validates required fields
+ * such as max attendees and waiting list size before creating the event.</p>
+ * 
+ * <p>The ViewModel uses LiveData to observe changes in form fields and
+ * provides a mechanism to reset the form after successful event creation.</p>
+ */
 public class CreateEventViewModel extends ViewModel {
     private FirebaseUser firebaseUser = new Authentication_Service().getCurrentUser();
     private MutableLiveData<String> title = new MutableLiveData<>();
@@ -25,6 +36,8 @@ public class CreateEventViewModel extends ViewModel {
     private MutableLiveData<Double> price = new MutableLiveData<>();
     private MutableLiveData<Date> date = new MutableLiveData<>();
     private MutableLiveData<Date> time = new MutableLiveData<>();
+    private MutableLiveData<Date> startDate = new MutableLiveData<>();
+    private MutableLiveData<Date> endDate = new MutableLiveData<>();
     private final DatabaseService db = new DatabaseService();
 
     private final MutableLiveData<Boolean> shouldResetFields = new MutableLiveData<>(false);
@@ -110,25 +123,114 @@ public class CreateEventViewModel extends ViewModel {
     {
         shouldResetFields.setValue(Boolean.FALSE);
     }
-    private void setEventInfo(Event event)
-    {
-        event.setTitle(title.getValue());
-        event.setRegistrationStartDate(registrationStartDate.getValue());
-        event.setRegistrationEndDate(registrationEndDate.getValue());
+
+    private void setEventInfo(Event event) {
+        if (event == null) return;
+
+        if (title != null && title.getValue() != null)
+            event.setTitle(title.getValue());
+
+        if (startDate != null && startDate.getValue() != null)
+            event.setEventStartDate(startDate.getValue());
+
+        if (endDate != null && endDate.getValue() != null)
+            event.setEventEndDate(endDate.getValue());
+
+        if (registrationStartDate != null && registrationStartDate.getValue() != null)
+            event.setRegistrationStartDate(registrationStartDate.getValue());
+
+        if (registrationEndDate != null && registrationEndDate.getValue() != null)
+            event.setRegistrationEndDate(registrationEndDate.getValue());
+
         event.setCreatedAt(Calendar.getInstance().getTime());
         event.setStatus(Event.EventStatus.OPEN_FOR_REGISTRATION);
-        event.setOrganizerId(firebaseUser.getUid());
 
-        event.setMaxAttendees(maxAttendees.getValue());
-        event.setMaxWaitingListSize(maxWaitingList.getValue());
-        event.setPrice(price.getValue());
-        event.setDescription(description.getValue());
-        event.setLocation(location.getValue());
-        event.setDate(date.getValue());
-        event.setTime(time.getValue());
+        if (firebaseUser != null)
+            event.setOrganizerId(firebaseUser.getUid());
+
+        if (maxAttendees != null && maxAttendees.getValue() != null)
+            event.setMaxAttendees(maxAttendees.getValue());
+
+        if (maxWaitingList != null && maxWaitingList.getValue() != null)
+            event.setMaxWaitingListSize(maxWaitingList.getValue());
+
+        if (price != null && price.getValue() != null)
+            event.setPrice(price.getValue());
+
+        if (description != null && description.getValue() != null)
+            event.setDescription(description.getValue());
+
+        if (location != null && location.getValue() != null)
+            event.setLocation(location.getValue());
+
+        if (date != null && date.getValue() != null)
+            event.setDate(date.getValue());
     }
+
+    @Nullable
+    private Event getEventInfo() {
+        Event event = new Event();
+
+        if (title != null && title.getValue() != null)
+            event.setTitle(title.getValue());
+
+        if (startDate != null && startDate.getValue() != null)
+            event.setEventStartDate(startDate.getValue());
+
+        if (endDate != null && endDate.getValue() != null)
+            event.setEventEndDate(endDate.getValue());
+
+        if (registrationStartDate != null && registrationStartDate.getValue() != null)
+            event.setRegistrationStartDate(registrationStartDate.getValue());
+
+        if (registrationEndDate != null && registrationEndDate.getValue() != null)
+            event.setRegistrationEndDate(registrationEndDate.getValue());
+
+        event.setCreatedAt(Calendar.getInstance().getTime());
+        event.setStatus(Event.EventStatus.OPEN_FOR_REGISTRATION);
+
+        if (firebaseUser != null)
+            event.setOrganizerId(firebaseUser.getUid());
+
+        if (maxAttendees != null && maxAttendees.getValue() != null)
+            event.setMaxAttendees(maxAttendees.getValue());
+
+        if (maxWaitingList != null && maxWaitingList.getValue() != null)
+            event.setMaxWaitingListSize(maxWaitingList.getValue());
+
+        if (price != null && price.getValue() != null)
+            event.setPrice(price.getValue());
+
+        if (description != null && description.getValue() != null)
+            event.setDescription(description.getValue());
+
+        if (location != null && location.getValue() != null)
+            event.setLocation(location.getValue());
+
+        if (date != null && date.getValue() != null)
+            event.setDate(date.getValue());
+
+        return event;
+    }
+
+
+
     public void createEvent()
     {
+        // Validate required fields
+        Integer maxAttendeesValue = maxAttendees.getValue();
+        Integer maxWaitingListValue = maxWaitingList.getValue();
+
+        if (maxAttendeesValue == null || maxAttendeesValue <= 0) {
+            Log.e("CreateEventViewModel", "Max Attendees is required and must be greater than 0");
+            return;
+        }
+
+        if (maxWaitingListValue == null || maxWaitingListValue <= 0) {
+            Log.e("CreateEventViewModel", "Max Waiting List Size is required and must be greater than 0");
+            return;
+        }
+
         Event newEvent = new Event();
         setEventInfo(newEvent);
 

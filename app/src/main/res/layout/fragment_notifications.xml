@@ -1,61 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<!--    <com.google.android.material.appbar.MaterialToolbar-->
-<!--        android:id="@+id/toolbar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:title="Notifications" />-->
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Optional header/title
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar_notifications"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="12dp">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:title="@string/notifications" />
+    -->
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Enable notifications"
-            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"/>
-
-        <!-- ✅ Updated MaterialSwitch -->
-        <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/switch_opt_in"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textOn=""
-            android:textOff=""
-            android:checked="false" />
-    </LinearLayout>
-
-<!--    <com.google.android.material.search.SearchBar-->
-<!--        android:id="@+id/searchBar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        />-->
-
+    <!-- Notifications list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_notifications"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:padding="12dp"
         android:clipToPadding="false" />
 
-
+    <!-- Empty state message -->
     <TextView
         android:id="@+id/tv_empty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="No notifications yet"
         android:gravity="center"
         android:padding="24dp"
-        android:visibility="gone"/>
+        android:text="@string/notifications_empty"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone" />
+
 </LinearLayout>

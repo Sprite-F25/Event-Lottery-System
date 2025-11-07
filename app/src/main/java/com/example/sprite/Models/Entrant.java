@@ -5,6 +5,18 @@ import java.util.ArrayList;
 /**
  * Represents an entrant user who can register for events and receive notifications
  * when selected from waiting lists.
+ * 
+ * <p>Entrants have the ability to:
+ * <ul>
+ *     <li>Register for events and join waiting lists</li>
+ *     <li>Receive notifications when selected from waitlists</li>
+ *     <li>Accept or decline invitations to events</li>
+ *     <li>View their event history</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>This class extends {@link User} and maintains lists of registered events
+ * and notifications specific to the entrant.</p>
  */
 public class Entrant extends User{
 

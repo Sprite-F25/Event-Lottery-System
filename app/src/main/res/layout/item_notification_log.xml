@@ -1,40 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="16dp"
-    android:layout_marginBottom="12dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@android:color/darker_gray"
+    app:strokeWidth="1dp">
 
     <LinearLayout
-        android:padding="12dp"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
 
         <TextView
             android:id="@+id/tv_org_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Organizer Name’s Notifications:"
-            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-            android:ellipsize="end" />
+            android:text="Organizer: Jane Doe  •  Event: Art Expo"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:ellipsize="end"
+            android:singleLine="true" />
+
 
         <TextView
             android:id="@+id/tv_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Notification message here…"
-            android:layout_marginTop="6dp"
-            android:maxLines="2"
-            android:ellipsize="end"/>
+            android:layout_marginTop="4dp"
+            android:text="You were invited to register"
+            android:textSize="14sp" />
 
-        <TextView
-            android:id="@+id/tv_date"
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Oct 28, 2025 3:14 PM"
-            android:layout_marginTop="6dp"
-            android:alpha="0.6"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp">
+
+            <TextView
+                android:id="@+id/tv_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="INVITED"
+                android:textStyle="bold" />
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Oct 30, 2025 3:12 PM"
+                android:gravity="end"
+                android:textSize="12sp"
+                android:textColor="@android:color/darker_gray" />
+        </LinearLayout>
+
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

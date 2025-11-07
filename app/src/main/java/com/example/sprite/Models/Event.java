@@ -10,7 +10,24 @@ import java.util.List;
  * and have various states throughout their lifecycle. Entrants can register
  * for events and be placed on waiting lists or selected through lotteries.
  * 
- * @author Angelo
+ * <p>Events go through several lifecycle stages:
+ * <ul>
+ *     <li><b>OPEN_FOR_REGISTRATION:</b> Event is accepting registrations</li>
+ *     <li><b>LOTTERY_COMPLETED:</b> Lottery has been run to select entrants</li>
+ *     <li><b>REGISTRATION_CLOSED:</b> Registration period has ended</li>
+ *     <li><b>CANCELLED:</b> Event has been cancelled</li>
+ *     <li><b>COMPLETED:</b> Event has finished</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>Events manage multiple lists of participants:
+ * <ul>
+ *     <li>Waiting list: Users who registered but weren't initially selected</li>
+ *     <li>Selected attendees: Users chosen from the waitlist via lottery</li>
+ *     <li>Confirmed attendees: Selected users who confirmed participation</li>
+ *     <li>Cancelled attendees: Users who declined or were cancelled</li>
+ * </ul>
+ * </p>
  */
 public class Event implements Serializable {
     private Date date;
@@ -201,100 +218,239 @@ public class Event implements Serializable {
     }
 
     //public void setRegistrationPeriod(LocalDate registrationPeriod) {this.registrationPeriod = registrationPeriod;}
+    /**
+     * Gets the registration period for this event.
+     * 
+     * @param registrationPeriod The registration period to get
+     * @return The registration period
+     */
     public LocalDate getRegistrationPeriod(LocalDate registrationPeriod) {return registrationPeriod;}
 
+    /**
+     * Sets whether geolocation is enabled for this event.
+     * 
+     * @param geolocation true to enable geolocation, false otherwise
+     */
     public void setGeolocation(Boolean geolocation) {this.geolocation = geolocation;}
+    
+    /**
+     * Gets whether geolocation is enabled for this event.
+     * 
+     * @return true if geolocation is enabled, false otherwise
+     */
     public Boolean getGeolocation() {return geolocation;}
 
+    /**
+     * Sets the maximum number of entrants allowed for this event.
+     * 
+     * @param entrantLimit The maximum number of entrants
+     */
     public void setEntrantLimit(int entrantLimit) {this.entrantLimit = entrantLimit;}
+    
+    /**
+     * Gets the maximum number of entrants allowed for this event.
+     * 
+     * @return The maximum number of entrants
+     */
     public int getEntrantLimit() {return entrantLimit;}
+    
+    /**
+     * Gets the start date and time of this event.
+     * 
+     * @return The event start date
+     */
     public Date getEventStartDate() {
         return eventStartDate;
     }
 
+    /**
+     * Sets the start date and time of this event.
+     * 
+     * @param eventStartDate The event start date to set
+     */
     public void setEventStartDate(Date eventStartDate) {
         this.eventStartDate = eventStartDate;
     }
 
+    /**
+     * Gets the end date and time of this event.
+     * 
+     * @return The event end date
+     */
     public Date getEventEndDate() {
         return eventEndDate;
     }
 
+    /**
+     * Sets the end date and time of this event.
+     * 
+     * @param eventEndDate The event end date to set
+     */
     public void setEventEndDate(Date eventEndDate) {
         this.eventEndDate = eventEndDate;
     }
 
+    /**
+     * Gets the date when registration opens for this event.
+     * 
+     * @return The registration start date
+     */
     public Date getRegistrationStartDate() {
         return registrationStartDate;
     }
 
+    /**
+     * Sets the date when registration opens for this event.
+     * 
+     * @param registrationStartDate The registration start date to set
+     */
     public void setRegistrationStartDate(Date registrationStartDate) {
         this.registrationStartDate = registrationStartDate;
     }
 
+    /**
+     * Gets the date when registration closes for this event.
+     * 
+     * @return The registration end date
+     */
     public Date getRegistrationEndDate() {
         return registrationEndDate;
     }
 
+    /**
+     * Sets the date when registration closes for this event.
+     * 
+     * @param registrationEndDate The registration end date to set
+     */
     public void setRegistrationEndDate(Date registrationEndDate) {
         this.registrationEndDate = registrationEndDate;
     }
 
+    /**
+     * Gets the maximum number of attendees allowed for this event.
+     * 
+     * @return The maximum number of attendees
+     */
     public int getMaxAttendees() {
         return maxAttendees;
     }
 
+    /**
+     * Sets the maximum number of attendees allowed for this event.
+     * 
+     * @param maxAttendees The maximum number of attendees to set
+     */
     public void setMaxAttendees(int maxAttendees) {
         this.maxAttendees = maxAttendees;
     }
 
+    /**
+     * Gets the maximum size of the waiting list for this event.
+     * 
+     * @return The maximum waiting list size
+     */
     public int getMaxWaitingListSize() {
         return maxWaitingListSize;
     }
 
+    /**
+     * Sets the maximum size of the waiting list for this event.
+     * 
+     * @param maxWaitingListSize The maximum waiting list size to set
+     */
     public void setMaxWaitingListSize(int maxWaitingListSize) {
         this.maxWaitingListSize = maxWaitingListSize;
     }
 
+    /**
+     * Gets the price of this event.
+     * 
+     * @return The event price
+     */
     public double getPrice() {
         return price;
     }
 
+    /**
+     * Sets the price of this event.
+     * 
+     * @param price The event price to set
+     */
     public void setPrice(double price) {
         this.price = price;
     }
 
+    /**
+     * Gets the URL of the poster image for this event.
+     * 
+     * @return The poster image URL
+     */
     public String getPosterImageUrl() {
         return posterImageUrl;
     }
 
+    /**
+     * Sets the URL of the poster image for this event.
+     * 
+     * @param posterImageUrl The poster image URL to set
+     */
     public void setPosterImageUrl(String posterImageUrl) {
         this.posterImageUrl = posterImageUrl;
     }
 
+    /**
+     * Gets the URL of the QR code for this event.
+     * 
+     * @return The QR code URL
+     */
     public String getQrCodeUrl() {
         return qrCodeUrl;
     }
 
+    /**
+     * Sets the URL of the QR code for this event.
+     * 
+     * @param qrCodeUrl The QR code URL to set
+     */
     public void setQrCodeUrl(String qrCodeUrl) {
         this.qrCodeUrl = qrCodeUrl;
     }
 
+    /**
+     * Gets the date of this event.
+     * 
+     * @return The event date
+     */
     public Date getDate()
     {
         return date;
     }
 
+    /**
+     * Sets the date of this event.
+     * 
+     * @param d The event date to set
+     */
     public void setDate(Date d)
     {
         this.date = d;
     }
 
+    /**
+     * Gets the time of this event.
+     * 
+     * @return The event time
+     */
     public Date getTime()
     {
         return time;
     }
 
+    /**
+     * Sets the time of this event.
+     * 
+     * @param d The event time to set
+     */
     public void setTime(Date d)
     {
         this.time = d;

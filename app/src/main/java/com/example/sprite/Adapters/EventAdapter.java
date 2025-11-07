@@ -16,6 +16,16 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Adapter for displaying a list of events in a RecyclerView.
+ * 
+ * <p>This adapter displays event information including title, description,
+ * date, location, and price. It supports click listeners to handle event
+ * selection and navigation.</p>
+ * 
+ * <p>Events are displayed in a card format with formatted dates and
+ * pricing information.</p>
+ */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
     private List<Event> eventList;

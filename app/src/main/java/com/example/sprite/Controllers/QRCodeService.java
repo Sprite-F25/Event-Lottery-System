@@ -19,8 +19,19 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import java.util.Map;
 
 /**
- * This class handles qrCode functions, including encoding and decoding QRCodes
- * This class also handles updating the qr code data in firebase
+ * Service class that handles QR code generation, encoding, and decoding operations.
+ * 
+ * <p>This service provides functionality to:
+ * <ul>
+ *     <li>Generate QR codes for events</li>
+ *     <li>Encode event data into QR code format</li>
+ *     <li>Decode QR codes to retrieve event information</li>
+ *     <li>Update QR code data in Firebase for events</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>The service uses the ZXing library for QR code operations and integrates
+ * with {@link DatabaseService} to persist QR code information.</p>
  */
 public class QRCodeService{
     private DatabaseService databaseService;
