@@ -2,6 +2,7 @@ package com.example.sprite.Models;
 
 import com.example.sprite.Controllers.NotificationService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,16 +22,37 @@ public class Waitlist {
     /**
      * Constructs a Waitlist manager for a specific event.
      * The waiting, selected, cancelled and confirmed lists are initialized based on the event's existing attendee lists.
+     * If any list is null, it will be initialized as an empty ArrayList and set back on the event.
      * @param event
      *      The event whose participant lists are being managed.
      */
     public Waitlist(Event event) {
         this.event = event;
-        // Below are references to the Event's list, not copies
+        // Initialize lists if they are null
         waitingList = event.getWaitingList();
+        if (waitingList == null) {
+            waitingList = new ArrayList<>();
+            event.setWaitingList(waitingList);
+        }
+        
         selectedList = event.getSelectedAttendees();
+        if (selectedList == null) {
+            selectedList = new ArrayList<>();
+            event.setSelectedAttendees(selectedList);
+        }
+        
         cancelledList = event.getCancelledAttendees();
+        if (cancelledList == null) {
+            cancelledList = new ArrayList<>();
+            event.setCancelledAttendees(cancelledList);
+        }
+        
         confirmedList = event.getConfirmedAttendees();
+        if (confirmedList == null) {
+            confirmedList = new ArrayList<>();
+            event.setConfirmedAttendees(confirmedList);
+        }
+        
         this.notificationService = new NotificationService();
     }
 
@@ -38,6 +60,7 @@ public class Waitlist {
      * Constructs a Waitlist manager for a specific event, using a custom NotificationService.
      * This is useful for testing so that notifications can be mocked.
      * The waiting, selected, cancelled, and confirmed lists are initialized based on the event's existing attendee lists.
+     * If any list is null, it will be initialized as an empty ArrayList and set back on the event.
      *
      * @param event
      *      The event whose participant lists are being managed.
@@ -46,11 +69,31 @@ public class Waitlist {
      */
     public Waitlist(Event event, NotificationService notificationService) {
         this.event = event;
-        // Below are references to the Event's list, not copies
+        // Initialize lists if they are null
         waitingList = event.getWaitingList();
+        if (waitingList == null) {
+            waitingList = new ArrayList<>();
+            event.setWaitingList(waitingList);
+        }
+        
         selectedList = event.getSelectedAttendees();
+        if (selectedList == null) {
+            selectedList = new ArrayList<>();
+            event.setSelectedAttendees(selectedList);
+        }
+        
         cancelledList = event.getCancelledAttendees();
+        if (cancelledList == null) {
+            cancelledList = new ArrayList<>();
+            event.setCancelledAttendees(cancelledList);
+        }
+        
         confirmedList = event.getConfirmedAttendees();
+        if (confirmedList == null) {
+            confirmedList = new ArrayList<>();
+            event.setConfirmedAttendees(confirmedList);
+        }
+        
         this.notificationService = notificationService;
     }
 
@@ -59,6 +102,11 @@ public class Waitlist {
      *      The unique ID of the entrant to be added to the waiting list
      * */
     public void addEntrantToWaitlist(String entrantId) {
+        // Initialize list if null (defensive check)
+        if (waitingList == null) {
+            waitingList = new ArrayList<>();
+            event.setWaitingList(waitingList);
+        }
         // later: will implement list size cap
         if (!waitingList.contains(entrantId)) {
             waitingList.add(entrantId);
@@ -70,6 +118,16 @@ public class Waitlist {
      *      The unique ID of the entrant
      */
     public void moveToSelected(String entrantId) {
+        // Initialize lists if null (defensive check)
+        if (waitingList == null) {
+            waitingList = new ArrayList<>();
+            event.setWaitingList(waitingList);
+        }
+        if (selectedList == null) {
+            selectedList = new ArrayList<>();
+            event.setSelectedAttendees(selectedList);
+        }
+        
         waitingList.remove(entrantId);
         if (!selectedList.contains(entrantId)) {
             selectedList.add(entrantId);
@@ -100,6 +158,11 @@ public class Waitlist {
      *      The unique ID of the entrant
      */
     public void moveToCancelled(String entrantId) {
+        // Initialize list if null (defensive check)
+        if (cancelledList == null) {
+            cancelledList = new ArrayList<>();
+            event.setCancelledAttendees(cancelledList);
+        }
         // selectedList.remove(entrantId);
         if (!cancelledList.contains(entrantId)) {
             cancelledList.add(entrantId);
@@ -112,6 +175,11 @@ public class Waitlist {
      *      The unique ID of the entrant
      * */
     public void addToConfirmed(String entrantId) {
+        // Initialize list if null (defensive check)
+        if (confirmedList == null) {
+            confirmedList = new ArrayList<>();
+            event.setConfirmedAttendees(confirmedList);
+        }
         //selectedList.remove(entrantId);
         if (!confirmedList.contains(entrantId)) {
             confirmedList.add(entrantId);
