@@ -1,0 +1,97 @@
+<resources>
+    <string name="app_name">Sprite</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_notifications">Notifications</string>
+    <string name="menu_profile">Profile</string>
+
+    <!-- View Entrants page dropdown options -->
+        <string-array name="entrant_status_options">
+            <item>Waiting List</item>
+            <item>Chosen</item>
+            <item>Cancelled</item>
+            <item>Final</item>
+        </string-array>
+    <!--profile roles bar -->
+    <string-array name="roles">
+        <item>Entrant</item>
+        <item>Organizer</item>
+        <item>Admin</item>
+    </string-array>
+
+    <string name="sampleEventDescription">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus maximus nisi et dui dapibus blandit. Donec fermentum facilisis ipsum ac malesuada. Donec non mauris at arcu aliquam dignissim egestas vitae massa. Sed quis urna id leo malesuada facilisis cursus vel tortor. Maecenas in gravida sapien, vel blandit ligula. Fusce dignissim enim at lectus finibus, eget suscipit neque ultrices. Cras fringilla porta turpis sed ultricies. Nam vitae euismod urna, a malesuada massa. Donec bibendum elit sit amet orci imperdiet tristique. Nulla aliquam risus vitae libero tempus, elementum imperdiet neque dignissim. Pellentesque in leo elit. Aenean sem metus, hendrerit vitae ligula ut, vehicula pellentesque mi. Cras id dui urna. Mauris id suscipit velit. Vivamus mattis tincidunt dolor. Suspendisse lacus ante, pellentesque et ligula a, sodales maximus tortor. Cras augue diam, viverra vitae massa luctus, ornare rutrum libero. Integer at massa nulla. Nulla turpis purus, condimentum nec ligula cursus, bibendum molestie ex. Nunc placerat, lorem vel placerat gravida, neque velit rutrum urna, non suscipit libero ante rutrum augue. Suspendisse tincidunt sagittis magna eu luctus. Nulla rhoncus in libero eu maximus. Sed nec neque a orci luctus cursus. Nulla porttitor vestibulum eleifend. In neque quam, dapibus ut nulla nec, tincidunt ullamcorper odio. Nullam quis bibendum nunc. Mauris vehicula lobortis magna placerat cursus. Vivamus volutpat placerat augue, in semper odio convallis et. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Suspendisse facilisis vel ipsum eget condimentum.
+Vestibulum vehicula suscipit felis, tincidunt maximus metus dignissim at. Proin tincidunt commodo aliquam. Ut sit amet semper nulla, bibendum egestas mauris. Suspendisse eu pulvinar diam. Mauris hendrerit, mauris ac ullamcorper cursus, risus nisl venenatis tellus, luctus varius tortor dui vitae odio. Donec ut consequat nibh. Nullam non placerat leo, nec sollicitudin sapien. Duis molestie et purus hendrerit dignissim. In porttitor consequat est eu gravida. Aliquam erat volutpat. Vestibulum vehicula massa pellentesque, cursus neque hendrerit, accumsan velit. Sed vel tellus nec mauris cursus feugiat. Aenean quis nibh eu eros finibus gravida. Mauris nec dolor at ligula vulputate lobortis eu id lectus. Aenean maximus auctor turpis, id dapibus odio rutrum at.
+Pellentesque sodales consequat urna ac rutrum. Vivamus nulla lorem, pulvinar ut facilisis vitae, feugiat eget urna. Suspendisse ac purus et eros ullamcorper pulvinar. Aliquam finibus leo dui, ut volutpat urna cursus sit amet. Vivamus et fermentum velit. In hac habitasse platea dictumst. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc tellus turpis, dictum in egestas ut, porta eget lectus. Vestibulum eleifend, ante a rutrum laoreet, metus ipsum efficitur justo, quis convallis ligula neque et orci. Morbi et magna vestibulum nisi blandit vehicula condimentum et orci.
+Nam sed arcu dapibus, dapibus ex a, volutpat risus. Praesent rhoncus interdum augue, eget blandit nunc viverra sit amet. Etiam euismod efficitur est tincidunt posuere. Maecenas tempus commodo lectus, vel tristique nulla venenatis at. Mauris sed lorem mauris. In hac habitasse platea dictumst. Nullam ut luctus urna. Sed tincidunt ligula vel porta hendrerit. Vestibulum dapibus placerat maximus. Sed at ipsum sit amet augue suscipit pharetra non id mauris. Fusce non consectetur odio. Quisque vulputate quam sed libero tempus elementum.</string>
+
+        <!-- Filter popup -->
+        <string name="filter_title">Filter</string>
+        <string name="categories">Categories</string>
+        <string name="sports">Sports</string>
+        <string name="music">Music</string>
+        <string name="art">Art</string>
+        <string name="food">Food</string>
+
+        <string name="time_and_date">Time &amp; Date</string>
+        <string name="today">Today</string>
+        <string name="tomorrow">Tomorrow</string>
+        <string name="this_week">This week</string>
+        <string name="choose_from_calendar">Choose from calendar</string>
+        <string name="open_date_picker">Open date picker</string>
+
+        <string name="location">Location</string>
+        <string name="enter_location">Enter location</string>
+
+        <string name="price_range">Price range</string>
+        <string name="price_20">$20</string>
+        <string name="price_120">$120</string>
+        <string name="select_price_range">Select price range</string>
+
+        <!-- Logs / notifications (from earlier screens) -->
+        <string name="search_logs_hint">Search organizer or event</string>
+        <string name="logs_chip_invited">Invited</string>
+        <string name="logs_chip_accepted">Accepted</string>
+        <string name="logs_chip_declined">Declined</string>
+        <string name="logs_chip_replacement">Replacement</string>
+        <string name="logs_chip_waitlist">Waitlist</string>
+        <string name="logs_empty">No notifications to show</string>
+
+        <string name="notifications_search_hint">Search notifications</string>
+        <string name="notifications_chip_unread">Unread</string>
+        <string name="notifications_chip_system">System</string>
+        <string name="notifications_chip_events">Events</string>
+        <string name="notifications_empty">No notifications to show</string>
+
+        <string name="only_show_free_events">Only show free events</string>
+        <string name="reset">Reset</string>
+        <string name="apply">Apply</string>
+
+        <!-- Site Criteria -->
+        <string name="site_criteria_title">Site Criteria</string>
+        <string name="waiting_list_explanation">Entrants join an event\'s waiting list during the registration period. Once it closes, the system randomly selects participants from the pool and notifies them through the app. If selected entrants decline, new ones are drawn until all spots are filled.</string>
+        <string name="geolocation_heading">Geolocation</string>
+        <string name="geolocation_description">Geolocation ensures entrants match event regions. Certain events require geolocation to join the waiting list.</string>
+        <string name="enable_location_tracking">Enable Location Tracking</string>
+        <string name="location_privacy_note">Location data is used only to confirm eligibility for events and is not shared with other users.</string>
+
+        <!-- Notification Popup -->
+        <string name="notification_popup_title">New Notification</string>
+        <string name="notification_dismiss">Dismiss</string>
+        <string name="notification_view">View</string>
+
+        <!-- Notify Entrants Dialog -->
+        <string name="notify_entrants_dialog_title">Send Notification To</string>
+        <string name="notify_selected_entrants">All Selected Entrants</string>
+        <string name="notify_cancelled_entrants">All Cancelled Entrants</string>
+        <string name="notify_waiting_entrants">All Waiting List Entrants</string>
+
+</resources>
