@@ -89,9 +89,9 @@ public class NotificationView extends AppCompatActivity{
             return;
         }
 
-        // Set listener to refresh after marking as read
-        adapter.setOnNotificationReadListener(notification -> {
-            // Refresh the list to show updated read status
+        // Set listener to refresh after deleting notification
+        adapter.setOnNotificationDeletedListener(notification -> {
+            // Refresh the list after deletion
             refreshNotifications(currentUserId);
         });
 

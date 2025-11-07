@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.sprite.Controllers.NotificationService;
 import com.example.sprite.Models.Notification;
 import com.example.sprite.R;
-import com.google.android.material.chip.Chip;
+import android.widget.ImageButton;
 
 import java.util.List;
 
@@ -29,6 +29,7 @@ import java.util.List;
  *     <li>Inflates the notification item layout.</li>
  *     <li>Binds notification data (title and message) to UI components.</li>
  *     <li>Handles efficient recycling of view elements.</li>
+ *     <li>Provides delete functionality for each notification.</li>
  * </ul>
  *
  * @see Notification
@@ -44,19 +45,19 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     /** Service for notification operations. */
     private final NotificationService notificationService;
     
-    /** Callback for when a notification is marked as read. */
-    private OnNotificationReadListener readListener;
+    /** Callback for when a notification is deleted. */
+    private OnNotificationDeletedListener deleteListener;
 
     /**
-     * Interface for listening to notification read events.
+     * Interface for listening to notification deletion events.
      */
-    public interface OnNotificationReadListener {
+    public interface OnNotificationDeletedListener {
         /**
-         * Called when a notification has been marked as read.
+         * Called when a notification has been deleted.
          * 
-         * @param notification The notification that was marked as read
+         * @param notification The notification that was deleted
          */
-        void onNotificationRead(Notification notification);
+        void onNotificationDeleted(Notification notification);
     }
 
     /**
@@ -104,12 +105,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
     /**
-     * Sets the listener for notification read events.
+     * Sets the listener for notification deletion events.
      * 
      * @param listener The listener to set
      */
-    public void setOnNotificationReadListener(OnNotificationReadListener listener) {
-        this.readListener = listener;
+    public void setOnNotificationDeletedListener(OnNotificationDeletedListener listener) {
+        this.deleteListener = listener;
     }
 
     /**
@@ -171,50 +172,44 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             Log.e(TAG, "holder.message is null!");
         }
         
-        // Show/hide unread chip based on read status
-        if (holder.chipUnread != null) {
-            if (notification.isRead()) {
-                holder.chipUnread.setVisibility(View.GONE);
-            } else {
-                holder.chipUnread.setVisibility(View.VISIBLE);
-            }
+        // Set click listener on delete button to delete the notification
+        if (holder.deleteButton != null) {
+            holder.deleteButton.setOnClickListener(v -> {
+                if (notification.getNotificationId() != null) {
+                    deleteNotification(notification, position);
+                }
+            });
         } else {
-            Log.e(TAG, "holder.chipUnread is null!");
+            Log.e(TAG, "holder.deleteButton is null!");
         }
-        
-        // Set click listener to mark notification as read when clicked
-        holder.itemView.setOnClickListener(v -> {
-            if (!notification.isRead() && notification.getNotificationId() != null) {
-                markNotificationAsRead(notification, position);
-            }
-        });
     }
 
     /**
-     * Marks a notification as read.
+     * Deletes a notification.
      * 
-     * @param notification The notification to mark as read
+     * @param notification The notification to delete
      * @param position The position of the notification in the list
      */
-    private void markNotificationAsRead(Notification notification, int position) {
-        notificationService.markAsRead(notification.getNotificationId(), 
+    private void deleteNotification(Notification notification, int position) {
+        notificationService.deleteNotification(notification.getNotificationId(), 
             new NotificationService.NotificationCallback() {
                 @Override
-                public void onSuccess(Notification updatedNotification) {
-                    Log.d(TAG, "Notification marked as read: " + notification.getNotificationId());
-                    // Update the notification in the list
-                    notification.setRead(true);
-                    notifyItemChanged(position);
+                public void onSuccess(Notification deletedNotification) {
+                    Log.d(TAG, "Notification deleted: " + notification.getNotificationId());
+                    // Remove from list and notify adapter
+                    notifications.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, notifications.size());
                     
                     // Notify listener
-                    if (readListener != null) {
-                        readListener.onNotificationRead(notification);
+                    if (deleteListener != null) {
+                        deleteListener.onNotificationDeleted(notification);
                     }
                 }
 
                 @Override
                 public void onFailure(String error) {
-                    Log.e(TAG, "Failed to mark notification as read: " + error);
+                    Log.e(TAG, "Failed to delete notification: " + error);
                 }
             });
     }
@@ -243,8 +238,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         /** TextView displaying the notification message body. */
         TextView message;
         
-        /** Chip displaying unread status. */
-        Chip chipUnread;
+        /** Button for deleting the notification. */
+        ImageButton deleteButton;
 
         /**
          * Constructs a new {@code ViewHolder}.
@@ -255,7 +250,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             super(itemView);
             title = itemView.findViewById(R.id.tv_title);
             message = itemView.findViewById(R.id.tv_message);
-            chipUnread = itemView.findViewById(R.id.chip_unread);
+            deleteButton = itemView.findViewById(R.id.btn_delete);
         }
     }
 }
