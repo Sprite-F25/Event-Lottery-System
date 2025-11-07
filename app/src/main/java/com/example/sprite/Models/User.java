@@ -15,7 +15,6 @@ import java.util.List;
  *     <li>Notification preferences</li>
  *     <li>Event history</li>
  * </ul>
- * </p>
  */
 public class User {
     private String name;

@@ -26,12 +26,19 @@ public class Authentication_ServiceTest {
     private Authentication_Service authService;
     private Context context;
 
+    /**
+     * Sets up the test environment before each test method.
+     * Initializes the authentication service and test context.
+     */
     @Before
     public void setUp() {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         authService = new Authentication_Service();
     }
 
+    /**
+     * Tests that the authentication service can be initialized correctly.
+     */
     @Test
     public void testAuthenticationServiceInitialization() {
         assertNotNull(authService);
@@ -40,6 +47,9 @@ public class Authentication_ServiceTest {
         authService.getCurrentUser(); // This may return null, which is valid
     }
 
+    /**
+     * Tests the user login status check functionality.
+     */
     @Test
     public void testIsUserLoggedIn() {
         // Initially, user should not be logged in (unless previously authenticated)
@@ -48,6 +58,9 @@ public class Authentication_ServiceTest {
         assertNotNull(Boolean.valueOf(isLoggedIn)); // Just verify method doesn't throw
     }
 
+    /**
+     * Tests retrieving the currently logged-in user.
+     */
     @Test
     public void testGetCurrentUser() {
         // getCurrentUser() may return null if no user is logged in - this is expected
@@ -58,6 +71,9 @@ public class Authentication_ServiceTest {
         assertNotNull(authService); // Verify service is initialized
     }
 
+    /**
+     * Tests the authentication callback interface implementation.
+     */
     @Test
     public void testAuthCallbackInterface() {
         // Test that callback interface is properly defined
@@ -80,6 +96,9 @@ public class Authentication_ServiceTest {
         callback.onFailure("Test error");
     }
 
+    /**
+     * Tests the user sign-out functionality.
+     */
     @Test
     public void testSignOut() {
         // Sign out should not throw an exception

@@ -25,17 +25,27 @@ public class MyFirebaseMessagingServiceTest {
     private MyFirebaseMessagingService messagingService;
     private Context context;
 
+    /**
+     * Sets up the test environment before each test method.
+     * Initializes the messaging service and test context.
+     */
     @Before
     public void setUp() {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         messagingService = new MyFirebaseMessagingService();
     }
 
+    /**
+     * Tests that the messaging service can be initialized correctly.
+     */
     @Test
     public void testMessagingServiceInitialization() {
         assertNotNull(messagingService);
     }
 
+    /**
+     * Tests that a new messaging service instance can be created.
+     */
     @Test
     public void testMessagingServiceInstance() {
         // Verify service can be instantiated

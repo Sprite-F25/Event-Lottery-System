@@ -26,7 +26,7 @@ import com.google.firebase.messaging.RemoteMessage;
  * <p>It supports both foreground and background message delivery and automatically
  * creates a notification channel for Android 8.0 (Oreo) and above.</p>
  *
- * <h3>Responsibilities:</h3>
+ * <h2>Responsibilities:</h2>
  * <ul>
  *     <li>Receives FCM messages via {@link #onMessageReceived(RemoteMessage)}</li>
  *     <li>Builds and displays a notification using {@link NotificationCompat.Builder}</li>

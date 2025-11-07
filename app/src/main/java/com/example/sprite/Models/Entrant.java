@@ -13,7 +13,6 @@ import java.util.ArrayList;
  *     <li>Accept or decline invitations to events</li>
  *     <li>View their event history</li>
  * </ul>
- * </p>
  * 
  * <p>This class extends {@link User} and maintains lists of registered events
  * and notifications specific to the entrant.</p>
@@ -23,6 +22,10 @@ public class Entrant extends User{
     private ArrayList<Event> registeredEvents;
     private ArrayList<Notification> notifications;
 
+    /**
+     * Default constructor for Entrant.
+     * Initializes empty lists for registered events and notifications.
+     */
     public Entrant() {
     }
 

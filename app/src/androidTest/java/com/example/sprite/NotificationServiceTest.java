@@ -17,12 +17,22 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
+/**
+ * Android instrumented tests for the {@link NotificationService} class.
+ * 
+ * <p>Tests notification creation and management functionality.
+ * Requires Firebase emulator or live Firebase setup.</p>
+ */
 @RunWith(AndroidJUnit4.class)
 public class NotificationServiceTest {
 
     private NotificationService notificationService;
     private FirebaseFirestore db;
 
+    /**
+     * Sets up the test environment before each test method.
+     * Initializes Firebase and the notification service.
+     */
     @Before
     public void setup() {
         // Initialize Firebase for the test environment
@@ -31,6 +41,11 @@ public class NotificationServiceTest {
         notificationService = new NotificationService();
     }
 
+    /**
+     * Tests that a notification can be created successfully.
+     *
+     * @throws InterruptedException if the test is interrupted
+     */
     @Test
     public void testCreateNotification_Success() throws InterruptedException {
         // CountDownLatch to wait for async callback

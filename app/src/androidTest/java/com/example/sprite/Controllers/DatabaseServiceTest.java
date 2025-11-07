@@ -23,18 +23,28 @@ public class DatabaseServiceTest {
     private DatabaseService databaseService;
     private Context context;
 
+    /**
+     * Sets up the test environment before each test method.
+     * Initializes the database service and test context.
+     */
     @Before
     public void setUp() {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         databaseService = new DatabaseService();
     }
 
+    /**
+     * Tests that the database service can be initialized correctly.
+     */
     @Test
     public void testDatabaseServiceInitialization() {
         assertNotNull(databaseService);
         assertNotNull(databaseService.db);
     }
 
+    /**
+     * Tests that a new database service instance is not null and has a valid database reference.
+     */
     @Test
     public void testDatabaseServiceNotNull() {
         // Verify that the service can be instantiated

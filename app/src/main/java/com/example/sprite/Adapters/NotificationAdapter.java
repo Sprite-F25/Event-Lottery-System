@@ -24,7 +24,7 @@ import java.util.List;
  * the event title and message content. This adapter is used primarily
  * in the notifications screen to render user-specific notification data.</p>
  *
- * <h3>Responsibilities:</h3>
+ * <h2>Responsibilities:</h2>
  * <ul>
  *     <li>Inflates the notification item layout.</li>
  *     <li>Binds notification data (title and message) to UI components.</li>

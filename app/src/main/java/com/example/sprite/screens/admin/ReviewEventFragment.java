@@ -19,6 +19,13 @@ import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 import com.google.android.material.button.MaterialButton;
 
+/**
+ * Fragment for admins to review and manage events.
+ * 
+ * <p>This fragment allows administrators to view event details and delete events.
+ * It displays event title, description, and image, and provides a delete button
+ * with confirmation dialog.</p>
+ */
 public class ReviewEventFragment extends Fragment {
 
     private ReviewEventViewModel viewModel;

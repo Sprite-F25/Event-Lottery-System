@@ -41,6 +41,12 @@ public class CreateEventViewModel extends ViewModel {
     private final DatabaseService db = new DatabaseService();
 
     private final MutableLiveData<Boolean> shouldResetFields = new MutableLiveData<>(false);
+    
+    /**
+     * Sets dummy event information for testing purposes.
+     * 
+     * @param event The event to populate with dummy data
+     */
     private void setDummyEventInfo(Event event)
     {
         Calendar calendar = Calendar.getInstance();
@@ -68,62 +74,134 @@ public class CreateEventViewModel extends ViewModel {
     }
 
 
+    /**
+     * Sets the event date.
+     * 
+     * @param d The event date
+     */
     public void setDate(Date d)
     {
         date.setValue(d);
     }
+    
+    /**
+     * Sets the event time.
+     * 
+     * @param d The event time
+     */
     public void setTime(Date d)
     {
         time.setValue(d);
     }
+    
+    /**
+     * Sets the event location.
+     * 
+     * @param s The location string
+     */
     public void setLocation(String s)
     {
         location.setValue(s);
     }
+    
+    /**
+     * Sets the event description.
+     * 
+     * @param s The description string
+     */
     public void setDescription(String s)
     {
         description.setValue(s);
     }
+    
+    /**
+     * Sets the event title.
+     * 
+     * @param s The title string
+     */
    public void setEventTitle(String s)
    {
        title.setValue(s);
    }
 
+   /**
+    * Sets the registration start date.
+    * 
+    * @param s The registration start date
+    */
    public void setRegistrationStartDate(Date s)
     {
         registrationStartDate.setValue(s);
     }
 
+    /**
+     * Sets the registration end date.
+     * 
+     * @param s The registration end date
+     */
     public void setRegistrationEndDate(Date s)
     {
         registrationEndDate.setValue(s);
     }
 
+    /**
+     * Sets the maximum number of attendees.
+     * 
+     * @param n The maximum attendees count
+     */
     public void setMaxAttendees(Integer n)
     {
         maxAttendees.setValue(n);
     }
 
+    /**
+     * Sets the maximum waiting list size.
+     * 
+     * @param n The maximum waiting list size
+     */
     public void setMaxWaitingList(Integer n)
     {
         maxWaitingList.setValue(n);
     }
 
+    /**
+     * Sets the event price.
+     * 
+     * @param d The price value
+     */
     public void setPrice(Double d)
     {
         price.setValue(d);
     }
 
+    /**
+     * Gets the LiveData indicating whether fields should be reset.
+     * 
+     * @return LiveData containing the reset flag
+     */
     public MutableLiveData<Boolean> getShouldResetFields()
     {
        return shouldResetFields;
     }
 
+    /**
+     * Marks the reset operation as complete.
+     * 
+     * <p>This method is called after fields have been reset to clear the reset flag.</p>
+     */
     public void onResetComplete()
     {
         shouldResetFields.setValue(Boolean.FALSE);
     }
 
+    /**
+     * Sets event information from ViewModel LiveData values.
+     * 
+     * <p>This method populates an Event object with values from the ViewModel's
+     * LiveData fields. Only non-null values are set.</p>
+     * 
+     * @param event The event to populate
+     */
     private void setEventInfo(Event event) {
         if (event == null) return;
 
@@ -167,6 +245,14 @@ public class CreateEventViewModel extends ViewModel {
             event.setDate(date.getValue());
     }
 
+    /**
+     * Creates and returns an Event object from ViewModel LiveData values.
+     * 
+     * <p>This method creates a new Event and populates it with values from
+     * the ViewModel's LiveData fields. Only non-null values are set.</p>
+     * 
+     * @return A new Event object with populated fields, or null if creation fails
+     */
     @Nullable
     private Event getEventInfo() {
         Event event = new Event();
@@ -215,6 +301,13 @@ public class CreateEventViewModel extends ViewModel {
 
 
 
+    /**
+     * Creates a new event in the database.
+     * 
+     * <p>This method validates required fields (max attendees and waiting list size)
+     * before creating the event. If validation fails, the operation is aborted
+     * and an error is logged.</p>
+     */
     public void createEvent()
     {
         // Validate required fields
@@ -244,6 +337,12 @@ public class CreateEventViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Resets all form fields to their default/empty values.
+     * 
+     * <p>This method clears all event creation form fields and sets them
+     * to empty or null values.</p>
+     */
     public void resetFields()
     {
         setEventTitle("");

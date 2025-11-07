@@ -22,21 +22,34 @@ public class SignUpActivityTest {
 
     private Context context;
 
+    /**
+     * Sets up the test environment before each test method.
+     * Initializes the test context.
+     */
     @Before
     public void setUp() {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
     }
 
+    /**
+     * Tests that the test context is not null.
+     */
     @Test
     public void testContextNotNull() {
         assertNotNull(context);
     }
 
+    /**
+     * Tests that the package name is correct.
+     */
     @Test
     public void testPackageName() {
         assertEquals("com.example.sprite", context.getPackageName());
     }
 
+    /**
+     * Tests retrieving the device ID using the static method.
+     */
     @Test
     public void testGetDeviceId() {
         // Test the static getDeviceId method

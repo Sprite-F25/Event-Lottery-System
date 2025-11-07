@@ -44,7 +44,6 @@ import java.util.UUID;
  *     <li><b>Cancelled:</b> Entrants who have been cancelled</li>
  *     <li><b>Final:</b> Final confirmed attendees</li>
  * </ul>
- * </p>
  * 
  * <p>The fragment provides functionality to:
  * <ul>
@@ -52,7 +51,6 @@ import java.util.UUID;
  *     <li>Cancel entrant registrations</li>
  *     <li>Export entrant data (planned for future implementation)</li>
  * </ul>
- * </p>
  * 
  * <p>Uses {@link ViewEntrantsViewModel} to load entrants and supports real-time updates.</p>
  */

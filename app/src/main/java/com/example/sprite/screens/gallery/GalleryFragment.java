@@ -12,6 +12,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sprite.databinding.FragmentGalleryBinding;
 
+/**
+ * Fragment that displays the gallery screen.
+ * 
+ * <p>This fragment shows gallery content. Currently displays placeholder text
+ * for the gallery interface.</p>
+ */
 public class GalleryFragment extends Fragment {
 
     private FragmentGalleryBinding binding;

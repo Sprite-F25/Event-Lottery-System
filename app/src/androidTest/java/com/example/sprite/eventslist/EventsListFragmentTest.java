@@ -16,10 +16,18 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.action.ViewActions.click;
 
+/**
+ * Android instrumented tests for the {@link EventsListFragment} class.
+ * 
+ * <p>Tests UI interactions and visibility of the events list RecyclerView.</p>
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class EventsListFragmentTest {
 
+    /**
+     * Tests that the RecyclerView is visible and clickable in the fragment.
+     */
     @Test
     public void recycler_isVisible_andClickable() {
         FragmentScenario<EventsListFragment> scenario =

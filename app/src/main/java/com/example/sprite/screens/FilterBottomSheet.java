@@ -21,6 +21,13 @@ import com.google.android.material.slider.RangeSlider;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Bottom sheet dialog fragment for filtering events.
+ * 
+ * <p>This fragment provides a bottom sheet interface for users to filter events
+ * by categories, date, location, price range, and other criteria. The filter
+ * options are collected and returned via fragment result.</p>
+ */
 public class FilterBottomSheet extends BottomSheetDialogFragment {
 
     public static final String REQUEST_KEY = "filter_request";

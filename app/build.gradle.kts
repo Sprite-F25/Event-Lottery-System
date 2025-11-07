@@ -42,8 +42,9 @@ android {
     }
 }
 
-dependencies {
 
+
+dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
@@ -92,5 +93,5 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
     debugImplementation("androidx.fragment:fragment-testing:1.7.1")
     androidTestImplementation("androidx.navigation:navigation-testing:2.7.7")
-
+    implementation (files("/Users/angeloroxas/Library/Android/sdk/platforms/android-36/android.jar"))
 }

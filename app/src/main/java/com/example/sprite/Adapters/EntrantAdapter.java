@@ -24,13 +24,17 @@ import java.util.List;
  *     <li><b>CANCELLED:</b> Shows cancelled entrants</li>
  *     <li><b>FINAL:</b> Shows final confirmed attendees</li>
  * </ul>
- * </p>
  * 
  * <p>The adapter provides click listeners for canceling entrants and handles
  * different UI layouts based on the current mode.</p>
  */
 public class EntrantAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    /**
+     * Sets the list type based on a string identifier and updates the adapter mode accordingly.
+     *
+     * @param currentListType The list type string ("WaitingList", "Chosen", "Cancelled", or "Final")
+     */
     public void setListType(String currentListType) {
         switch (currentListType) {
             case "WaitingList":
@@ -51,26 +55,58 @@ public class EntrantAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public enum Mode { WAITING_LIST, CHOSEN, CANCELLED, FINAL }
+    /**
+     * Enum representing the different display modes for the entrant adapter.
+     */
+    public enum Mode { 
+        /** Entrants on the waiting list */
+        WAITING_LIST, 
+        /** Entrants selected from the waitlist */
+        CHOSEN, 
+        /** Entrants who have been cancelled */
+        CANCELLED, 
+        /** Final confirmed attendees */
+        FINAL 
+    }
 
     private List<Entrant> entrants;
     private Mode mode = Mode.WAITING_LIST;
     private OnCancelClickListener cancelListener;
 
+    /**
+     * Constructs a new EntrantAdapter with the specified list of entrants.
+     *
+     * @param entrants The list of entrants to display
+     */
     public EntrantAdapter(List<Entrant> entrants) {
         this.entrants = entrants;
     }
 
+    /**
+     * Updates the list of entrants and notifies the adapter of the change.
+     *
+     * @param entrantsList The new list of entrants to display
+     */
     public void setEntrants(List<Entrant> entrantsList) {
         this.entrants = entrantsList;
         notifyDataSetChanged();
     }
 
+    /**
+     * Sets the display mode for the adapter.
+     *
+     * @param mode The mode to set (WAITING_LIST, CHOSEN, CANCELLED, or FINAL)
+     */
     public void setMode(Mode mode) {
         this.mode = mode;
         notifyDataSetChanged();
     }
 
+    /**
+     * Sets the click listener for cancel actions on entrants.
+     *
+     * @param listener The listener to be called when an entrant is cancelled
+     */
     public void setOnCancelClickListener(OnCancelClickListener listener) {
         this.cancelListener = listener;
     }
@@ -146,7 +182,15 @@ public class EntrantAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    /**
+     * Interface for handling cancel click events on entrants.
+     */
     public interface OnCancelClickListener {
+        /**
+         * Called when an entrant is cancelled.
+         *
+         * @param entrant The entrant that was cancelled
+         */
         void onCancelClick(Entrant entrant);
     }
 }

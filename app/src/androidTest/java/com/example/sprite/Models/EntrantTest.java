@@ -10,12 +10,17 @@ import java.util.ArrayList;
 
 /**
  * Android instrumented tests for the {@link Entrant} model class.
- *
+ * 
+ * <p>Tests entrant operations including event registration, notification management,
+ * and event list operations.</p>
  */
 @RunWith(AndroidJUnit4.class)
 public class EntrantTest {
     private Entrant entrant = new Entrant("1234", "name@test.com", "test");
 
+    /**
+     * Tests that an entrant can join an event and that duplicate joins are prevented.
+     */
     @Test
     public void testJoinEvent() {
         Event event = new Event();
@@ -29,6 +34,9 @@ public class EntrantTest {
         assertEquals(1, events.size());
     }
 
+    /**
+     * Tests that an entrant can leave an event and that leaving a non-existent event is handled gracefully.
+     */
     @Test
     public void testLeaveEvent() {
         Event event = new Event();
@@ -43,6 +51,9 @@ public class EntrantTest {
         assertEquals(0, events.size());
     }
 
+    /**
+     * Tests retrieving the list of events an entrant has registered for.
+     */
     @Test
     public void testGetRegisteredEvents() {
         ArrayList<Event> events = entrant.getRegisteredEvents();
@@ -54,12 +65,18 @@ public class EntrantTest {
         assertEquals(1, events.size());
     }
 
+    /**
+     * Tests retrieving the list of notifications for an entrant.
+     */
     @Test
     public void testGetNotifications() {
         ArrayList<Notification> notifications = entrant.getNotifications();
         assertEquals(0, notifications.size());
     }
 
+    /**
+     * Tests setting the list of notifications for an entrant.
+     */
     @Test
     public void testSetNotifications() {
         ArrayList<Notification> notifications = new ArrayList<>();
@@ -67,6 +84,9 @@ public class EntrantTest {
         assertEquals(0, entrant.getNotifications().size());
     }
 
+    /**
+     * Tests adding a notification to an entrant's notification list and preventing duplicates.
+     */
     @Test
     public void testAddNotifications() {
         ArrayList<Notification> notifications = new ArrayList<>();

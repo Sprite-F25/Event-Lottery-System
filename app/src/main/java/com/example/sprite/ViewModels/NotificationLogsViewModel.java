@@ -12,6 +12,13 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * ViewModel for managing notification log entries.
+ * 
+ * <p>This ViewModel manages a list of notification log entries and provides
+ * filtering functionality by search query and notification type. It maintains
+ * both the full list of logs and a filtered list for display.</p>
+ */
 public class NotificationLogsViewModel extends ViewModel {
 
     private final MutableLiveData<List<NotificationLogEntry>> allLogs = new MutableLiveData<>(new ArrayList<>());
@@ -20,6 +27,12 @@ public class NotificationLogsViewModel extends ViewModel {
     private String search = "";
     private Set<NotificationLogEntry.Type> types = EnumSet.noneOf(NotificationLogEntry.Type.class);
 
+    /**
+     * Loads notification log entries.
+     * 
+     * <p>Currently loads demo data for UI testing. In production, this should
+     * load data from Firestore. After loading, applies any active filters.</p>
+     */
     public void load() {
         // demo data for UI bring-up
         List<NotificationLogEntry> demo = List.of(
@@ -32,16 +45,38 @@ public class NotificationLogsViewModel extends ViewModel {
         applyFilters();
     }
 
+    /**
+     * Sets the search query for filtering notification logs.
+     * 
+     * <p>The search query filters logs by organizer name, event title, or message.
+     * The filter is applied immediately after setting the query.</p>
+     * 
+     * @param q The search query string
+     */
     public void setSearchQuery(String q) {
         search = q == null ? "" : q.trim();
         applyFilters();
     }
 
+    /**
+     * Sets the type filter for notification logs.
+     * 
+     * <p>Filters logs to show only entries matching the specified types.
+     * The filter is applied immediately after setting the types.</p>
+     * 
+     * @param set The set of notification types to filter by
+     */
     public void setTypeFilter(Set<NotificationLogEntry.Type> set) {
         types = set == null ? EnumSet.noneOf(NotificationLogEntry.Type.class) : set;
         applyFilters();
     }
 
+    /**
+     * Applies the current search and type filters to the log entries.
+     * 
+     * <p>This method filters the allLogs list based on the current search query
+     * and type filter, then updates the visibleLogs LiveData with the filtered results.</p>
+     */
     private void applyFilters() {
         List<NotificationLogEntry> src = allLogs.getValue();
         if (src == null) src = List.of();

@@ -25,6 +25,10 @@ public class ManageEventViewModelTest {
 
     private ManageEventViewModel viewModel;
 
+    /**
+     * Sets up the test environment before each test method.
+     * Initializes the ViewModel.
+     */
     @Before
     public void setUp() {
         viewModel = new ManageEventViewModel();

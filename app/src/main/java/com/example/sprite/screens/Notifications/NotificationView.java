@@ -24,7 +24,7 @@ import java.util.List;
  * and displays them in a RecyclerView. It handles empty states by showing a message
  * when no notifications are available.</p>
  * 
- * <h3>Features:</h3>
+ * <h2>Features:</h2>
  * <ul>
  *     <li>Displays all notifications for the current user</li>
  *     <li>Shows empty state message when no notifications exist</li>

@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.sprite.Controllers.DatabaseService;
 import com.example.sprite.Models.Entrant;
 import com.example.sprite.Models.Event;
 import com.example.sprite.Models.Waitlist;
@@ -23,17 +22,29 @@ public class ViewEntrantsViewModel extends ViewModel {
 
     private final MutableLiveData<List<Entrant>> currentEntrantList = new MutableLiveData<>();
     private String currentEventId;
-    private DatabaseService dbService;
 
+    /**
+     * Constructs a new ViewEntrantsViewModel.
+     * Initializes the database service and sets up an empty entrant list.
+     */
     public ViewEntrantsViewModel() {
-        dbService = new DatabaseService();
         currentEntrantList.setValue(new ArrayList<>());
     }
 
+    /**
+     * Gets the current list of entrants as LiveData.
+     * 
+     * @return LiveData containing the list of entrants
+     */
     public LiveData<List<Entrant>> getCurrentEntrantList() {
         return currentEntrantList;
     }
 
+    /**
+     * Sets the event ID for which entrants should be loaded.
+     * 
+     * @param eventId The ID of the event
+     */
     public void setEventId(String eventId) {
         this.currentEventId = eventId;
     }
@@ -68,7 +79,12 @@ public class ViewEntrantsViewModel extends ViewModel {
     }
 
     /**
-     * Loads Entrant objects given their IDs using DatabaseService
+     * Loads Entrant objects given their IDs from Firestore.
+     * 
+     * <p>This method fetches entrant data from Firestore for each ID in the list
+     * and updates the currentEntrantList LiveData as entrants are loaded.</p>
+     * 
+     * @param entrantIds The list of entrant user IDs to fetch
      */
     private void fetchEntrants(List<String> entrantIds) {
         if (entrantIds == null || entrantIds.isEmpty()) {
@@ -93,6 +109,15 @@ public class ViewEntrantsViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Cancels an entrant's registration for an event.
+     * 
+     * <p>Moves the entrant from the selected list to the cancelled list
+     * and updates the event in Firestore.</p>
+     * 
+     * @param event The event for which the entrant is being cancelled
+     * @param entrant The entrant to cancel
+     */
     public void cancelEntrant(Event event, Entrant entrant) {
         Waitlist waitlist = new Waitlist(event);
         waitlist.moveToCancelled(entrant.getUserId());

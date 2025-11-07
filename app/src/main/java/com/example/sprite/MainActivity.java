@@ -30,7 +30,7 @@ import java.util.List;
  * navigation components. It dynamically adjusts the navigation menu based on
  * the current user’s role (Entrant, Organizer, or Admin).</p>
  *
- * <h3>Responsibilities:</h3>
+ * <h2>Responsibilities:</h2>
  * <ul>
  *     <li>Sets up the navigation drawer and toolbar.</li>
  *     <li>Loads user profile data from Firestore via {@link Authentication_Service}.</li>

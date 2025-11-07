@@ -13,10 +13,18 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.*;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 
+/**
+ * Android instrumented tests for the {@link ViewEntrantsFragment} class.
+ * 
+ * <p>Tests UI visibility of the entrants RecyclerView.</p>
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class ViewEntrantsFragmentTest {
 
+    /**
+     * Tests that the entrants list RecyclerView is visible in the fragment.
+     */
     @Test
     public void list_isVisible() {
         FragmentScenario<ViewEntrantsFragment> scenario =

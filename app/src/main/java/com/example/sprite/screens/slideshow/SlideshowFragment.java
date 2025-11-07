@@ -12,6 +12,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sprite.databinding.FragmentSlideshowBinding;
 
+/**
+ * Fragment that displays the slideshow screen.
+ * 
+ * <p>This fragment shows slideshow content. Currently displays placeholder text
+ * for the slideshow interface.</p>
+ */
 public class SlideshowFragment extends Fragment {
 
     private FragmentSlideshowBinding binding;

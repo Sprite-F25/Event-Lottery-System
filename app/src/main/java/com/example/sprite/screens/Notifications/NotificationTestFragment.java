@@ -30,7 +30,6 @@ import java.util.UUID;
  *     <li>Mark all notifications as read/unread</li>
  *     <li>Clear all notifications</li>
  * </ul>
- * </p>
  * 
  * <p>This is useful for testing the notification popup system and ensuring
  * notifications are properly stored and displayed.</p>

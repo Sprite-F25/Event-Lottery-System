@@ -18,7 +18,6 @@ import java.util.List;
  *     <li><b>CANCELLED:</b> Event has been cancelled</li>
  *     <li><b>COMPLETED:</b> Event has finished</li>
  * </ul>
- * </p>
  * 
  * <p>Events manage multiple lists of participants:
  * <ul>
@@ -27,7 +26,6 @@ import java.util.List;
  *     <li>Confirmed attendees: Selected users who confirmed participation</li>
  *     <li>Cancelled attendees: Users who declined or were cancelled</li>
  * </ul>
- * </p>
  */
 public class Event implements Serializable {
     private Date date;

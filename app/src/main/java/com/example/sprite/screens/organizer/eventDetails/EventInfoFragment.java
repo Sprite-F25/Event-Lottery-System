@@ -16,14 +16,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.sprite.R;
 import com.example.sprite.screens.createEvent.CreateEventFragment;
 import com.example.sprite.screens.createEvent.CreateEventViewModel;
-import com.example.sprite.screens.createEvent.ManageEventFragment;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,7 +38,6 @@ import java.util.Locale;
  *     <li><b>Display mode:</b> When used within {@link EventDetailsFragment}, displays
  *     read-only event information.</li>
  * </ul>
- * </p>
  * 
  * <p>The fragment uses date and time pickers to allow users to select event
  * scheduling information.</p>
@@ -54,6 +51,11 @@ public class EventInfoFragment extends Fragment {
     private TextView dateInput;
     private Boolean isEditable = Boolean.FALSE;
 
+    /**
+     * Creates a new instance of EventInfoFragment.
+     *
+     * @return A new EventInfoFragment instance
+     */
     public static EventInfoFragment newInstance() {
         return new EventInfoFragment();
     }
@@ -157,6 +159,13 @@ public class EventInfoFragment extends Fragment {
         // TODO: Use the ViewModel
     }
 
+    /**
+     * Sets the location, date, and time fields for the event.
+     *
+     * @param l The location string
+     * @param d The event date
+     * @param t The event time
+     */
     public void setFields(String l, Date d, Date t)
     {
         String eventDate = "";

@@ -36,7 +36,6 @@ import java.util.List;
  *     <li><b>Leave Waitlist:</b> Available when user is on the waitlist</li>
  *     <li><b>Accept/Decline:</b> Available when user has been selected from the waitlist</li>
  * </ul>
- * </p>
  * 
  * <p>The fragment dynamically updates button visibility based on the user's current
  * status with the event (waiting list, selected, confirmed, or cancelled).</p>
@@ -58,6 +57,11 @@ public class EventDetailsFragment extends Fragment {
     private DatabaseService databaseService;
     private Authentication_Service authService;
 
+    /**
+     * Creates a new instance of EventDetailsFragment.
+     *
+     * @return A new EventDetailsFragment instance
+     */
     public static EventDetailsFragment newInstance() {
         return new EventDetailsFragment();
     }

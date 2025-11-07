@@ -12,6 +12,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sprite.databinding.FragmentHomeBinding;
 
+/**
+ * Fragment that displays the home screen.
+ * 
+ * <p>This fragment shows the main home content. Currently displays placeholder text
+ * for the home interface.</p>
+ */
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;

@@ -21,6 +21,12 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
+/**
+ * Android instrumented tests for notification delivery functionality.
+ * 
+ * <p>Tests Firebase Cloud Messaging integration and notification delivery
+ * to devices. Requires Firebase emulator or live Firebase setup.</p>
+ */
 @RunWith(AndroidJUnit4.class)
 public class NotificationDeliveryTest {
 
@@ -29,6 +35,12 @@ public class NotificationDeliveryTest {
     private String testUserId;
     private String deviceToken;
 
+    /**
+     * Sets up the test environment before each test method.
+     * Initializes Firebase and retrieves the device FCM token.
+     *
+     * @throws Exception if setup fails
+     */
     @Before
     public void setup() throws Exception {
         FirebaseApp.initializeApp(InstrumentationRegistry.getInstrumentation().getTargetContext());
@@ -61,6 +73,11 @@ public class NotificationDeliveryTest {
                 }});
     }
 
+    /**
+     * Tests that creating a notification triggers a push notification to be sent.
+     *
+     * @throws InterruptedException if the test is interrupted
+     */
     @Test
     public void testServerSendsPushOnNotificationCreate() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);

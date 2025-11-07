@@ -14,6 +14,12 @@ import android.view.ViewGroup;
 
 import com.example.sprite.R;
 
+/**
+ * Fragment that displays a QR code in a popup dialog.
+ * 
+ * <p>This fragment is used to show QR codes for events in a popup overlay.
+ * Currently a placeholder for future QR code display functionality.</p>
+ */
 public class QRCodePopup extends Fragment {
 
     private QRCodePopupViewModel mViewModel;

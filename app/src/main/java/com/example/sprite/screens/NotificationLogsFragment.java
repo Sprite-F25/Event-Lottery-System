@@ -24,6 +24,13 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.EnumSet;
 import java.util.Set;
 
+/**
+ * Fragment that displays notification logs for organizers.
+ * 
+ * <p>This fragment shows a list of notification log entries with filtering
+ * capabilities. Users can search by text and filter by notification type
+ * (invited, accepted, declined, replacement, waitlist joined/left).</p>
+ */
 public class NotificationLogsFragment extends Fragment {
 
     private NotificationLogAdapter adapter;

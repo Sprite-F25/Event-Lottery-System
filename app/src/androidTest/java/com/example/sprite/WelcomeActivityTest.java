@@ -22,16 +22,26 @@ public class WelcomeActivityTest {
 
     private Context context;
 
+    /**
+     * Sets up the test environment before each test method.
+     * Initializes the test context.
+     */
     @Before
     public void setUp() {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
     }
 
+    /**
+     * Tests that the test context is not null.
+     */
     @Test
     public void testContextNotNull() {
         assertNotNull(context);
     }
 
+    /**
+     * Tests that the package name is correct.
+     */
     @Test
     public void testPackageName() {
         assertEquals("com.example.sprite", context.getPackageName());

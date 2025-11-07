@@ -15,10 +15,18 @@ import com.example.sprite.screens.Notifications.NotificationFragment;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/**
+ * Android instrumented tests for the {@link NotificationFragment} class.
+ * 
+ * <p>Tests UI visibility of the notifications RecyclerView.</p>
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class NotificationFragmentTest {
 
+    /**
+     * Tests that the RecyclerView is visible in the fragment.
+     */
     @Test
     public void recycler_isVisible() {
         FragmentScenario<NotificationFragment> scenario =

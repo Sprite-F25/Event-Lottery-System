@@ -14,6 +14,12 @@ import android.view.ViewGroup;
 
 import com.example.sprite.R;
 
+/**
+ * Fragment that displays user profile information in a tab view.
+ * 
+ * <p>This fragment is used to show user profile details in a tabbed interface.
+ * Currently a placeholder for future profile viewing functionality.</p>
+ */
 public class ViewProfileTab extends Fragment {
 
     private ViewProfileTabViewModel mViewModel;

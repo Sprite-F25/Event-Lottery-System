@@ -13,6 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.sprite.Models.NotificationLogEntry;
 import com.example.sprite.R;
 
+/**
+ * Adapter for displaying notification log entries in a RecyclerView.
+ * 
+ * <p>This adapter uses DiffUtil for efficient list updates and displays
+ * notification log entries with organizer name, event title, message, type,
+ * and date information.</p>
+ */
 public class NotificationLogAdapter
         extends ListAdapter<NotificationLogEntry, NotificationLogAdapter.VH> {
 

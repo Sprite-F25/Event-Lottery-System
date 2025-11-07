@@ -40,7 +40,6 @@ import java.util.Locale;
  *     <li>Registration start and end dates</li>
  *     <li>Event date and time</li>
  * </ul>
- * </p>
  * 
  * <p>All input fields are validated before event creation. The fragment uses
  * {@link CreateEventViewModel} to manage the event data and interact with
@@ -60,8 +59,11 @@ public class CreateEventFragment extends Fragment {
 
     private EventInfoFragment eventInfoFragment;
 
-
-
+    /**
+     * Creates a new instance of CreateEventFragment.
+     *
+     * @return A new CreateEventFragment instance
+     */
     public static CreateEventFragment newInstance() {
         return new CreateEventFragment();
     }
@@ -392,6 +394,9 @@ public class CreateEventFragment extends Fragment {
         mViewModel.createEvent();
     }
 
+    /**
+     * Clears all input fields in the event creation form.
+     */
     public void clearFields() {
         eventTitleInput.setText("Event Title");
         eventDescInput.setText("");

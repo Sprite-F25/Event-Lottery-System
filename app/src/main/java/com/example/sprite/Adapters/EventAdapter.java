@@ -31,14 +31,32 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     private List<Event> eventList;
     private OnItemClickListener listener;
 
+    /**
+     * Constructs a new EventAdapter with the specified list of events.
+     *
+     * @param eventList The list of events to display
+     */
     public EventAdapter(List<Event> eventList) {
         this.eventList = eventList;
     }
 
+    /**
+     * Interface for handling item click events on events.
+     */
     public interface OnItemClickListener {
+        /**
+         * Called when an event item is clicked.
+         *
+         * @param event The event that was clicked
+         */
         void onItemClick(Event event);
     }
 
+    /**
+     * Sets the click listener for event items.
+     *
+     * @param listener The listener to be called when an event is clicked
+     */
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
@@ -89,7 +107,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         }
     }
 
+    /**
+     * Updates the list of events and notifies the adapter of the change.
+     *
+     * @param events The new list of events to display
+     */
     public void setEvents(List<Event> events) {
         this.eventList = events;
+        notifyDataSetChanged();
     }
 }

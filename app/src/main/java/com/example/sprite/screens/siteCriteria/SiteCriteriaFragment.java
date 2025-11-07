@@ -23,7 +23,6 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
  *     <li>View information about how the waiting list system works</li>
  *     <li>Enable or disable location tracking for event eligibility</li>
  * </ul>
- * </p>
  * 
  * <p>The location tracking preference is saved to SharedPreferences and persists
  * across app sessions.</p>

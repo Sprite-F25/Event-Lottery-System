@@ -34,7 +34,6 @@ import java.util.List;
  *     <li>Allows users to mark notifications as read by clicking on them</li>
  *     <li>Automatically refreshes when notifications are marked as read</li>
  * </ul>
- * </p>
  * 
  * <p>Mirrors the functionality of {@link NotificationView} but uses Fragment lifecycle.</p>
  */

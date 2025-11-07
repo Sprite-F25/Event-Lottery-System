@@ -25,17 +25,27 @@ public class NotificationServiceTest {
     private NotificationService notificationService;
     private Context context;
 
+    /**
+     * Sets up the test environment before each test method.
+     * Initializes the notification service and test context.
+     */
     @Before
     public void setUp() {
         context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         notificationService = new NotificationService();
     }
 
+    /**
+     * Tests that the notification service can be initialized correctly.
+     */
     @Test
     public void testNotificationServiceInitialization() {
         assertNotNull(notificationService);
     }
 
+    /**
+     * Tests the notification callback interface implementation.
+     */
     @Test
     public void testNotificationCallbackInterface() {
         // Test that callback interfaces are properly defined
@@ -55,6 +65,9 @@ public class NotificationServiceTest {
         callback.onSuccess(null);
     }
 
+    /**
+     * Tests the notification list callback interface implementation.
+     */
     @Test
     public void testNotificationListCallbackInterface() {
         NotificationService.NotificationListCallback callback = new NotificationService.NotificationListCallback() {

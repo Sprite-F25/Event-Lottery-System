@@ -22,11 +22,18 @@ public class UserTest {
 
     private User user;
 
+    /**
+     * Sets up the test environment before each test method.
+     * Initializes a new User instance.
+     */
     @Before
     public void setUp() {
         user = new User();
     }
 
+    /**
+     * Tests that the default constructor creates a valid User instance.
+     */
     @Test
     public void testDefaultConstructor() {
         assertNotNull(user);
@@ -35,6 +42,9 @@ public class UserTest {
         assertNull(user.getEmail());
     }
 
+    /**
+     * Tests that the parameterized constructor creates a User with the correct initial values.
+     */
     @Test
     public void testParameterizedConstructor() {
         User newUser = new User("user123", "test@example.com", "Test User", User.UserRole.ENTRANT);
@@ -47,30 +57,45 @@ public class UserTest {
         assertTrue(newUser.isNotificationsEnabled());
     }
 
+    /**
+     * Tests getting and setting the user's name.
+     */
     @Test
     public void testNameGetterSetter() {
         user.setName("John Doe");
         assertEquals("John Doe", user.getName());
     }
 
+    /**
+     * Tests getting and setting the user ID.
+     */
     @Test
     public void testUserIdGetterSetter() {
         user.setUserId("user456");
         assertEquals("user456", user.getUserId());
     }
 
+    /**
+     * Tests getting and setting the user's email address.
+     */
     @Test
     public void testEmailGetterSetter() {
         user.setEmail("john@example.com");
         assertEquals("john@example.com", user.getEmail());
     }
 
+    /**
+     * Tests getting and setting the user's phone number.
+     */
     @Test
     public void testPhoneNumberGetterSetter() {
         user.setPhoneNumber("123-456-7890");
         assertEquals("123-456-7890", user.getPhoneNumber());
     }
 
+    /**
+     * Tests getting and setting the user's role.
+     */
     @Test
     public void testRoleGetterSetter() {
         user.setRole(User.UserRole.ORGANIZER);
@@ -82,6 +107,9 @@ public class UserTest {
         assertEquals(User.UserRole.ADMIN, user.getUserRole());
     }
 
+    /**
+     * Tests getting and setting the user's creation timestamp.
+     */
     @Test
     public void testCreatedAtGetterSetter() {
         Date date = new Date();
@@ -89,6 +117,9 @@ public class UserTest {
         assertEquals(date, user.getCreatedAt());
     }
 
+    /**
+     * Tests getting and setting the user's last login timestamp.
+     */
     @Test
     public void testLastLoginAtGetterSetter() {
         Date date = new Date();
@@ -96,6 +127,9 @@ public class UserTest {
         assertEquals(date, user.getLastLoginAt());
     }
 
+    /**
+     * Tests getting and setting the notifications enabled flag.
+     */
     @Test
     public void testNotificationsEnabledGetterSetter() {
         user.setNotificationsEnabled(true);
@@ -105,12 +139,18 @@ public class UserTest {
         assertFalse(user.isNotificationsEnabled());
     }
 
+    /**
+     * Tests getting and setting the device token.
+     */
     @Test
     public void testDeviceTokenGetterSetter() {
         user.setDeviceToken("device_token_123");
         assertEquals("device_token_123", user.getDeviceToken());
     }
 
+    /**
+     * Tests getting and setting the user's event history.
+     */
     @Test
     public void testEventHistoryGetterSetter() {
         List<String> eventHistory = new ArrayList<>();
@@ -124,6 +164,9 @@ public class UserTest {
         assertTrue(user.getEventHistory().contains("event2"));
     }
 
+    /**
+     * Tests that all user role enum values are accessible.
+     */
     @Test
     public void testUserRoleEnum() {
         assertEquals(User.UserRole.ENTRANT, User.UserRole.valueOf("ENTRANT"));

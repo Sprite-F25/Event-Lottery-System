@@ -5,10 +5,8 @@ import android.util.Log;
 import com.example.sprite.Models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * {@code Authentication_Service} manages all authentication-related operations,
@@ -36,7 +34,18 @@ public class Authentication_Service {
      * Callback interface for authentication results.
      */
     public interface AuthCallback {
+        /**
+         * Called when authentication succeeds.
+         *
+         * @param user The authenticated user object
+         */
         void onSuccess(User user);
+        
+        /**
+         * Called when authentication fails.
+         *
+         * @param error Error message describing the failure
+         */
         void onFailure(String error);
     }
 

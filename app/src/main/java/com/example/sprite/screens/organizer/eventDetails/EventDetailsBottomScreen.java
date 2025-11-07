@@ -16,8 +16,13 @@ import android.widget.TextView;
 import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 
-import java.util.Locale;
-
+/**
+ * Fragment that displays the bottom section of event details.
+ * 
+ * <p>This fragment shows event title, description, price, and location information
+ * in the bottom portion of the event details screen. It uses EventInfoFragment
+ * as a child fragment to display location and date/time details.</p>
+ */
 public class EventDetailsBottomScreen extends Fragment {
 
     private EventDetailsBottomScreenViewModel mViewModel;
@@ -29,6 +34,11 @@ public class EventDetailsBottomScreen extends Fragment {
 
     private Event selectedEvent;
 
+    /**
+     * Creates a new instance of EventDetailsBottomScreen.
+     *
+     * @return A new EventDetailsBottomScreen instance
+     */
     public static EventDetailsBottomScreen newInstance() {
         return new EventDetailsBottomScreen();
     }
@@ -59,6 +69,12 @@ public class EventDetailsBottomScreen extends Fragment {
         }
     }
 
+    /**
+     * Updates the UI with event information.
+     * 
+     * <p>Sets the title, description, price, and location/date/time fields
+     * from the selected event.</p>
+     */
     public void setEventText()
     {
         titleView.setText(selectedEvent.getTitle());

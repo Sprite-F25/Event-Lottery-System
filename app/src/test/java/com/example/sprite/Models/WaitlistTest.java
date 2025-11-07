@@ -28,10 +28,8 @@ public class WaitlistTest {
     private Event event;
 
     /**
-     * Helper method that creates a mock Event with empty participant lists and max attendees set to 2.
-     *
-     * @return
-     *      A new mock Event
+     * Sets up the test environment before each test method.
+     * Initializes mocks and creates a test event with empty participant lists.
      */
     @BeforeEach
     void setUp() {

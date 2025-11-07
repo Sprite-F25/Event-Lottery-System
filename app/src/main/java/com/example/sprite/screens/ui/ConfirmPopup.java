@@ -14,10 +14,21 @@ import android.view.ViewGroup;
 
 import com.example.sprite.R;
 
+/**
+ * Fragment that displays a confirmation dialog.
+ * 
+ * <p>This fragment is used to show confirmation dialogs for various actions
+ * throughout the app, such as deleting events or canceling operations.</p>
+ */
 public class ConfirmPopup extends Fragment {
 
     private ConfirmPopupViewModel mViewModel;
 
+    /**
+     * Creates a new instance of ConfirmPopup.
+     *
+     * @return A new ConfirmPopup instance
+     */
     public static ConfirmPopup newInstance() {
         return new ConfirmPopup();
     }

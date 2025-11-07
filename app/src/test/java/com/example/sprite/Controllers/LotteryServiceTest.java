@@ -36,7 +36,8 @@ public class LotteryServiceTest {
     private Waitlist mockWaitlist;
 
     /**
-     * Sets up mocks and initializes the LotteryService before each test.
+     * Sets up the test environment before each test method.
+     * Initializes mocks and creates the LotteryService instance.
      */
     @BeforeEach
     void setUp() {
@@ -51,7 +52,9 @@ public class LotteryServiceTest {
     }
 
     /**
-     * Helper: creates a mock Event with defined waiting, selected, and cancelled lists.
+     * Helper method to create a mock Event with defined waiting, selected, and cancelled lists.
+     *
+     * @return A mock Event instance for testing
      */
     private Event createMockEvent() {
         Event e = new Event();

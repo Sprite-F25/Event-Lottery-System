@@ -34,7 +34,10 @@ import org.junit.runner.RunWith;
 public class ManageEventFragmentTest {
 
     /**
-     * Helper: launch fragment with app theme and a sample event.
+     * Helper method to launch the fragment with app theme and a sample event.
+     *
+     * @param event The event to pass to the fragment
+     * @return A FragmentScenario for the launched fragment
      */
     private FragmentScenario<ManageEventFragment> launchFragment(Event event) {
         Bundle bundle = new Bundle();

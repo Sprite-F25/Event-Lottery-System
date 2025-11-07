@@ -14,18 +14,25 @@ import java.util.List;
 
 /**
  * Android instrumented tests for the {@link Organizer} model class.
- *
+ * 
+ * <p>Tests organizer operations including event creation, management, and entrant viewing.</p>
  */
 @RunWith(AndroidJUnit4.class)
 public class OrganizerTest {
     private Organizer organizer = new Organizer("1234", "name@test.com", "test");
 
+    /**
+     * Tests retrieving the list of events created by the organizer.
+     */
     @Test
     public void testGetCreatedEvents() {
         ArrayList<Event> events = organizer.getCreatedEvents();
         assertEquals(0, events.size());
     }
 
+    /**
+     * Tests that an organizer can create an event and that duplicate events are prevented.
+     */
     @Test
     public void testCreateEvent() {
         Event event = new Event();
@@ -37,6 +44,9 @@ public class OrganizerTest {
         assertEquals(1, organizer.getCreatedEvents().size());
     }
 
+    /**
+     * Tests that an organizer can delete an event and that deleting a non-existent event is handled gracefully.
+     */
     @Test
     public void testDeleteEvent() {
         Event event = new Event();
@@ -49,6 +59,9 @@ public class OrganizerTest {
         assertEquals(0, organizer.getCreatedEvents().size());
     }
 
+    /**
+     * Tests that an organizer can edit an event by replacing the old event with an updated one.
+     */
     @Test
     public void testEditEvent() {
         Event oldEvent = new Event();
@@ -59,6 +72,9 @@ public class OrganizerTest {
         assertFalse(organizer.getCreatedEvents().contains(oldEvent));
     }
 
+    /**
+     * Tests that an organizer can view the list of entrants (waiting list) for an event.
+     */
     @Test
     public void testViewEntrants() {
         Event event = new Event();
@@ -69,6 +85,9 @@ public class OrganizerTest {
         assertEquals(1, entrants.size());
     }
 
+    /**
+     * Tests enabling and disabling geolocation requirements for an event.
+     */
     @Test
     public void testEnableDisableGeolocation() {
         Event event = new Event("1234", "5678", "title", "desc");
@@ -80,6 +99,9 @@ public class OrganizerTest {
         assertFalse(event.getGeolocation());
     }
 
+    /**
+     * Tests setting the entrant limit (max attendees) for an event.
+     */
     @Test
     public void testSetEntrantLimit() {
         Event event = new Event();
@@ -87,6 +109,9 @@ public class OrganizerTest {
         assertEquals(100, event.getMaxAttendees());
     }
 
+    /**
+     * Tests uploading a poster image URL for an event.
+     */
     @Test
     public void testUploadPoster() {
         Event event = new Event();
@@ -111,6 +136,9 @@ public class OrganizerTest {
     }
     */
 
+    /**
+     * Tests viewing the list of chosen (selected) entrants for an event.
+     */
     @Test
     public void testViewChosenEntrants() {
         Event event = new Event();
@@ -122,6 +150,9 @@ public class OrganizerTest {
         assertEquals(event.getSelectedAttendees(), chosen);
     }
 
+    /**
+     * Tests viewing the list of cancelled entrants for an event.
+     */
     @Test
     public void testViewCancelledEntrants() {
         Event event = new Event();
@@ -133,6 +164,9 @@ public class OrganizerTest {
         assertEquals(event.getCancelledAttendees(), cancelled);
     }
 
+    /**
+     * Tests viewing the list of enrolled (confirmed) entrants for an event.
+     */
     @Test
     public void testViewEnrolledEntrants() {
         Event event = new Event();
@@ -144,6 +178,9 @@ public class OrganizerTest {
         assertEquals(event.getConfirmedAttendees(), enrolled);
     }
 
+    /**
+     * Tests exporting event entrant data to CSV format.
+     */
     @Test
     public void testExportCSV() {
         Event event = new Event("1234", "5678", "title", "desc");
