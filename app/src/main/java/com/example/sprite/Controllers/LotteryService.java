@@ -167,7 +167,13 @@ public class LotteryService {
         int maxAttendees = event.getMaxAttendees();
         List<String> confirmedAttendees = event.getConfirmedAttendees() != null ? 
             event.getConfirmedAttendees() : new ArrayList<>();
-        int openSlots = maxAttendees - confirmedAttendees.size();
+        List<String> selectedAttendees = event.getSelectedAttendees() != null ?
+                event.getSelectedAttendees() : new ArrayList<>();
+        List<String> cancelledAttendees = event.getCancelledAttendees() != null ?
+                event.getCancelledAttendees() : new ArrayList<>();
+
+
+        int openSlots = maxAttendees - selectedAttendees.size() + cancelledAttendees.size();
 
         if (openSlots <= 0) {
             Log.i("LotteryService", "No open slots for replacements in event: " + event.getEventId() + 
