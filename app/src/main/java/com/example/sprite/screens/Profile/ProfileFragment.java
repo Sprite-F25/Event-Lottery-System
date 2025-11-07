@@ -16,6 +16,8 @@ import androidx.fragment.app.Fragment;
 import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Models.User;
 import com.example.sprite.R;
+import com.example.sprite.SignInActivity;
+import com.example.sprite.SignUpActivity;
 import com.example.sprite.WelcomeActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -131,6 +133,13 @@ public class ProfileFragment extends Fragment {
     }
 
     /**
+     * reauthenticate user to delete profile
+     */
+    public void reauthenitcateUser(){
+        //
+
+    }
+    /**
      * pop-up for deleting a profile. Cancel sends you back, Delete sends you to delete
      */
     private void showDeleteConfirmationPopup() {
@@ -151,18 +160,21 @@ public class ProfileFragment extends Fragment {
         // Confirm button performs deletion
         confirmButton.setOnClickListener(v -> {
             dialog.dismiss();
-            deleteUserProfile(); // <-- your Firebase deletion function
+            deleteUserProfile();
         });
 
         dialog.show();
     }
 
+
+
     /**
      * Deletes the user's profile
      */
     private void deleteUserProfile() {
+        reauthenitcateUser();
         if (!authService.isUserLoggedIn()) {
-            Toast.makeText(getContext(), "Profile not deleted, please sign in to delete", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Please sign in to delete profile", Toast.LENGTH_SHORT).show();
             return;
         }
         else {
@@ -170,10 +182,25 @@ public class ProfileFragment extends Fragment {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) return;
             String userId = user.getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+            // have to reauthenticate to delete if theyve been signed in for a while
+            // for now this will do for testing
+            // simple delete for now which assumes already logged in recently
+            db.collection("users").document(userId).delete(); // delete data
+            // delete account
+            user.delete().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // on success go to next line
+                        } else {
+                            // on failure, they will need to sign-in again
+                            Toast.makeText(getContext(), "Unable to remove profile, Please sign in again.", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getContext(), SignInActivity.class);
+                            startActivity(intent);
+                        }
+                    });
 
-
-            Toast.makeText(getContext(), "Profile deleted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Profile deleted", Toast.LENGTH_SHORT).show();
 
             // if profile deleted send back to welcome page
             startActivity(new Intent(getContext(), WelcomeActivity.class));
