@@ -25,6 +25,8 @@ public class CreateEventViewModel extends ViewModel {
     private MutableLiveData<Double> price = new MutableLiveData<>();
     private MutableLiveData<Date> date = new MutableLiveData<>();
     private MutableLiveData<Date> time = new MutableLiveData<>();
+    private MutableLiveData<Date> startDate = new MutableLiveData<>();
+    private MutableLiveData<Date> endDate = new MutableLiveData<>();
     private final DatabaseService db = new DatabaseService();
 
     private final MutableLiveData<Boolean> shouldResetFields = new MutableLiveData<>(false);
@@ -110,23 +112,98 @@ public class CreateEventViewModel extends ViewModel {
     {
         shouldResetFields.setValue(Boolean.FALSE);
     }
-    private void setEventInfo(Event event)
-    {
-        event.setTitle(title.getValue());
-        event.setRegistrationStartDate(registrationStartDate.getValue());
-        event.setRegistrationEndDate(registrationEndDate.getValue());
+
+    private void setEventInfo(Event event) {
+        if (event == null) return;
+
+        if (title != null && title.getValue() != null)
+            event.setTitle(title.getValue());
+
+        if (startDate != null && startDate.getValue() != null)
+            event.setEventStartDate(startDate.getValue());
+
+        if (endDate != null && endDate.getValue() != null)
+            event.setEventEndDate(endDate.getValue());
+
+        if (registrationStartDate != null && registrationStartDate.getValue() != null)
+            event.setRegistrationStartDate(registrationStartDate.getValue());
+
+        if (registrationEndDate != null && registrationEndDate.getValue() != null)
+            event.setRegistrationEndDate(registrationEndDate.getValue());
+
         event.setCreatedAt(Calendar.getInstance().getTime());
         event.setStatus(Event.EventStatus.OPEN_FOR_REGISTRATION);
-        event.setOrganizerId(firebaseUser.getUid());
 
-        event.setMaxAttendees(maxAttendees.getValue());
-        event.setMaxWaitingListSize(maxWaitingList.getValue());
-        event.setPrice(price.getValue());
-        event.setDescription(description.getValue());
-        event.setLocation(location.getValue());
-        event.setDate(date.getValue());
-        event.setTime(time.getValue());
+        if (firebaseUser != null)
+            event.setOrganizerId(firebaseUser.getUid());
+
+        if (maxAttendees != null && maxAttendees.getValue() != null)
+            event.setMaxAttendees(maxAttendees.getValue());
+
+        if (maxWaitingList != null && maxWaitingList.getValue() != null)
+            event.setMaxWaitingListSize(maxWaitingList.getValue());
+
+        if (price != null && price.getValue() != null)
+            event.setPrice(price.getValue());
+
+        if (description != null && description.getValue() != null)
+            event.setDescription(description.getValue());
+
+        if (location != null && location.getValue() != null)
+            event.setLocation(location.getValue());
+
+        if (date != null && date.getValue() != null)
+            event.setDate(date.getValue());
     }
+
+    @Nullable
+    private Event getEventInfo() {
+        Event event = new Event();
+
+        if (title != null && title.getValue() != null)
+            event.setTitle(title.getValue());
+
+        if (startDate != null && startDate.getValue() != null)
+            event.setEventStartDate(startDate.getValue());
+
+        if (endDate != null && endDate.getValue() != null)
+            event.setEventEndDate(endDate.getValue());
+
+        if (registrationStartDate != null && registrationStartDate.getValue() != null)
+            event.setRegistrationStartDate(registrationStartDate.getValue());
+
+        if (registrationEndDate != null && registrationEndDate.getValue() != null)
+            event.setRegistrationEndDate(registrationEndDate.getValue());
+
+        event.setCreatedAt(Calendar.getInstance().getTime());
+        event.setStatus(Event.EventStatus.OPEN_FOR_REGISTRATION);
+
+        if (firebaseUser != null)
+            event.setOrganizerId(firebaseUser.getUid());
+
+        if (maxAttendees != null && maxAttendees.getValue() != null)
+            event.setMaxAttendees(maxAttendees.getValue());
+
+        if (maxWaitingList != null && maxWaitingList.getValue() != null)
+            event.setMaxWaitingListSize(maxWaitingList.getValue());
+
+        if (price != null && price.getValue() != null)
+            event.setPrice(price.getValue());
+
+        if (description != null && description.getValue() != null)
+            event.setDescription(description.getValue());
+
+        if (location != null && location.getValue() != null)
+            event.setLocation(location.getValue());
+
+        if (date != null && date.getValue() != null)
+            event.setDate(date.getValue());
+
+        return event;
+    }
+
+
+
     public void createEvent()
     {
         // Validate required fields
