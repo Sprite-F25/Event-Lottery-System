@@ -62,11 +62,11 @@ public class Organizer extends User {
     }
 
     public void enableGeolocation(Event event) {
-        event.setGeolocationRequired(true);
+        event.setGeolocation(true);
     }
 
     public void disableGeolocation(Event event) {
-        event.setGeolocationRequired(false);
+        event.setGeolocation(false);
     }
 
     public void setEntrantLimit(Event event, int limit) {
