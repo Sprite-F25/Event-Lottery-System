@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.sprite.R;
@@ -202,6 +203,16 @@ public class CreateEventFragment extends Fragment {
                 mViewModel.setRegistrationStartDate(setDate(registrationStartDate)));
         registrationEndDate.setOnClickListener(v ->
                 mViewModel.setRegistrationEndDate(setDate(registrationEndDate)));
+        
+        // Observe validation errors
+        mViewModel.getValidationErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
+            if (errorMessage != null && !errorMessage.isEmpty()) {
+                Toast.makeText(getContext(), "All attributes must be filled in", Toast.LENGTH_LONG).show();
+                // Clear the error message after showing
+                mViewModel.getValidationErrorMessage().setValue(null);
+            }
+        });
+        
         mViewModel.getShouldResetFields().observe(getViewLifecycleOwner(), shouldReset->{
             if (Boolean.TRUE.equals(shouldReset))
             {
