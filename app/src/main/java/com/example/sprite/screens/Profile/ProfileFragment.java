@@ -1,10 +1,13 @@
 package com.example.sprite.screens.Profile;
 
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,10 +16,17 @@ import androidx.fragment.app.Fragment;
 import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Models.User;
 import com.example.sprite.R;
+import com.example.sprite.SignInActivity;
+import com.example.sprite.SignUpActivity;
+import com.example.sprite.WelcomeActivity;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * {@code UserProfileFragment} displays and manages the current user's profile.
@@ -63,7 +73,7 @@ public class ProfileFragment extends Fragment {
 
         // Set listeners
         editProfileButton.setOnClickListener(v -> saveUserProfile());
-        deleteProfileButton.setOnClickListener(v -> deleteUserProfile());
+        deleteProfileButton.setOnClickListener(v -> showDeleteConfirmationPopup());
 
         return view;
     }
@@ -123,10 +133,79 @@ public class ProfileFragment extends Fragment {
     }
 
     /**
-     * Deletes the user's profile (placeholder for future implementation).
+     * reauthenticate user to delete profile
+     */
+    public void reauthenitcateUser(){
+        //
+
+    }
+    /**
+     * pop-up for deleting a profile. Cancel sends you back, Delete sends you to delete
+     */
+    private void showDeleteConfirmationPopup() {
+        // inflate the popup layout
+        View popupView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_profile_delete_popup, null);
+
+        // create an AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(popupView);
+        AlertDialog dialog = builder.create();
+
+        MaterialButton cancelButton = popupView.findViewById(R.id.cancel_button);
+        MaterialButton confirmButton = popupView.findViewById(R.id.confirm_delete_button);
+
+        // Cancel button closes dialog
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+
+        // Confirm button performs deletion
+        confirmButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            deleteUserProfile();
+        });
+
+        dialog.show();
+    }
+
+
+
+    /**
+     * Deletes the user's profile
      */
     private void deleteUserProfile() {
-        Toast.makeText(getContext(), "Delete Profile clicked (implement logic here)", Toast.LENGTH_SHORT).show();
-        // TODO: Add Firestore + Auth delete logic
+        reauthenitcateUser();
+        if (!authService.isUserLoggedIn()) {
+            Toast.makeText(getContext(), "Please sign in to delete profile", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        else {
+            // get user info
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user == null) return;
+            String userId = user.getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            // have to reauthenticate to delete if theyve been signed in for a while
+            // for now this will do for testing
+            // simple delete for now which assumes already logged in recently
+            db.collection("users").document(userId).delete(); // delete data
+            // delete account
+            user.delete().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // on success go to next line
+                        } else {
+                            // on failure, they will need to sign-in again
+                            Toast.makeText(getContext(), "Unable to remove profile, Please sign in again.", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getContext(), SignInActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+
+                Toast.makeText(getContext(), "Profile deleted", Toast.LENGTH_SHORT).show();
+
+                // if profile deleted send back to welcome page
+                startActivity(new Intent(getContext(), SignInActivity.class));
+                requireActivity().finish();
+        }
     }
+
 }
