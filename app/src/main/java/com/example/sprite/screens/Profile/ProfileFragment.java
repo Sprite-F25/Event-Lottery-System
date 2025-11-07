@@ -202,9 +202,9 @@ public class ProfileFragment extends Fragment {
 
                 Toast.makeText(getContext(), "Profile deleted", Toast.LENGTH_SHORT).show();
 
-            // if profile deleted send back to welcome page
-            startActivity(new Intent(getContext(), WelcomeActivity.class));
-            requireActivity().finish();
+                // if profile deleted send back to welcome page
+                startActivity(new Intent(getContext(), SignInActivity.class));
+                requireActivity().finish();
         }
     }
 

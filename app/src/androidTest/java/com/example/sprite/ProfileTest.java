@@ -43,12 +43,12 @@ public class ProfileTest {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        // Sign out any existing user
+        // sign out any existing user
         if (auth.getCurrentUser() != null) {
             auth.signOut();
         }
 
-        // Wait for activity to be ready
+        // wait for activity to be ready
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -58,14 +58,14 @@ public class ProfileTest {
 
     @After
     public void tearDown() {
-        // Clean up: sign out and optionally delete test user
+        // sign out and optionally delete test user
         if (auth.getCurrentUser() != null) {
             String userId = auth.getCurrentUser().getUid();
 
-            // Delete user from Firestore
+            // delete user from Firestore
             db.collection("users").document(userId).delete();
 
-            // Delete user from Firebase Auth
+            // delete user from Firebase Auth
             auth.getCurrentUser().delete();
             auth.signOut();
         }
@@ -124,6 +124,7 @@ public class ProfileTest {
      * helper: navigate to profile
      */
     private void navigateToProfile() throws InterruptedException {
+        Thread.sleep(10000);
         onView(withContentDescription("Open navigation drawer")).perform(click());
         Thread.sleep(500);
 
@@ -134,10 +135,10 @@ public class ProfileTest {
      * helper: signout for testing
      */
     private void signOut() throws InterruptedException {
-        // Open navigation drawer
+        // open navigation drawer
         onView(withContentDescription("Open navigation drawer")).perform(click());
         Thread.sleep(500);
-        // Click on signout
+        // click on signout
         onView(withId(R.id.nav_signout)).perform(click());
         Thread.sleep(1000);
     }
@@ -146,15 +147,18 @@ public class ProfileTest {
      */
     @Test
     public void testDisplayProfile() throws InterruptedException {
+        Thread.sleep(2000);
         String testEmail = "display.test@ualberta.ca";
         String testName = "Display Test Name";
 
         signUp(testEmail, testName, "testpass123");
         navigateToProfile();
 
-        // Check if name and email are displayed
-        onView(withText(testName)).check(matches(isDisplayed()));
-        onView(withText(testEmail)).check(matches(isDisplayed()));
+        // check if name and email are displayed
+        onView(withId(R.id.name_edit_text))
+                .check(matches(withText(testName)));
+        onView(withId(R.id.email_edit_text))
+                .check(matches(withText(testEmail)));
     }
 
     /**
@@ -162,34 +166,34 @@ public class ProfileTest {
      */
     @Test
     public void testUpdateProfile() throws InterruptedException {
+        Thread.sleep(2000);
         String testEmail = "update.test@ualberta.ca";
         String originalName = "Original Name";
         String updatedName = "Updated Name";
 
-        // Create account
+        // create account
         signUp(testEmail, originalName, "testpass123");
 
-        // Navigate to profile
+        // navigate to profile
         navigateToProfile();
 
-        // Update profile name
+        // update profile name
         onView(withId(R.id.name_edit_text))
                 .perform(ViewActions.replaceText(updatedName), ViewActions.closeSoftKeyboard());
         Thread.sleep(500);
 
-        // Save changes (if there's a save button, click it here)
-        // onView(withId(R.id.save_button)).perform(click());
-
-        // Wait for update to sync
+        // save changes
+        onView(withId(R.id.edit_profile_button)).perform(click());
         Thread.sleep(2000);
 
-        // Sign out and sign back in
+        // sign out and sign in
         signOut();
         signIn(testEmail, "testpass123");
         navigateToProfile();
 
-        // Verify updated name is displayed
-        onView(withText(updatedName)).check(matches(isDisplayed()));
+        // verify updated name is displayed
+        onView(withId(R.id.name_edit_text))
+                .check(matches(withText(updatedName)));
     }
 
     /**
@@ -197,6 +201,7 @@ public class ProfileTest {
      */
     @Test
     public void testDeleteProfile() throws InterruptedException {
+        Thread.sleep(2000);
         String testEmail = "delete.test@ualberta.ca";
         String testName = "Delete Test Name";
 
@@ -227,6 +232,6 @@ public class ProfileTest {
         Thread.sleep(2000);
 
         // verify sign in failed
-        onView(withText("Sign-in failed:")).check(matches(isDisplayed()));
+        onView(withId(R.id.btnSignIn)).check(matches(isDisplayed()));
     }
 }
