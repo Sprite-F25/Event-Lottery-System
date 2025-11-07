@@ -75,6 +75,10 @@ public class NotificationFragment extends Fragment {
         notificationsList = new ArrayList<>();
         adapter = new NotificationAdapter(notificationsList);
         recyclerView.setAdapter(adapter);
+        
+        android.util.Log.d("NotificationFragment", "RecyclerView setup complete - LayoutManager: " + 
+            (recyclerView.getLayoutManager() != null ? "SET" : "NULL") + 
+            ", Adapter: " + (recyclerView.getAdapter() != null ? "SET" : "NULL"));
 
         // Show empty state initially
         updateEmptyState();
@@ -128,28 +132,42 @@ public class NotificationFragment extends Fragment {
                     // Update the adapter's list directly - this must be on UI thread
                     if (getActivity() != null) {
                         getActivity().runOnUiThread(() -> {
-                            if (adapter != null) {
-                                adapter.updateNotifications(notifications);
-                                android.util.Log.d("NotificationFragment", "Adapter updated. Item count: " + adapter.getItemCount());
-                            } else {
+                            if (adapter == null) {
                                 android.util.Log.e("NotificationFragment", "Adapter is null!");
+                                return;
                             }
                             
-                            // Also update our local list for consistency
+                            if (recyclerView == null) {
+                                android.util.Log.e("NotificationFragment", "RecyclerView is null!");
+                                return;
+                            }
+                            
+                            android.util.Log.d("NotificationFragment", "Before update - Adapter count: " + adapter.getItemCount());
+                            
+                            // Update adapter
+                            adapter.updateNotifications(notifications);
+                            
+                            android.util.Log.d("NotificationFragment", "After update - Adapter count: " + adapter.getItemCount());
+                            
+                            // Also update our local list for consistency (they should be the same reference)
                             notificationsList.clear();
                             if (notifications != null && !notifications.isEmpty()) {
                                 notificationsList.addAll(notifications);
                             }
                             
-                            updateEmptyState();
-                            
-                            // Force RecyclerView to refresh
-                            if (recyclerView != null) {
-                                recyclerView.setVisibility(View.VISIBLE);
+                            // Force RecyclerView to refresh and request layout
+                            recyclerView.setVisibility(View.VISIBLE);
+                            recyclerView.post(() -> {
                                 recyclerView.invalidate();
-                            }
+                                recyclerView.requestLayout();
+                                android.util.Log.d("NotificationFragment", "RecyclerView refreshed. Visibility: " + 
+                                    (recyclerView.getVisibility() == View.VISIBLE ? "VISIBLE" : "GONE"));
+                            });
+                            
+                            updateEmptyState();
                         });
                     } else {
+                        android.util.Log.w("NotificationFragment", "Activity is null, using fallback");
                         // Fallback if activity is null
                         if (adapter != null) {
                             adapter.updateNotifications(notifications);
@@ -161,7 +179,10 @@ public class NotificationFragment extends Fragment {
                         updateEmptyState();
                         if (recyclerView != null) {
                             recyclerView.setVisibility(View.VISIBLE);
-                            recyclerView.invalidate();
+                            recyclerView.post(() -> {
+                                recyclerView.invalidate();
+                                recyclerView.requestLayout();
+                            });
                         }
                     }
                 }
@@ -191,9 +212,22 @@ public class NotificationFragment extends Fragment {
         
         if (emptyStateTextView != null) {
             emptyStateTextView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+            android.util.Log.d("NotificationFragment", "Empty state TextView visibility: " + 
+                (isEmpty ? "VISIBLE" : "GONE"));
         }
         if (recyclerView != null) {
             recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+            android.util.Log.d("NotificationFragment", "RecyclerView visibility: " + 
+                (isEmpty ? "GONE" : "VISIBLE") + ", Item count: " + adapterCount);
+            
+            // If we have items, ensure RecyclerView is visible and has proper dimensions
+            if (!isEmpty && recyclerView.getVisibility() == View.VISIBLE) {
+                recyclerView.post(() -> {
+                    android.util.Log.d("NotificationFragment", "RecyclerView dimensions - Width: " + 
+                        recyclerView.getWidth() + ", Height: " + recyclerView.getHeight() +
+                        ", Measured: " + recyclerView.getMeasuredWidth() + "x" + recyclerView.getMeasuredHeight());
+                });
+            }
         }
     }
 }

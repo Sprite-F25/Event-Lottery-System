@@ -76,14 +76,31 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
      * @param newNotifications The new list of notifications
      */
     public void updateNotifications(List<Notification> newNotifications) {
-        if (notifications != null) {
-            notifications.clear();
-            if (newNotifications != null && !newNotifications.isEmpty()) {
-                notifications.addAll(newNotifications);
-                Log.d(TAG, "Updated notifications list with " + notifications.size() + " items");
-            }
-            notifyDataSetChanged();
+        if (notifications == null) {
+            Log.e(TAG, "Notifications list is null in updateNotifications!");
+            return;
         }
+        
+        int oldSize = notifications.size();
+        notifications.clear();
+        
+        if (newNotifications != null && !newNotifications.isEmpty()) {
+            notifications.addAll(newNotifications);
+            Log.d(TAG, "Updated notifications list: " + oldSize + " -> " + notifications.size() + " items");
+            
+            // Log first few notifications for debugging
+            for (int i = 0; i < Math.min(3, notifications.size()); i++) {
+                Notification n = notifications.get(i);
+                Log.d(TAG, "  Notification " + i + ": " + 
+                    (n != null ? (n.getEventTitle() + " - " + n.getMessage()) : "null"));
+            }
+        } else {
+            Log.d(TAG, "New notifications list is null or empty");
+        }
+        
+        // Always notify, even if list is empty
+        notifyDataSetChanged();
+        Log.d(TAG, "notifyDataSetChanged() called. getItemCount() now returns: " + getItemCount());
     }
 
     /**
@@ -110,6 +127,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_notifications, parent, false);
+        Log.d(TAG, "onCreateViewHolder called - creating new ViewHolder");
         return new ViewHolder(view);
     }
 
@@ -121,6 +139,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
      */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Log.d(TAG, "onBindViewHolder called for position " + position + ", list size: " + 
+            (notifications != null ? notifications.size() : 0));
+        
         if (notifications == null || position < 0 || position >= notifications.size()) {
             Log.e(TAG, "Invalid position or null list - position: " + position + ", list size: " + 
                 (notifications != null ? notifications.size() : 0));
@@ -138,14 +159,27 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         Log.d(TAG, "Binding notification at position " + position + " - Title: " + eventTitle + ", Message: " + message);
 
-        holder.title.setText(eventTitle != null ? eventTitle : "");
-        holder.message.setText(message != null ? message : "");
+        if (holder.title != null) {
+            holder.title.setText(eventTitle != null ? eventTitle : "");
+        } else {
+            Log.e(TAG, "holder.title is null!");
+        }
+        
+        if (holder.message != null) {
+            holder.message.setText(message != null ? message : "");
+        } else {
+            Log.e(TAG, "holder.message is null!");
+        }
         
         // Show/hide unread chip based on read status
-        if (notification.isRead()) {
-            holder.chipUnread.setVisibility(View.GONE);
+        if (holder.chipUnread != null) {
+            if (notification.isRead()) {
+                holder.chipUnread.setVisibility(View.GONE);
+            } else {
+                holder.chipUnread.setVisibility(View.VISIBLE);
+            }
         } else {
-            holder.chipUnread.setVisibility(View.VISIBLE);
+            Log.e(TAG, "holder.chipUnread is null!");
         }
         
         // Set click listener to mark notification as read when clicked
