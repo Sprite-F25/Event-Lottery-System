@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 /**
  * Fragment that displays the list of entrants registered for a selected event.
- * Uses ViewEntrantsViewModel    to load entrants and supports real-time updates.
+ * Uses ViewEntrantsViewModel to load entrants and supports real-time updates.
  * Typically accessed by organizers or admins for event management.
  */
 
