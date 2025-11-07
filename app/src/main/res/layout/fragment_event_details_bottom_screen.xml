@@ -5,6 +5,7 @@
     android:id="@+id/event_details"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minHeight="600dp"
     android:background="@color/cream"
     tools:context="com.example.sprite.screens.organizer.eventDetails.EventDetailsFragment">
 
@@ -14,14 +15,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/eventInfoFrame">
+        app:layout_constraintTop_toBottomOf="@+id/event_info_frame">
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/desc_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/sampleEventDescription" />
@@ -34,13 +34,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
-        app:layout_constraintBottom_toTopOf="@+id/eventInfoFrame"
+        app:layout_constraintBottom_toTopOf="@+id/event_info_frame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/eventTitleTextView"
+            android:id="@+id/event_title_view"
             android:layout_width="220dp"
             android:layout_height="0dp"
             android:fontFamily="@font/inter_bold"
@@ -49,13 +49,13 @@
             android:textColor="@color/black"
             android:textSize="36sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/priceTextView"
+            app:layout_constraintEnd_toStartOf="@+id/price_view"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/priceTextView"
+            android:id="@+id/price_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_bold"
@@ -64,7 +64,7 @@
             android:textColor="@color/green3"
             android:textSize="36sp"
             app:layout_constraintEnd_toStartOf="@+id/imageView2"
-            app:layout_constraintStart_toEndOf="@+id/eventTitleTextView"
+            app:layout_constraintStart_toEndOf="@+id/event_title_view"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
@@ -76,13 +76,13 @@
             android:src="@drawable/more_vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/priceTextView"
+            app:layout_constraintStart_toEndOf="@+id/price_view"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
-        android:id="@+id/eventInfoFrame"
+        android:id="@+id/event_info_frame"
         android:layout_width="0dp"
         android:layout_height="80dp"
         android:layout_marginStart="24dp"

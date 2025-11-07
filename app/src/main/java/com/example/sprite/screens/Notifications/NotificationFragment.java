@@ -13,11 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sprite.Controllers.Authentication_Service;
-import com.example.sprite.Controllers.DatabaseService;
+import com.example.sprite.Controllers.NotificationService;
 import com.example.sprite.Models.Notification;
 import com.example.sprite.Adapters.NotificationAdapter;
 import com.example.sprite.R;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,8 @@ public class NotificationFragment extends Fragment {
     private TextView emptyStateTextView;
     private NotificationAdapter adapter;
     private List<Notification> notificationsList;
-    private DatabaseService databaseService;
+    private NotificationService notificationService;
+    private String currentUserId;
 
     public NotificationFragment() {
         // Required empty public constructor
@@ -70,10 +70,10 @@ public class NotificationFragment extends Fragment {
         // Show empty state initially
         updateEmptyState();
 
-        databaseService = new DatabaseService();
+        notificationService = new NotificationService();
 
         Authentication_Service authService = new Authentication_Service();
-        String currentUserId = null;
+        currentUserId = null;
 
         if (authService.isUserLoggedIn() && authService.getCurrentUser() != null) {
             currentUserId = authService.getCurrentUser().getUid();
@@ -84,27 +84,51 @@ public class NotificationFragment extends Fragment {
             return;
         }
 
-        // Fetch notifications for this user
-        databaseService.getNotificationsForUser(currentUserId, task -> {
-            if (!isAdded() || getView() == null) {
-                // Fragment is no longer active — don't touch UI
-                return;
-            }
-
-            if (task.isSuccessful() && task.getResult() != null) {
-                notificationsList.clear();
-                for (QueryDocumentSnapshot doc : task.getResult()) {
-                    Notification notif = doc.toObject(Notification.class);
-                    if (notif != null) {
-                        notificationsList.add(notif);
-                    }
-                }
-                adapter.notifyDataSetChanged();
-                updateEmptyState();
-            } else {
-                updateEmptyState();
-            }
+        // Set listener to refresh after marking as read
+        adapter.setOnNotificationReadListener(notification -> {
+            // Refresh the list to show updated read status
+            refreshNotifications(currentUserId);
         });
+
+        // Fetch notifications for this user
+        refreshNotifications(currentUserId);
+    }
+
+    /**
+     * Refreshes the notifications list for the current user.
+     * 
+     * @param userId The user ID to fetch notifications for
+     */
+    private void refreshNotifications(String userId) {
+        if (userId == null || userId.isEmpty() || notificationService == null) {
+            return;
+        }
+
+        notificationService.getNotificationsForEntrant(userId, 
+            new NotificationService.NotificationListCallback() {
+                @Override
+                public void onSuccess(List<Notification> notifications) {
+                    if (!isAdded() || getView() == null) {
+                        // Fragment is no longer active — don't touch UI
+                        return;
+                    }
+
+                    notificationsList.clear();
+                    if (notifications != null) {
+                        notificationsList.addAll(notifications);
+                    }
+                    adapter.notifyDataSetChanged();
+                    updateEmptyState();
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    if (!isAdded() || getView() == null) {
+                        return;
+                    }
+                    updateEmptyState();
+                }
+            });
     }
 
     /**

@@ -76,6 +76,15 @@ Nam sed arcu dapibus, dapibus ex a, volutpat risus. Praesent rhoncus interdum au
         <string name="enable_location_tracking">Enable Location Tracking</string>
         <string name="location_privacy_note">Location data is used only to confirm eligibility for events and is not shared with other users.</string>
 
+        <!-- Notification Popup -->
+        <string name="notification_popup_title">New Notification</string>
+        <string name="notification_dismiss">Dismiss</string>
+        <string name="notification_view">View</string>
 
+        <!-- Notify Entrants Dialog -->
+        <string name="notify_entrants_dialog_title">Send Notification To</string>
+        <string name="notify_selected_entrants">All Selected Entrants</string>
+        <string name="notify_cancelled_entrants">All Cancelled Entrants</string>
+        <string name="notify_waiting_entrants">All Waiting List Entrants</string>
 
 </resources>

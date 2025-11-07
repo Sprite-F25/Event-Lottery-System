@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +80,9 @@ public class CreateEventFragment extends Fragment {
         registrationStartDate = view.findViewById(R.id.start_date_input);
         registrationEndDate = view.findViewById(R.id.end_date_input);
         createEventButton = view.findViewById(R.id.create_event_button);
-        eventInfoFragment = (EventInfoFragment) getChildFragmentManager().findFragmentById(R.id.fragment_event_info_view);
+        eventInfoFragment =
+                (EventInfoFragment) getChildFragmentManager()
+                        .findFragmentById(R.id.fragment_event_info_view);
     }
 
 
@@ -199,7 +202,6 @@ public class CreateEventFragment extends Fragment {
                 mViewModel.setRegistrationStartDate(setDate(registrationStartDate)));
         registrationEndDate.setOnClickListener(v ->
                 mViewModel.setRegistrationEndDate(setDate(registrationEndDate)));
-
         mViewModel.getShouldResetFields().observe(getViewLifecycleOwner(), shouldReset->{
             if (Boolean.TRUE.equals(shouldReset))
             {
@@ -208,7 +210,6 @@ public class CreateEventFragment extends Fragment {
                 mViewModel.onResetComplete();
             }
         });
-
     }
 
     private Date setDate(TextView textView)
@@ -236,6 +237,6 @@ public class CreateEventFragment extends Fragment {
         priceInput.setText("");
         registrationStartDate.setText("");
         registrationEndDate.setText("");
-        eventInfoFragment.clearFields();
+        eventInfoFragment.setFields("", null, null);
     }
 }

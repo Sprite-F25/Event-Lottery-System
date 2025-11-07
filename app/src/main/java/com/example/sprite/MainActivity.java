@@ -14,9 +14,14 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.sprite.Controllers.Authentication_Service;
+import com.example.sprite.Controllers.NotificationService;
+import com.example.sprite.Models.Notification;
 import com.example.sprite.Models.User;
 import com.example.sprite.databinding.ActivityMainBinding;
+import com.example.sprite.screens.Notifications.NotificationPopupDialog;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.List;
 
 /**
  * {@code MainActivity} serves as the primary entry point for the Sprite app after authentication.
@@ -105,6 +110,12 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
 
+            if (id == R.id.nav_notification_test) {
+                drawer.closeDrawers();
+                navController.navigate(R.id.nav_notification_test);
+                return true;
+            }
+
             if (id == R.id.nav_signout) {
                 drawer.closeDrawers();
                 signOut();
@@ -167,6 +178,9 @@ public class MainActivity extends AppCompatActivity {
                         navigationView.inflateMenu(R.menu.app_bar_entrant);
                         break;
                 }
+                
+                // Check for unread notifications and show popup
+                checkForUnreadNotifications(userId);
             }
 
             @Override
@@ -220,6 +234,55 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    /**
+     * Checks for unread notifications and displays a popup if any exist.
+     * 
+     * @param userId The current user's ID
+     */
+    private void checkForUnreadNotifications(String userId) {
+        NotificationService notificationService = new NotificationService();
+        
+        notificationService.getUnreadNotificationsForEntrant(userId, 
+            new NotificationService.NotificationListCallback() {
+                @Override
+                public void onSuccess(List<Notification> notifications) {
+                    if (notifications != null && !notifications.isEmpty()) {
+                        // Show popup for the first unread notification
+                        Notification firstUnread = notifications.get(0);
+                        showNotificationPopup(firstUnread, notificationService);
+                    }
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    // Silently fail - don't show error to user
+                }
+            });
+    }
+
+    /**
+     * Shows a popup dialog for an unread notification.
+     * 
+     * @param notification The notification to display
+     * @param notificationService The service to mark notification as read
+     */
+    private void showNotificationPopup(Notification notification, NotificationService notificationService) {
+        NotificationPopupDialog dialog = new NotificationPopupDialog(
+            this,
+            notification,
+            notificationService,
+            () -> {
+                // Navigate to notifications fragment when user clicks "View"
+                NavController navController = Navigation.findNavController(
+                    MainActivity.this, 
+                    R.id.nav_host_fragment_content_main
+                );
+                navController.navigate(R.id.nav_notifications);
+            }
+        );
+        dialog.show();
     }
 
     /**
