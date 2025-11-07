@@ -28,7 +28,6 @@ public class CreateEventViewModel extends ViewModel {
     private final DatabaseService db = new DatabaseService();
 
     private final MutableLiveData<Boolean> shouldResetFields = new MutableLiveData<>(false);
-    private final MutableLiveData<String> validationErrorMessage = new MutableLiveData<>();
     private void setDummyEventInfo(Event event)
     {
         Calendar calendar = Calendar.getInstance();
@@ -107,11 +106,6 @@ public class CreateEventViewModel extends ViewModel {
        return shouldResetFields;
     }
 
-    public MutableLiveData<String> getValidationErrorMessage()
-    {
-        return validationErrorMessage;
-    }
-
     public void onResetComplete()
     {
         shouldResetFields.setValue(Boolean.FALSE);
@@ -133,59 +127,19 @@ public class CreateEventViewModel extends ViewModel {
         event.setDate(date.getValue());
         event.setTime(time.getValue());
     }
-    /**
-     * Validates that all required fields are filled in.
-     * 
-     * @return null if validation passes, error message if validation fails
-     */
-    public String validateEventFields() {
-        if (title.getValue() == null || title.getValue().trim().isEmpty() || 
-            title.getValue().equals("Event Title")) {
-            return "Event title is required";
-        }
-        
-        if (description.getValue() == null || description.getValue().trim().isEmpty()) {
-            return "Description is required";
-        }
-        
-        if (maxAttendees.getValue() == null || maxAttendees.getValue() <= 0) {
-            return "Max attendees is required and must be greater than 0";
-        }
-        
-        if (price.getValue() == null || price.getValue() < 0) {
-            return "Price is required";
-        }
-        
-        if (registrationStartDate.getValue() == null) {
-            return "Registration start date is required";
-        }
-        
-        if (registrationEndDate.getValue() == null) {
-            return "Registration end date is required";
-        }
-        
-        if (location.getValue() == null || location.getValue().trim().isEmpty()) {
-            return "Location is required";
-        }
-        
-        if (date.getValue() == null) {
-            return "Event date is required";
-        }
-        
-        if (time.getValue() == null) {
-            return "Event time is required";
-        }
-        
-        return null; // All fields are valid
-    }
-
     public void createEvent()
     {
-        // Validate all required fields
-        String validationError = validateEventFields();
-        if (validationError != null) {
-            // Validation failed - notify fragment to show error
-            validationErrorMessage.setValue(validationError);
+        // Validate required fields
+        Integer maxAttendeesValue = maxAttendees.getValue();
+        Integer maxWaitingListValue = maxWaitingList.getValue();
+
+        if (maxAttendeesValue == null || maxAttendeesValue <= 0) {
+            Log.e("CreateEventViewModel", "Max Attendees is required and must be greater than 0");
+            return;
+        }
+
+        if (maxWaitingListValue == null || maxWaitingListValue <= 0) {
+            Log.e("CreateEventViewModel", "Max Waiting List Size is required and must be greater than 0");
             return;
         }
 

@@ -198,21 +198,11 @@ public class CreateEventFragment extends Fragment {
             }
         });
         createEventButton.setOnClickListener(
-                v -> mViewModel.createEvent());
+                v -> validateAndCreateEvent());
         registrationStartDate.setOnClickListener(v ->
                 mViewModel.setRegistrationStartDate(setDate(registrationStartDate)));
         registrationEndDate.setOnClickListener(v ->
                 mViewModel.setRegistrationEndDate(setDate(registrationEndDate)));
-        
-        // Observe validation errors
-        mViewModel.getValidationErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
-            if (errorMessage != null && !errorMessage.isEmpty()) {
-                Toast.makeText(getContext(), "All attributes must be filled in", Toast.LENGTH_LONG).show();
-                // Clear the error message after showing
-                mViewModel.getValidationErrorMessage().setValue(null);
-            }
-        });
-        
         mViewModel.getShouldResetFields().observe(getViewLifecycleOwner(), shouldReset->{
             if (Boolean.TRUE.equals(shouldReset))
             {
@@ -238,6 +228,151 @@ public class CreateEventFragment extends Fragment {
         }, year, month, day);
         datePickerDialog.show();
         return calendar.getTime();
+    }
+
+    /**
+     * Validates all required fields before creating the event.
+     * Shows toast messages if validation fails.
+     */
+    private void validateAndCreateEvent() {
+        // Get input values
+        String eventTitle = eventTitleInput.getText().toString().trim();
+        String description = eventDescInput.getText().toString().trim();
+        String maxAttendeesText = eventMaxAttendeesInput.getText().toString().trim();
+        String maxWaitingListText = eventMaxWaitingListInput.getText().toString().trim();
+        String priceText = priceInput.getText().toString().trim();
+        String registrationStartDateText = registrationStartDate.getText().toString().trim();
+        String registrationEndDateText = registrationEndDate.getText().toString().trim();
+
+        // Validate event title
+        if (eventTitle.isEmpty() || eventTitle.equals("Event Title")) {
+            Toast.makeText(getContext(), "Event Title is required", Toast.LENGTH_SHORT).show();
+            eventTitleInput.requestFocus();
+            return;
+        }
+
+        // Validate description
+        if (description.isEmpty()) {
+            Toast.makeText(getContext(), "Description is required", Toast.LENGTH_SHORT).show();
+            eventDescInput.requestFocus();
+            return;
+        }
+
+        // Validate max attendees
+        if (maxAttendeesText.isEmpty()) {
+            Toast.makeText(getContext(), "Max Entrants is required", Toast.LENGTH_SHORT).show();
+            eventMaxAttendeesInput.requestFocus();
+            return;
+        }
+
+        int maxAttendees;
+        try {
+            maxAttendees = Integer.parseInt(maxAttendeesText);
+            if (maxAttendees <= 0) {
+                Toast.makeText(getContext(), "Max Entrants must be greater than 0", Toast.LENGTH_SHORT).show();
+                eventMaxAttendeesInput.requestFocus();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Max Entrants must be a valid number", Toast.LENGTH_SHORT).show();
+            eventMaxAttendeesInput.requestFocus();
+            return;
+        }
+
+        // Validate waiting list size
+        if (maxWaitingListText.isEmpty()) {
+            Toast.makeText(getContext(), "Waiting List Size is required", Toast.LENGTH_SHORT).show();
+            eventMaxWaitingListInput.requestFocus();
+            return;
+        }
+
+        int maxWaitingList;
+        try {
+            maxWaitingList = Integer.parseInt(maxWaitingListText);
+            if (maxWaitingList <= 0) {
+                Toast.makeText(getContext(), "Waiting List Size must be greater than 0", Toast.LENGTH_SHORT).show();
+                eventMaxWaitingListInput.requestFocus();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Waiting List Size must be a valid number", Toast.LENGTH_SHORT).show();
+            eventMaxWaitingListInput.requestFocus();
+            return;
+        }
+
+        // Validate price
+        if (priceText.isEmpty()) {
+            Toast.makeText(getContext(), "Price is required", Toast.LENGTH_SHORT).show();
+            priceInput.requestFocus();
+            return;
+        }
+
+        try {
+            double price = Double.parseDouble(priceText);
+            if (price < 0) {
+                Toast.makeText(getContext(), "Price must be 0 or greater", Toast.LENGTH_SHORT).show();
+                priceInput.requestFocus();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Price must be a valid number", Toast.LENGTH_SHORT).show();
+            priceInput.requestFocus();
+            return;
+        }
+
+        // Validate registration start date
+        if (registrationStartDateText.isEmpty()) {
+            Toast.makeText(getContext(), "Registration Start Date is required", Toast.LENGTH_SHORT).show();
+            registrationStartDate.requestFocus();
+            return;
+        }
+
+        // Validate registration end date
+        if (registrationEndDateText.isEmpty()) {
+            Toast.makeText(getContext(), "Registration End Date is required", Toast.LENGTH_SHORT).show();
+            registrationEndDate.requestFocus();
+            return;
+        }
+
+        // Validate location, date, and time from EventInfoFragment
+        if (eventInfoFragment != null) {
+            View eventInfoView = eventInfoFragment.getView();
+            if (eventInfoView != null) {
+                EditText locationInput = eventInfoView.findViewById(R.id.location_input);
+                TextView dateInput = eventInfoView.findViewById(R.id.date_input);
+                TextView timeInput = eventInfoView.findViewById(R.id.time_input);
+
+                if (locationInput != null) {
+                    String location = locationInput.getText().toString().trim();
+                    if (location.isEmpty()) {
+                        Toast.makeText(getContext(), "Location is required", Toast.LENGTH_SHORT).show();
+                        locationInput.requestFocus();
+                        return;
+                    }
+                }
+
+//                if (dateInput != null) {
+//                    String eventDate = dateInput.getText().toString().trim();
+//                    if (eventDate.isEmpty()) {
+//                        Toast.makeText(getContext(), "Event Date is required", Toast.LENGTH_SHORT).show();
+//                        dateInput.requestFocus();
+//                        return;
+//                    }
+//                }
+
+//                if (timeInput != null) {
+//                        String eventTime = timeInput.getText().toString().trim();
+//                    if (eventTime.isEmpty()) {
+//                        Toast.makeText(getContext(), "Event Time is required", Toast.LENGTH_SHORT).show();
+//                        timeInput.requestFocus();
+//                        return;
+//                    }
+                //}
+            }
+        }
+
+        // All validation passed, create the event
+        mViewModel.createEvent();
     }
 
     public void clearFields() {
