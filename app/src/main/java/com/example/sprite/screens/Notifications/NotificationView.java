@@ -31,7 +31,6 @@ import java.util.List;
  *     <li>Automatically updates the list when notifications are loaded</li>
  * </ul>
  * 
- * @author Angelo
  * @see NotificationService
  * @see Notification
  * @see NotificationAdapter
@@ -113,13 +112,17 @@ public class NotificationView extends AppCompatActivity{
             new NotificationService.NotificationListCallback() {
                 @Override
                 public void onSuccess(List<Notification> notifications) {
+                    // Update the adapter's list directly
+                    if (adapter != null) {
+                        adapter.updateNotifications(notifications);
+                    }
+                    
+                    // Also update our local list for consistency
                     notificationsList.clear();
-                    if (notifications != null) {
+                    if (notifications != null && !notifications.isEmpty()) {
                         notificationsList.addAll(notifications);
                     }
-                    if (adapter != null) {
-                        adapter.notifyDataSetChanged();
-                    }
+                    
                     // Update empty state after loading notifications
                     updateEmptyState();
                 }
@@ -137,7 +140,9 @@ public class NotificationView extends AppCompatActivity{
      */
     private void updateEmptyState() {
         if (emptyStateTextView == null || recyclerView == null) return;
-        boolean isEmpty = notificationsList == null || notificationsList.isEmpty();
+        // Check adapter count instead of list size, as adapter is the source of truth
+        int adapterCount = adapter != null ? adapter.getItemCount() : 0;
+        boolean isEmpty = adapterCount == 0;
         emptyStateTextView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
         recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
     }

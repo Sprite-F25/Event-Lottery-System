@@ -10,7 +10,24 @@ import java.util.List;
  * and have various states throughout their lifecycle. Entrants can register
  * for events and be placed on waiting lists or selected through lotteries.
  * 
- * @author Angelo
+ * <p>Events go through several lifecycle stages:
+ * <ul>
+ *     <li><b>OPEN_FOR_REGISTRATION:</b> Event is accepting registrations</li>
+ *     <li><b>LOTTERY_COMPLETED:</b> Lottery has been run to select entrants</li>
+ *     <li><b>REGISTRATION_CLOSED:</b> Registration period has ended</li>
+ *     <li><b>CANCELLED:</b> Event has been cancelled</li>
+ *     <li><b>COMPLETED:</b> Event has finished</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>Events manage multiple lists of participants:
+ * <ul>
+ *     <li>Waiting list: Users who registered but weren't initially selected</li>
+ *     <li>Selected attendees: Users chosen from the waitlist via lottery</li>
+ *     <li>Confirmed attendees: Selected users who confirmed participation</li>
+ *     <li>Cancelled attendees: Users who declined or were cancelled</li>
+ * </ul>
+ * </p>
  */
 public class Event implements Serializable {
     private Date date;

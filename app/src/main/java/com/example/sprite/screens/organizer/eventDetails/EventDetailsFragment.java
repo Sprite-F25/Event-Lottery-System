@@ -26,6 +26,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment that displays event details for entrants and allows them to interact with events.
+ * 
+ * <p>This fragment shows comprehensive event information and provides action buttons
+ * based on the user's relationship with the event:
+ * <ul>
+ *     <li><b>Join Waitlist:</b> Available when user is not on the waitlist</li>
+ *     <li><b>Leave Waitlist:</b> Available when user is on the waitlist</li>
+ *     <li><b>Accept/Decline:</b> Available when user has been selected from the waitlist</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>The fragment dynamically updates button visibility based on the user's current
+ * status with the event (waiting list, selected, confirmed, or cancelled).</p>
+ */
 public class EventDetailsFragment extends Fragment {
 
     private static final String TAG = "EventDetailsFragment";

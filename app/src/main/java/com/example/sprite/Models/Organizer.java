@@ -7,6 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Represents an organizer user who can create and manage events.
+ * 
+ * <p>Organizers have the ability to:
+ * <ul>
+ *     <li>Create new events</li>
+ *     <li>Manage their created events</li>
+ *     <li>Delete events they have created</li>
+ *     <li>Run lotteries for event registration</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>This class extends {@link User} and maintains a list of events
+ * created by the organizer.</p>
+ */
 public class Organizer extends User {
 
     private ArrayList<Event> createdEvents;

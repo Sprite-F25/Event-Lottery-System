@@ -35,11 +35,27 @@ import java.util.UUID;
 
 /**
  * Fragment that displays the list of entrants registered for a selected event.
- * Uses ViewEntrantsViewModel    to load entrants and supports real-time updates.
- * Typically accessed by organizers or admins for event management.
+ * 
+ * <p>This fragment allows organizers to view and manage entrants for their events.
+ * It supports viewing different entrant lists:
+ * <ul>
+ *     <li><b>Chosen:</b> Entrants selected from the waitlist</li>
+ *     <li><b>WaitingList:</b> Entrants currently on the waiting list</li>
+ *     <li><b>Cancelled:</b> Entrants who have been cancelled</li>
+ *     <li><b>Final:</b> Final confirmed attendees</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>The fragment provides functionality to:
+ * <ul>
+ *     <li>Send notifications to entrants in different lists</li>
+ *     <li>Cancel entrant registrations</li>
+ *     <li>Export entrant data (planned for future implementation)</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>Uses {@link ViewEntrantsViewModel} to load entrants and supports real-time updates.</p>
  */
-
-
 public class ViewEntrantsFragment extends Fragment {
 
     private static final String TAG = "ViewEntrantsFragment";

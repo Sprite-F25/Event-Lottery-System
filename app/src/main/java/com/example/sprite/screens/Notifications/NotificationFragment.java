@@ -23,11 +23,20 @@ import java.util.List;
 
 /**
  * Fragment that displays a list of notifications for the logged-in user.
- * If there are no notifications, an empty state message is shown.
- *
- * Mirrors NotificationView but uses Fragment lifecycle.
- *
- * @author Angelo
+ * 
+ * <p>This fragment retrieves and displays all notifications for the current user
+ * from Firestore. If there are no notifications, an empty state message is shown.</p>
+ * 
+ * <p>Features:
+ * <ul>
+ *     <li>Displays all notifications sorted by creation date (newest first)</li>
+ *     <li>Shows unread status indicators</li>
+ *     <li>Allows users to mark notifications as read by clicking on them</li>
+ *     <li>Automatically refreshes when notifications are marked as read</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>Mirrors the functionality of {@link NotificationView} but uses Fragment lifecycle.</p>
  */
 public class NotificationFragment extends Fragment {
 
@@ -113,16 +122,53 @@ public class NotificationFragment extends Fragment {
                         return;
                     }
 
-                    notificationsList.clear();
-                    if (notifications != null) {
-                        notificationsList.addAll(notifications);
+                    android.util.Log.d("NotificationFragment", "Received " + 
+                        (notifications != null ? notifications.size() : 0) + " notifications from service");
+                    
+                    // Update the adapter's list directly - this must be on UI thread
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            if (adapter != null) {
+                                adapter.updateNotifications(notifications);
+                                android.util.Log.d("NotificationFragment", "Adapter updated. Item count: " + adapter.getItemCount());
+                            } else {
+                                android.util.Log.e("NotificationFragment", "Adapter is null!");
+                            }
+                            
+                            // Also update our local list for consistency
+                            notificationsList.clear();
+                            if (notifications != null && !notifications.isEmpty()) {
+                                notificationsList.addAll(notifications);
+                            }
+                            
+                            updateEmptyState();
+                            
+                            // Force RecyclerView to refresh
+                            if (recyclerView != null) {
+                                recyclerView.setVisibility(View.VISIBLE);
+                                recyclerView.invalidate();
+                            }
+                        });
+                    } else {
+                        // Fallback if activity is null
+                        if (adapter != null) {
+                            adapter.updateNotifications(notifications);
+                        }
+                        notificationsList.clear();
+                        if (notifications != null && !notifications.isEmpty()) {
+                            notificationsList.addAll(notifications);
+                        }
+                        updateEmptyState();
+                        if (recyclerView != null) {
+                            recyclerView.setVisibility(View.VISIBLE);
+                            recyclerView.invalidate();
+                        }
                     }
-                    adapter.notifyDataSetChanged();
-                    updateEmptyState();
                 }
 
                 @Override
                 public void onFailure(String error) {
+                    android.util.Log.e("NotificationFragment", "Failed to get notifications: " + error);
                     if (!isAdded() || getView() == null) {
                         return;
                     }
@@ -135,8 +181,19 @@ public class NotificationFragment extends Fragment {
      * Updates visibility of the empty state message based on list content.
      */
     private void updateEmptyState() {
-        boolean isEmpty = notificationsList == null || notificationsList.isEmpty();
-        emptyStateTextView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-        recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        // Check adapter count instead of list size, as adapter is the source of truth
+        int adapterCount = adapter != null ? adapter.getItemCount() : 0;
+        boolean isEmpty = adapterCount == 0;
+        
+        android.util.Log.d("NotificationFragment", "updateEmptyState - List size: " + 
+            (notificationsList != null ? notificationsList.size() : 0) + 
+            ", Adapter count: " + adapterCount + ", isEmpty: " + isEmpty);
+        
+        if (emptyStateTextView != null) {
+            emptyStateTextView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
+        if (recyclerView != null) {
+            recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        }
     }
 }

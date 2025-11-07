@@ -19,8 +19,6 @@ import com.google.android.material.button.MaterialButton;
  * <p>This dialog shows a single unread notification and allows the user to either
  * dismiss it or view it in the notifications list. When dismissed or viewed, the
  * notification is marked as read.</p>
- * 
- * @author Angelo
  */
 public class NotificationPopupDialog extends Dialog {
 

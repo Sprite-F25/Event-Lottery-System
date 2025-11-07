@@ -30,6 +30,21 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Fragment that displays event information including location, date, and time.
+ * 
+ * <p>This fragment can be used in two modes:
+ * <ul>
+ *     <li><b>Editable mode:</b> When used within {@link CreateEventFragment}, allows
+ *     organizers to input event location, date, and time.</li>
+ *     <li><b>Display mode:</b> When used within {@link EventDetailsFragment}, displays
+ *     read-only event information.</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>The fragment uses date and time pickers to allow users to select event
+ * scheduling information.</p>
+ */
 public class EventInfoFragment extends Fragment {
 
     private CreateEventViewModel mCreateEventViewModel;

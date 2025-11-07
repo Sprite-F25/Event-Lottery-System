@@ -29,6 +29,23 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Fragment that allows organizers to create new events.
+ * 
+ * <p>This fragment provides a form interface for entering event details including:
+ * <ul>
+ *     <li>Event title and description</li>
+ *     <li>Maximum attendees and waiting list size</li>
+ *     <li>Price and location</li>
+ *     <li>Registration start and end dates</li>
+ *     <li>Event date and time</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>All input fields are validated before event creation. The fragment uses
+ * {@link CreateEventViewModel} to manage the event data and interact with
+ * the database service.</p>
+ */
 public class CreateEventFragment extends Fragment {
 
     private EditText eventTitleInput;

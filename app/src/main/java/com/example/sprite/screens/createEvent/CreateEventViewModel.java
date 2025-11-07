@@ -13,6 +13,16 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * ViewModel for managing event creation data and operations.
+ * 
+ * <p>This ViewModel holds the state of event creation form fields and handles
+ * the creation of new events in the database. It validates required fields
+ * such as max attendees and waiting list size before creating the event.</p>
+ * 
+ * <p>The ViewModel uses LiveData to observe changes in form fields and
+ * provides a mechanism to reset the form after successful event creation.</p>
+ */
 public class CreateEventViewModel extends ViewModel {
     private FirebaseUser firebaseUser = new Authentication_Service().getCurrentUser();
     private MutableLiveData<String> title = new MutableLiveData<>();

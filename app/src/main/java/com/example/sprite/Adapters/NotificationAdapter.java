@@ -65,8 +65,25 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
      * @param notifications A list of {@link Notification} objects to display.
      */
     public NotificationAdapter(List<Notification> notifications) {
-        this.notifications = notifications;
+        this.notifications = notifications != null ? notifications : new java.util.ArrayList<>();
         this.notificationService = new NotificationService();
+        Log.d(TAG, "NotificationAdapter created with " + this.notifications.size() + " notifications");
+    }
+    
+    /**
+     * Updates the notifications list and notifies the adapter of the change.
+     * 
+     * @param newNotifications The new list of notifications
+     */
+    public void updateNotifications(List<Notification> newNotifications) {
+        if (notifications != null) {
+            notifications.clear();
+            if (newNotifications != null && !newNotifications.isEmpty()) {
+                notifications.addAll(newNotifications);
+                Log.d(TAG, "Updated notifications list with " + notifications.size() + " items");
+            }
+            notifyDataSetChanged();
+        }
     }
 
     /**
@@ -104,9 +121,22 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
      */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        if (notifications == null || position < 0 || position >= notifications.size()) {
+            Log.e(TAG, "Invalid position or null list - position: " + position + ", list size: " + 
+                (notifications != null ? notifications.size() : 0));
+            return;
+        }
+        
         Notification notification = notifications.get(position);
+        if (notification == null) {
+            Log.e(TAG, "Notification at position " + position + " is null");
+            return;
+        }
+        
         String eventTitle = notification.getEventTitle();
         String message = notification.getMessage();
+
+        Log.d(TAG, "Binding notification at position " + position + " - Title: " + eventTitle + ", Message: " + message);
 
         holder.title.setText(eventTitle != null ? eventTitle : "");
         holder.message.setText(message != null ? message : "");
@@ -162,7 +192,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
      */
     @Override
     public int getItemCount() {
-        return notifications.size();
+        int count = notifications != null ? notifications.size() : 0;
+        Log.d(TAG, "getItemCount() called - returning: " + count);
+        return count;
     }
 
     /**
