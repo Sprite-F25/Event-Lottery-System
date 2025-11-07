@@ -2,6 +2,7 @@ package com.example.sprite.screens.createEvent;
 
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
