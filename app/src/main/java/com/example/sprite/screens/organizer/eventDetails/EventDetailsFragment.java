@@ -179,6 +179,13 @@ public class EventDetailsFragment extends Fragment {
         List<String> cancelledList = currentEvent.getCancelledAttendees() != null ? 
             currentEvent.getCancelledAttendees() : new ArrayList<>();
 
+        // Check if user is confirmed - if so, hide all buttons
+        boolean isConfirmed = confirmedList.contains(userId);
+        if (isConfirmed) {
+            hideAllButtons();
+            return;
+        }
+        
         // Check if user is on waiting list
         boolean isOnWaitlist = waitingList.contains(userId);
         
@@ -266,6 +273,7 @@ public class EventDetailsFragment extends Fragment {
 
     /**
      * Adds the current user to the event's waiting list.
+     * Checks if the waitlist is full before adding the user.
      */
     private void joinWaitlist() {
         if (currentEvent == null || currentUser == null) {
@@ -289,6 +297,13 @@ public class EventDetailsFragment extends Fragment {
                     
                     if (waitingList.contains(userId)) {
                         Toast.makeText(getContext(), "You are already on the waitlist", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    
+                    // Check if waitlist is full
+                    int maxWaitingListSize = currentEvent.getMaxWaitingListSize();
+                    if (maxWaitingListSize > 0 && waitingList.size() >= maxWaitingListSize) {
+                        Toast.makeText(getContext(), "Waitlist is full. Cannot join at this time.", Toast.LENGTH_SHORT).show();
                         return;
                     }
                     
@@ -362,6 +377,7 @@ public class EventDetailsFragment extends Fragment {
     /**
      * Accepts the invitation when user is selected from waitlist.
      * Moves user from selected list to confirmed list.
+     * After accepting, all buttons are hidden and user can no longer join waitlist.
      */
     private void acceptInvitation() {
         if (currentEvent == null || currentUser == null) {
@@ -397,10 +413,13 @@ public class EventDetailsFragment extends Fragment {
                     databaseService.updateEvent(currentEvent, updateTask -> {
                         if (updateTask.isSuccessful()) {
                             Toast.makeText(getContext(), "Invitation accepted!", Toast.LENGTH_SHORT).show();
-                            setupButtons(); // Refresh button visibility
+                            // Hide all buttons after accepting - user is now confirmed
+                            hideAllButtons();
                         } else {
                             Toast.makeText(getContext(), "Failed to accept invitation", Toast.LENGTH_SHORT).show();
                             Log.e(TAG, "Error updating event: " + updateTask.getException());
+                            // Still refresh buttons in case of error
+                            setupButtons();
                         }
                     });
                 }
