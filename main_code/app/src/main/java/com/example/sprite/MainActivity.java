@@ -75,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
         // Configure app bar navigation destinations
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_notifications, 
-                R.id.nav_events_list, R.id.nav_create_event, R.id.nav_profile, R.id.nav_site_criteria)
+                R.id.nav_events_list, R.id.nav_create_event, R.id.nav_profile, R.id.nav_site_criteria,
+                R.id.nav_history)
                 .setOpenableLayout(drawer)
                 .build();
 
@@ -113,6 +114,12 @@ public class MainActivity extends AppCompatActivity {
             if (id == R.id.nav_notification_test) {
                 drawer.closeDrawers();
                 navController.navigate(R.id.nav_notification_test);
+                return true;
+            }
+
+            if (id == R.id.nav_history) {
+                drawer.closeDrawers();
+                navController.navigate(R.id.nav_history);
                 return true;
             }
 
