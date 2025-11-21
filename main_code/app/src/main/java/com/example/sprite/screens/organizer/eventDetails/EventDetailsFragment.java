@@ -105,8 +105,11 @@ public class EventDetailsFragment extends Fragment {
         
         // Fetch current user and setup buttons
         fetchCurrentUser();
-        joinWaitlistButton.setText("Join Waitlist" + "("+ currentEvent.getWaitingList().size()+")");
-        
+        int waitlistSize = (currentEvent.getWaitingList() != null)
+                ? currentEvent.getWaitingList().size()
+                : 0;
+
+        joinWaitlistButton.setText("Join Waitlist (" + waitlistSize + ")");
         return view;
     }
 
