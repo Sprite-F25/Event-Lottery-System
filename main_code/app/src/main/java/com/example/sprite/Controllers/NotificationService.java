@@ -131,6 +131,32 @@ public class NotificationService {
     }
 
     /**
+     * Creates a notification for an entrant who was not selected from the waiting list.
+     * 
+     * @param entrantId The unique identifier of the entrant
+     * @param eventId The unique identifier of the event
+     * @param eventTitle The title of the event
+     * @param callback The callback to handle the result
+     */
+    public void notifyNotSelectedFromWaitlist(String entrantId, String eventId, String eventTitle, 
+                                               NotificationCallback callback) {
+        String notificationId = UUID.randomUUID().toString();
+        String message = "Unfortunately, you were not selected to participate in " + eventTitle + 
+                ". Thank you for your interest!";
+        
+        Notification notification = new Notification(
+                notificationId,
+                entrantId,
+                eventId,
+                eventTitle,
+                message,
+                Notification.NotificationType.NOT_SELECTED_FROM_WAITLIST
+        );
+
+        createNotification(notification, callback);
+    }
+
+    /**
      * Retrieves all notifications for a specific entrant.
      * 
      * @param entrantId The unique identifier of the entrant

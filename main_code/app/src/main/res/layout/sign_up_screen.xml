@@ -17,20 +17,20 @@
 
         <ImageButton
             android:id="@+id/btnBackSignUp"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:scaleType="fitCenter"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/back_button_1"
             android:contentDescription="Back"
- />
+            android:scaleType="fitCenter"
+            android:src="@drawable/back_button_1"
+            android:layout_marginStart="-10dp"/>
 
         <ImageView
             android:layout_width="90dp"
             android:layout_height="90dp"
             android:src="@drawable/ic_person_add"
             android:layout_gravity="center"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="0dp" />
 
         <TextView
             android:text="Create Account"
@@ -45,7 +45,7 @@
             android:textSize="14sp"
             android:textColor="#666"
             android:gravity="center"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="0dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -99,16 +99,17 @@
             android:text="Select Your Role"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="0dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <RadioGroup
             android:id="@+id/radioGroupRole"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="0dp"
+            >
 
             <RadioButton
                 android:id="@+id/radioEntrant"
@@ -116,30 +117,24 @@
                 android:checked="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="0dp" />
 
             <RadioButton
                 android:id="@+id/radioOrganizer"
                 android:text="Organizer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp" />
+                android:layout_marginBottom="0dp" />
 
-            <RadioButton
-                android:id="@+id/radioAdmin"
-                android:text="Admin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+<!--            <RadioButton-->
+<!--                android:id="@+id/radioAdmin"-->
+<!--                android:text="Admin"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginBottom="0dp"/>-->
         </RadioGroup>
 
         <!-- Terms Checkbox -->
-        <CheckBox
-            android:id="@+id/checkTerms"
-            android:text="I agree to the Terms of Service and Privacy Policy"
-            android:textSize="13sp"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginBottom="16dp" />
 
         <!-- Sign Up Button -->
         <Button

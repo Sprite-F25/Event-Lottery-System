@@ -150,20 +150,43 @@ public class Waitlist {
                 }
             }
         );
+
+
+
+
+
+
+
     }
 
     /** Moves an entrant from selected list to cancelled list and sends a notification.
+     * Also removes the entrant from the confirmed list and selected list if they are in them.
      *
      * @param entrantId
      *      The unique ID of the entrant
      */
     public void moveToCancelled(String entrantId) {
-        // Initialize list if null (defensive check)
+        // Initialize lists if null (defensive check)
         if (cancelledList == null) {
             cancelledList = new ArrayList<>();
             event.setCancelledAttendees(cancelledList);
         }
-        // selectedList.remove(entrantId);
+        if (confirmedList == null) {
+            confirmedList = new ArrayList<>();
+            event.setConfirmedAttendees(confirmedList);
+        }
+        if (selectedList == null) {
+            selectedList = new ArrayList<>();
+            event.setSelectedAttendees(selectedList);
+        }
+        
+        // Remove from selected list if present
+        selectedList.remove(entrantId);
+        
+        // Remove from confirmed list if present
+        confirmedList.remove(entrantId);
+        
+        // Add to cancelled list if not already present
         if (!cancelledList.contains(entrantId)) {
             cancelledList.add(entrantId);
         }

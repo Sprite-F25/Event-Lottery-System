@@ -30,6 +30,11 @@ public class Notification {
         SELECTED_FROM_WAITLIST,
         
         /**
+         * Notification sent when an entrant is not selected from the waiting list.
+         */
+        NOT_SELECTED_FROM_WAITLIST,
+        
+        /**
          * Notification sent when an entrant's registration is cancelled.
          */
         CANCELLED,

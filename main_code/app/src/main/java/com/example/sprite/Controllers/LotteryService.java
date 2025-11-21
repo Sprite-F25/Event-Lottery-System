@@ -3,6 +3,7 @@ package com.example.sprite.Controllers;
 import android.util.Log;
 
 import com.example.sprite.Models.Event;
+import com.example.sprite.Models.Notification;
 import com.example.sprite.Models.Waitlist;
 
 import java.util.ArrayList;
@@ -110,9 +111,12 @@ public class LotteryService {
         List<String> waitlistCopy = new ArrayList<>(waitlist);
 
         int selectedCount = 0;
+        List<String> selectedEntrantIds = new ArrayList<>();
+        
         for (String entrantId : waitlistCopy) {
             if (availableSlots > 0) {
                 waitlistObject.moveToSelected(entrantId);
+                selectedEntrantIds.add(entrantId);
                 availableSlots--;
                 selectedCount++;
             } else {
@@ -120,16 +124,64 @@ public class LotteryService {
             }
         }
 
+        // Get the list of entrants who were NOT selected (remain on waitlist)
+        List<String> notSelectedEntrantIds = new ArrayList<>(waitlistCopy);
+        notSelectedEntrantIds.removeAll(selectedEntrantIds);
+
         event.setStatus(Event.EventStatus.LOTTERY_COMPLETED);
 
         Log.i("LotteryService", "Lottery completed for event: " + event.getEventId() + 
-            ". Selected " + selectedCount + " entrants.");
+            ". Selected " + selectedCount + " entrants. " + notSelectedEntrantIds.size() + 
+            " entrants were not selected.");
 
         // Update event in database
         if (dbService != null) {
             dbService.updateEvent(event, task -> {
                 if (task.isSuccessful()) {
                     Log.i("LotteryService", "Event updated successfully in database: " + event.getEventId());
+                    
+                    // Send notifications to selected entrants
+                    String eventTitle = event.getTitle() != null ? event.getTitle() : "Event";
+                    for (String entrantId : selectedEntrantIds) {
+                        if (notificationService != null) {
+                            notificationService.notifySelectedFromWaitlist(
+                                    entrantId, 
+                                    event.getEventId(), 
+                                    eventTitle,
+                                    new NotificationService.NotificationCallback() {
+                                        @Override
+                                        public void onSuccess(Notification notification) {
+                                            Log.d("LotteryService", "Notification sent to selected entrant: " + entrantId);
+                                        }
+
+                                        @Override
+                                        public void onFailure(String error) {
+                                            Log.e("LotteryService", "Failed to notify selected entrant " + entrantId + ": " + error);
+                                        }
+                                    });
+                        }
+                    }
+                    
+                    // Send notifications to entrants who were NOT selected
+                    for (String entrantId : notSelectedEntrantIds) {
+                        if (notificationService != null) {
+                            notificationService.notifyNotSelectedFromWaitlist(
+                                    entrantId, 
+                                    event.getEventId(), 
+                                    eventTitle,
+                                    new NotificationService.NotificationCallback() {
+                                        @Override
+                                        public void onSuccess(Notification notification) {
+                                            Log.d("LotteryService", "Notification sent to not-selected entrant: " + entrantId);
+                                        }
+
+                                        @Override
+                                        public void onFailure(String error) {
+                                            Log.e("LotteryService", "Failed to notify not-selected entrant " + entrantId + ": " + error);
+                                        }
+                                    });
+                        }
+                    }
                 } else {
                     Log.e("LotteryService", "Failed to update event: " + event.getEventId(), task.getException());
                 }
@@ -152,6 +204,12 @@ public class LotteryService {
         if (event == null) {
             Log.e("LotteryService", "Cannot draw replacements: event is null");
             return false;
+        }
+
+        // if already complete
+        if (event.getStatus() != Event.EventStatus.LOTTERY_COMPLETED) {
+            Log.i("LotteryService", "Lottery has not been completed for event: " + event.getEventId());
+            return false ;
         }
 
         Waitlist waitlist = waitlistProvider.apply(event);

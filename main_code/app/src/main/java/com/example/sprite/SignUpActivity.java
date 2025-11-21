@@ -33,7 +33,7 @@ import com.example.sprite.Controllers.Authentication_Service;
 public class SignUpActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "SpritePrefs";
     private static final String KEY_DEVICE_ID = "device_id";
-    private EditText nameField, emailField, passwordField,ConfirmPasswordField, PhoneNumberField;
+    private EditText nameField, emailField, passwordField, ConfirmPasswordField, PhoneNumberField;
     private Button signUpButton;
     private RadioGroup roleRadioGroup;
     private RadioButton radioEntrant, radioOrganizer, radioAdmin;
@@ -60,12 +60,12 @@ public class SignUpActivity extends AppCompatActivity {
         ConfirmPasswordField = findViewById(R.id.inputConfirmPassword);
         signUpButton = findViewById(R.id.btnSignUp);
         ImageButton backButton = findViewById(R.id.btnBackSignUp);
-        
+
         // Role selection
         roleRadioGroup = findViewById(R.id.radioGroupRole);
         radioEntrant = findViewById(R.id.radioEntrant);
         radioOrganizer = findViewById(R.id.radioOrganizer);
-        radioAdmin = findViewById(R.id.radioAdmin);
+        //radioAdmin = findViewById(R.id.radioAdmin);
         //loginRedirectText = findViewById(R.id.loginRedirectText);
 
         signUpButton.setOnClickListener(v -> attemptSignUp());
@@ -99,69 +99,59 @@ public class SignUpActivity extends AppCompatActivity {
         int selectedRoleId = roleRadioGroup.getCheckedRadioButtonId();
         if (selectedRoleId == R.id.radioOrganizer) {
             selectedRole = User.UserRole.ORGANIZER;
-        } else if (selectedRoleId == R.id.radioAdmin) {
-            selectedRole = User.UserRole.ADMIN;
         }
+//        } else if (selectedRoleId == R.id.radioAdmin) {
+//            selectedRole = User.UserRole.ADMIN;
+//        }
 
-        signUpButton.setEnabled(false);
-        signUpButton.setText("Creating account...");
+            signUpButton.setEnabled(false);
+            signUpButton.setText("Creating account...");
 
-        authService.createUserWithEmail(email, password, name, selectedRole, new Authentication_Service.AuthCallback() {
-            @Override
-            public void onSuccess(User user) {
-                // Store device ID for device-based identification
-                String deviceId = null;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    deviceId = String.valueOf(getDeviceId());
+            authService.createUserWithEmail(email, password, name, selectedRole, new Authentication_Service.AuthCallback() {
+                @Override
+                public void onSuccess(User user) {
+                    // Store device ID for device-based identification
+                    String deviceId = null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                        deviceId = String.valueOf(getDeviceId());
+                    }
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(KEY_DEVICE_ID, deviceId);
+                    editor.apply();
+
+                    // Update user's device token and phone number in database
+                    user.setDeviceToken(deviceId);
+                    String phoneNumber = PhoneNumberField.getText().toString().trim();
+                    if (!phoneNumber.isEmpty()) {
+                        user.setPhoneNumber(phoneNumber);
+                    }
+                    authService.updateUserProfile(user, new Authentication_Service.AuthCallback() {
+                        @Override
+                        public void onSuccess(User updatedUser) {
+                            // Device token and phone number updated successfully
+                        }
+
+                        @Override
+                        public void onFailure(String error) {
+                            // Log error but don't fail sign-up
+                            System.err.println("Failed to update user profile: " + error);
+                        }
+                    });
+
+                    Toast.makeText(SignUpActivity.this, "Welcome, " + user.getName(), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
                 }
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(KEY_DEVICE_ID, deviceId);
-                editor.apply();
-                
-                // Update user's device token in database for device identification
-                user.setDeviceToken(deviceId);
-                authService.updateUserProfile(user, new Authentication_Service.AuthCallback() {
-                    @Override
-                    public void onSuccess(User updatedUser) {
-                        // Device token updated successfully
-                    }
 
-                    @Override
-                    public void onFailure(String error) {
-                        // Log error but don't fail sign-up
-                        System.err.println("Failed to update device token: " + error);
-                    }
-                });
-                
-                Toast.makeText(SignUpActivity.this, "Welcome, " + user.getName(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
-            }
+                @Override
+                public void onFailure(String error) {
+                    signUpButton.setEnabled(true);
+                    signUpButton.setText("Sign Up");
+                    Toast.makeText(SignUpActivity.this, "Sign-up failed: " + error, Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    }
 
-            @Override
-            public void onFailure(String error) {
-                signUpButton.setEnabled(true);
-                signUpButton.setText("Sign Up");
-                Toast.makeText(SignUpActivity.this, "Sign-up failed: " + error, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-    
-    /**
-     * Gets the unique device identifier for this Android device.
-     * Uses Android ID as a stable identifier for the device.
-     * This allows users to be identified by their device without requiring
-     * username and password for future sign-ins.
-     * 
-     * @return The device ID string
-     */
-//    private String getDeviceId() {
-//        return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-//    }
-    public static String getDeviceId(ContentResolver contentResolver) {
-        String androidId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
-        return androidId;
-    }
-}

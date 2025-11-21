@@ -231,17 +231,17 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    /**
-     * Inflates the options menu in the app bar.
-     *
-     * @param menu The menu to inflate.
-     * @return {@code true} if the menu is displayed.
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+//    /**
+//     * Inflates the options menu in the app bar.
+//     *
+//     * @param menu The menu to inflate.
+//     * @return {@code true} if the menu is displayed.
+//     */
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
 
     /**
      * Checks for unread notifications and displays a popup if any exist.

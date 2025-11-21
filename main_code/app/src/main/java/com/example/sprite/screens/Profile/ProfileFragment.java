@@ -42,6 +42,7 @@ public class ProfileFragment extends Fragment {
     private MaterialButton editProfileButton, deleteProfileButton;
 
     private Authentication_Service authService;
+    private User currentUser; // Store current user to preserve all fields when updating
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -61,7 +62,7 @@ public class ProfileFragment extends Fragment {
 
         // Initialize UI elements
         nameEditText = view.findViewById(R.id.name_edit_text);
-        roleEditText = view.findViewById(R.id.role_edit_text);
+        //roleEditText = view.findViewById(R.id.role_edit_text);
         emailEditText = view.findViewById(R.id.email_edit_text);
         phoneEditText = view.findViewById(R.id.phone_edit_text);
         locationSwitch = view.findViewById(R.id.location_switch);
@@ -93,10 +94,18 @@ public class ProfileFragment extends Fragment {
             public void onSuccess(User user) {
                 if (getActivity() == null) return;
 
+                // Store the current user to preserve all fields when updating
+                currentUser = user;
+
                 nameEditText.setText(user.getName());
-                roleEditText.setText(user.getRole().toString());
+                //roleEditText.setText(user.getRole().toString());
                 emailEditText.setText(user.getEmail());
-                if (user.getPhoneNumber() != null) phoneEditText.setText(user.getPhoneNumber());
+                //get user phone number
+                if (user.getPhoneNumber() != null && !user.getPhoneNumber().isEmpty()) {
+                    phoneEditText.setText(user.getPhoneNumber());
+                } else {
+                    phoneEditText.setText(""); // Clear placeholder if no phone number
+                }
             }
 
             @Override
@@ -112,16 +121,22 @@ public class ProfileFragment extends Fragment {
     private void saveUserProfile() {
         if (!authService.isUserLoggedIn()) return;
 
-        User updatedUser = new User(
-                authService.getCurrentUser().getUid(),
-                emailEditText.getText().toString(),
-                nameEditText.getText().toString(),
-                User.UserRole.valueOf(roleEditText.getText().toString().toUpperCase())
-        );
+        // If we don't have the current user loaded, load it first
+        if (currentUser == null) {
+            loadUserProfile();
+            Toast.makeText(getContext(), "Please wait for profile to load", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        authService.updateUserProfile(updatedUser, new Authentication_Service.AuthCallback() {
+        // Update only the editable fields, preserving all other fields
+        currentUser.setName(nameEditText.getText().toString().trim());
+        currentUser.setEmail(emailEditText.getText().toString().trim());
+        currentUser.setPhoneNumber(phoneEditText.getText().toString().trim());
+
+        authService.updateUserProfile(currentUser, new Authentication_Service.AuthCallback() {
             @Override
             public void onSuccess(User user) {
+                currentUser = user; // Update stored user with latest data
                 Toast.makeText(getContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
             }
 

@@ -128,7 +128,8 @@ public class ViewEntrantsViewModel extends ViewModel {
             db.collection("events")
                     .document(event.getEventId())
                     .update("selectedAttendees", event.getSelectedAttendees(),
-                            "cancelledAttendees", event.getCancelledAttendees())
+                            "cancelledAttendees", event.getCancelledAttendees(),
+                            "confirmedAttendees", event.getConfirmedAttendees())
                     .addOnSuccessListener(aVoid -> {
                         // Refresh UI
                         selectList("Cancelled", event);
