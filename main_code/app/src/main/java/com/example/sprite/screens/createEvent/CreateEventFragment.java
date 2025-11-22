@@ -54,6 +54,7 @@ public class CreateEventFragment extends Fragment {
     private EditText priceInput;
     private TextView registrationStartDate;
     private TextView registrationEndDate;
+    private TextView eventStartDate;
     private Button createEventButton;
     private CreateEventViewModel mViewModel;
 
@@ -99,6 +100,7 @@ public class CreateEventFragment extends Fragment {
         priceInput = view.findViewById(R.id.price_input);
         registrationStartDate = view.findViewById(R.id.start_date_input);
         registrationEndDate = view.findViewById(R.id.end_date_input);
+        eventStartDate = view.findViewById(R.id.event_start_date_input);
         createEventButton = view.findViewById(R.id.create_event_button);
         eventInfoFragment =
                 (EventInfoFragment) getChildFragmentManager()
@@ -219,9 +221,11 @@ public class CreateEventFragment extends Fragment {
         createEventButton.setOnClickListener(
                 v -> validateAndCreateEvent());
         registrationStartDate.setOnClickListener(v ->
-                mViewModel.setRegistrationStartDate(setDate(registrationStartDate)));
+                setDate(registrationStartDate, date -> mViewModel.setRegistrationStartDate(date)));
         registrationEndDate.setOnClickListener(v ->
-                mViewModel.setRegistrationEndDate(setDate(registrationEndDate)));
+                setDate(registrationEndDate, date -> mViewModel.setRegistrationEndDate(date)));
+        eventStartDate.setOnClickListener(v ->
+                setDate(eventStartDate, date -> mViewModel.setEventStartDate(date)));
         mViewModel.getShouldResetFields().observe(getViewLifecycleOwner(), shouldReset->{
             if (Boolean.TRUE.equals(shouldReset))
             {
@@ -232,7 +236,13 @@ public class CreateEventFragment extends Fragment {
         });
     }
 
-    private Date setDate(TextView textView)
+    /**
+     * Shows a date picker dialog and sets the selected date in the TextView and ViewModel.
+     * 
+     * @param textView The TextView to display the selected date
+     * @param onDateSelected Callback to set the date in the ViewModel
+     */
+    private void setDate(TextView textView, java.util.function.Consumer<Date> onDateSelected)
     {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -242,11 +252,14 @@ public class CreateEventFragment extends Fragment {
         DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, selectedYear, selectedMonth, selectedDay) -> {
             SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", Locale.getDefault());
             calendar.set(selectedYear, selectedMonth, selectedDay);
-            String formattedDate = sdf.format(calendar.getTime());
+            Date selectedDate = calendar.getTime();
+            String formattedDate = sdf.format(selectedDate);
             textView.setText(formattedDate);
+            if (onDateSelected != null) {
+                onDateSelected.accept(selectedDate);
+            }
         }, year, month, day);
         datePickerDialog.show();
-        return calendar.getTime();
     }
 
     /**
@@ -262,6 +275,7 @@ public class CreateEventFragment extends Fragment {
         String priceText = priceInput.getText().toString().trim();
         String registrationStartDateText = registrationStartDate.getText().toString().trim();
         String registrationEndDateText = registrationEndDate.getText().toString().trim();
+        String eventStartDateText = eventStartDate.getText().toString().trim();
 
         // Validate event title
         if (eventTitle.isEmpty() || eventTitle.equals("Event Title")) {
@@ -353,6 +367,13 @@ public class CreateEventFragment extends Fragment {
             return;
         }
 
+        // Validate event start date
+        if (eventStartDateText.isEmpty()) {
+            Toast.makeText(getContext(), "Event Start Date is required", Toast.LENGTH_SHORT).show();
+            eventStartDate.requestFocus();
+            return;
+        }
+
         // Validate location, date, and time from EventInfoFragment
         if (eventInfoFragment != null) {
             View eventInfoView = eventInfoFragment.getView();
@@ -405,6 +426,7 @@ public class CreateEventFragment extends Fragment {
         priceInput.setText("");
         registrationStartDate.setText("");
         registrationEndDate.setText("");
+        eventStartDate.setText("");
         eventInfoFragment.setFields("", null, null);
     }
 }

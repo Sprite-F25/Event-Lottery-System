@@ -34,6 +34,7 @@ public class FilterBottomSheet extends BottomSheetDialogFragment {
     public static final String RESULT_KEY  = "filter_result";
 
     private FilterPopupBinding binding;
+    private Long selectedDateTimestamp = null;
 
     public static FilterBottomSheet newInstance() {
         return new FilterBottomSheet();
@@ -83,8 +84,10 @@ public class FilterBottomSheet extends BottomSheetDialogFragment {
 
         binding.etDate.setOnClickListener(v -> {
             MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker().build();
-            picker.addOnPositiveButtonClickListener(sel ->
-                    binding.etDate.setText(picker.getHeaderText()));
+            picker.addOnPositiveButtonClickListener(sel -> {
+                selectedDateTimestamp = sel;
+                binding.etDate.setText(picker.getHeaderText());
+            });
             picker.show(getParentFragmentManager(), "date");
         });
 
@@ -116,6 +119,7 @@ public class FilterBottomSheet extends BottomSheetDialogFragment {
         binding.chipGroupTime.clearCheck();
         // Manual date
         binding.etDate.setText("");
+        selectedDateTimestamp = null;
 
         // Location
         binding.etLocation.setText("");
@@ -152,12 +156,17 @@ public class FilterBottomSheet extends BottomSheetDialogFragment {
         // Quick time
         if (binding.chipToday.isChecked()) {
             f.quickTime = "today";
+            f.chosenDate = null; // Clear chosenDate if quick time is selected
         } else if (binding.chipTomorrow.isChecked()) {
             f.quickTime = "tomorrow";
+            f.chosenDate = null; // Clear chosenDate if quick time is selected
         } else if (binding.chipThisWeek.isChecked()) {
             f.quickTime = "week";
+            f.chosenDate = null; // Clear chosenDate if quick time is selected
         } else {
             f.quickTime = "";
+            // Use chosenDate if a specific date was selected
+            f.chosenDate = selectedDateTimestamp;
         }
 
         // Location

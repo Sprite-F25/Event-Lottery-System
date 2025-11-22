@@ -19,11 +19,17 @@ import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Models.Event;
 import com.example.sprite.Models.User;
 import com.example.sprite.R;
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.textfield.TextInputEditText;
+import android.widget.SearchView;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Fragment that displays a list of events based on the current user's role.
@@ -42,7 +48,12 @@ public class EventsListFragment extends Fragment {
     private RecyclerView recyclerView;
     private EventAdapter adapter;
     private User currentUser;
-    private MaterialButton filterButton;
+    private SearchView searchView;
+    private TextInputEditText startDateEditText;
+    private TextInputEditText endDateEditText;
+    
+    private static final String DATE_FORMAT = "MMM dd, yyyy";
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
 
     /**
      * Creates a new instance of EventsListFragment.
@@ -62,6 +73,8 @@ public class EventsListFragment extends Fragment {
         setupViewModel();
         setupRecyclerView();
         setupEventClickListener(view);
+        setupSearchView(view);
+        setupDatePickers();
         fetchCurrentUser();
 
         return view;
@@ -74,7 +87,9 @@ public class EventsListFragment extends Fragment {
      */
     private void initializeViews(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_events);
-        filterButton = view.findViewById(R.id.filter_button);
+        searchView = view.findViewById(R.id.search_bar);
+        startDateEditText = view.findViewById(R.id.et_start_date);
+        endDateEditText = view.findViewById(R.id.et_end_date);
     }
 
     /**
@@ -83,16 +98,22 @@ public class EventsListFragment extends Fragment {
     private void setupViewModel() {
         mViewModel = new ViewModelProvider(this).get(EventsListViewModel.class);
         
-        // Observe events LiveData
-        mViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
-            if (events != null) {
+        // Observe filtered events LiveData (for entrants)
+        mViewModel.getFilteredEvents().observe(getViewLifecycleOwner(), events -> {
+            if (events != null && currentUser != null && 
+                currentUser.getUserRole() == User.UserRole.ENTRANT) {
                 adapter.setEvents(events);
                 adapter.notifyDataSetChanged();
-                
-                // Update filter button text with event count
-                if (filterButton != null) {
-                    filterButton.setText("Filter (" + events.size() + ")");
-                }
+            }
+        });
+        
+        // Observe all events for organizers and admins (no filtering for them)
+        mViewModel.getEvents().observe(getViewLifecycleOwner(), events -> {
+            if (events != null && currentUser != null && 
+                (currentUser.getUserRole() == User.UserRole.ORGANIZER || 
+                 currentUser.getUserRole() == User.UserRole.ADMIN)) {
+                adapter.setEvents(events);
+                adapter.notifyDataSetChanged();
             }
         });
     }
@@ -136,6 +157,131 @@ public class EventsListFragment extends Fragment {
                     break;
             }
         });
+    }
+
+    /**
+     * Sets up the SearchView to filter events by keywords.
+     * 
+     * @param view The root view of the fragment
+     */
+    private void setupSearchView(View view) {
+        if (searchView == null) {
+            return;
+        }
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                // Apply keyword filter when user submits search
+                if (currentUser != null && currentUser.getUserRole() == User.UserRole.ENTRANT) {
+                    applyAllFilters();
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Optional: could apply filter as user types, but plan says on submit
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Sets up date pickers for start and end date inputs.
+     */
+    private void setupDatePickers() {
+        if (startDateEditText == null || endDateEditText == null) {
+            return;
+        }
+
+        // Start Date Picker
+        startDateEditText.setOnClickListener(v -> {
+            MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select Start Date")
+                    .build();
+            
+            picker.addOnPositiveButtonClickListener(selection -> {
+                Date selectedDate = new Date(selection);
+                startDateEditText.setText(dateFormatter.format(selectedDate));
+                applyDateRangeFilter();
+            });
+            
+            picker.show(getParentFragmentManager(), "start_date_picker");
+        });
+
+        // End Date Picker
+        endDateEditText.setOnClickListener(v -> {
+            MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select End Date")
+                    .build();
+            
+            picker.addOnPositiveButtonClickListener(selection -> {
+                Date selectedDate = new Date(selection);
+                endDateEditText.setText(dateFormatter.format(selectedDate));
+                applyDateRangeFilter();
+            });
+            
+            picker.show(getParentFragmentManager(), "end_date_picker");
+        });
+    }
+
+    /**
+     * Applies date range filter based on selected start and end dates.
+     */
+    private void applyDateRangeFilter() {
+        applyAllFilters();
+    }
+
+    /**
+     * Applies both keyword and date range filters together.
+     */
+    private void applyAllFilters() {
+        if (currentUser == null || currentUser.getUserRole() != User.UserRole.ENTRANT) {
+            return;
+        }
+
+        Date startDate = null;
+        Date endDate = null;
+
+        // Parse start date
+        String startDateText = startDateEditText.getText() != null ? 
+                startDateEditText.getText().toString().trim() : "";
+        if (!startDateText.isEmpty()) {
+            try {
+                startDate = dateFormatter.parse(startDateText);
+            } catch (Exception e) {
+                Log.e(TAG, "Error parsing start date: " + e.getMessage());
+            }
+        }
+
+        // Parse end date
+        String endDateText = endDateEditText.getText() != null ? 
+                endDateEditText.getText().toString().trim() : "";
+        if (!endDateText.isEmpty()) {
+            try {
+                endDate = dateFormatter.parse(endDateText);
+                // Set end date to end of day for inclusive filtering
+                if (endDate != null) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(endDate);
+                    cal.set(Calendar.HOUR_OF_DAY, 23);
+                    cal.set(Calendar.MINUTE, 59);
+                    cal.set(Calendar.SECOND, 59);
+                    cal.set(Calendar.MILLISECOND, 999);
+                    endDate = cal.getTime();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error parsing end date: " + e.getMessage());
+            }
+        }
+
+        // Get current keyword filter
+        String currentKeyword = searchView != null ? 
+                searchView.getQuery().toString() : "";
+
+        // Apply filters
+        mViewModel.applyFilters(currentKeyword, startDate, endDate);
     }
 
     /**

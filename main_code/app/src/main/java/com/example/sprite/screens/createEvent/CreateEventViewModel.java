@@ -145,6 +145,16 @@ public class CreateEventViewModel extends ViewModel {
     }
 
     /**
+     * Sets the event start date.
+     * 
+     * @param date The event start date
+     */
+    public void setEventStartDate(Date date)
+    {
+        startDate.setValue(date);
+    }
+
+    /**
      * Sets the maximum number of attendees.
      * 
      * @param n The maximum attendees count
@@ -352,6 +362,7 @@ public class CreateEventViewModel extends ViewModel {
         setPrice(0.0);
         setRegistrationStartDate(null);
         setRegistrationEndDate(null);
+        setEventStartDate(null);
         setLocation("");
         setDate(null);
         setTime(null);
