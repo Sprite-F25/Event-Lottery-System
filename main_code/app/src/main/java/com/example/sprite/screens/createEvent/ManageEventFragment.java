@@ -145,8 +145,10 @@ public class ManageEventFragment extends Fragment {
             Navigation.findNavController(v).navigate(R.id.fragment_view_entrants, bundle);
         });
 
-        viewMapButton.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Map feature in project part 4!", Toast.LENGTH_SHORT).show()
-        );
+        viewMapButton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("selectedEvent", selectedEvent);
+            Navigation.findNavController(v).navigate(R.id.fragment_view_map, bundle);
+        });
     }
 }
