@@ -18,6 +18,7 @@ import com.example.sprite.Controllers.LotteryService;
 import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 /**
  * Fragment for managing a single event as an organizer.
@@ -34,6 +35,7 @@ public class ManageEventFragment extends Fragment {
     private MaterialButton runLotteryButton, drawReplacementsButton, viewEntrantsButton, viewMapButton;
     private TextView titleView, descriptionView;
     private ImageView eventImageView;
+    private SwitchMaterial geolocationToggle;
 
     private Event selectedEvent;
 
@@ -69,6 +71,7 @@ public class ManageEventFragment extends Fragment {
         titleView = view.findViewById(R.id.eventTitleView);
         descriptionView = view.findViewById(R.id.editDescriptionTextView);
         eventImageView = view.findViewById(R.id.createImageView);
+        geolocationToggle = view.findViewById(R.id.geolocationToggle);
 
         viewModel = new ViewModelProvider(this).get(ManageEventViewModel.class);
         lotteryService = new LotteryService();
@@ -79,6 +82,11 @@ public class ManageEventFragment extends Fragment {
             viewModel.setSelectedEvent(selectedEvent);
         }
 
+        // Initialize geolocation toggle from event attribute
+        if (selectedEvent != null) {
+            geolocationToggle.setChecked(selectedEvent.isGeolocationRequired());
+        }
+
         viewModel.getSelectedEvent().observe(getViewLifecycleOwner(), event -> {
             if (event != null) {
                 selectedEvent = event;
@@ -87,6 +95,19 @@ public class ManageEventFragment extends Fragment {
                 // TODO: load actual image here later
                 eventImageView.setImageResource(R.drawable.event_image);
             }
+        });
+
+        // Geolocation
+        viewModel.getGeolocationRequired().observe(getViewLifecycleOwner(), required -> {
+            if (required != null) {
+                geolocationToggle.setChecked(required);
+            }
+        });
+        geolocationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            viewModel.setGeolocationRequired(isChecked);
+            Toast.makeText(requireContext(),
+                    "Geolocation requirement " + (isChecked ? "enabled" : "disabled"),
+                    Toast.LENGTH_SHORT).show();
         });
 
         setupButtonListeners();

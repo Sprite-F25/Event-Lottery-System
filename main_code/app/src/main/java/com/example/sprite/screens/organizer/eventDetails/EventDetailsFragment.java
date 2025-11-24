@@ -65,17 +65,7 @@ public class EventDetailsFragment extends Fragment {
     private Authentication_Service authService;
 
     // used to check location permissions per device
-    private final ActivityResultLauncher<String> locationPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    if (currentUser != null) {
-                        // Try joining the waitlist again now that permission is granted
-                        joinWaitlist();
-                    }
-                } else {
-                    Toast.makeText(getContext(), "Cannot join waitlist without location permission", Toast.LENGTH_SHORT).show();
-                }
-            });
+    private ActivityResultLauncher<String> locationPermissionLauncher;
 
 
     /**
@@ -93,6 +83,18 @@ public class EventDetailsFragment extends Fragment {
         mViewModel = new ViewModelProvider(this).get(EventDetailsViewModel.class);
         databaseService = new DatabaseService();
         authService = new Authentication_Service();
+        locationPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        joinWaitlist();
+                    } else {
+                        Toast.makeText(getContext(),
+                                "Cannot join waitlist without location permission",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
     }
 
     @Nullable
