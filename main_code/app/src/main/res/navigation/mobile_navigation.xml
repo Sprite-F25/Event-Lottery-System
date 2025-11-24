@@ -73,6 +73,12 @@
         android:label="History"
         tools:layout="@layout/fragment_history" />
 
+    <fragment
+        android:id="@+id/nav_manage_images"
+        android:name="com.example.sprite.screens.admin.ManageImagesFragment"
+        android:label="Manage Images"
+        tools:layout="@layout/fragment_manage_images" />
+
 
 <!--this is how to add a fragment into the nav bar-->
 <!--    <fragment-->

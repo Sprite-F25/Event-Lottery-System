@@ -123,6 +123,12 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
 
+            if (id == R.id.nav_manage_images) {
+                drawer.closeDrawers();
+                navController.navigate(R.id.nav_manage_images);
+                return true;
+            }
+
             if (id == R.id.nav_signout) {
                 drawer.closeDrawers();
                 signOut();
