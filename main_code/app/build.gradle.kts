@@ -100,5 +100,6 @@ dependencies {
     androidTestImplementation("androidx.navigation:navigation-testing:2.7.7")
     // map services
     implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation("com.google.android.gms:play-services-location:21.2.0")
     // implementation("org.maplibre.gl:android-sdk:10.2.0")
 }

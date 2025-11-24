@@ -1,8 +1,10 @@
 package com.example.sprite.Models;
 
 import com.example.sprite.Controllers.NotificationService;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -112,6 +114,31 @@ public class Waitlist {
             waitingList.add(entrantId);
         }
     }
+
+    /** Adds an entrant to the list of waiting list locations.
+     * @param entrantId
+     *      The unique ID of the entrant to be added to the waiting list
+     * @param location
+     *      The location of the entrant joining the waitlist
+     * */
+    public void addEntrantLocation(String entrantId, GeoPoint location) {
+        if (event.getWaitingListLocations() == null) {
+            event.setWaitingListLocations(new HashMap<>());
+        }
+
+        event.getWaitingListLocations().put(entrantId, location);
+    }
+
+    /** Adds an entrant to the list of waiting list locations.
+     * @param entrantId
+     *      The unique ID of the entrant to be removed from the waiting list
+     * */
+    public void removeEntrantLocation(String entrantId) {
+        if (event.getWaitingListLocations() != null) {
+            event.getWaitingListLocations().remove(entrantId);
+        }
+    }
+
 
     /** Moves an entrant from waiting list to selected list and sends a notification.
      * @param entrantId
