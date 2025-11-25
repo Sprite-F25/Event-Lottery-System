@@ -280,13 +280,47 @@ public class MainActivity extends AppCompatActivity {
             this,
             notification,
             notificationService,
-            () -> {
-                // Navigate to notifications fragment when user clicks "View"
-                NavController navController = Navigation.findNavController(
-                    MainActivity.this, 
-                    R.id.nav_host_fragment_content_main
-                );
-                navController.navigate(R.id.nav_notifications);
+            new NotificationPopupDialog.NotificationPopupListener() {
+                @Override
+                public void onViewNotification() {
+                    // Navigate to notifications fragment when user clicks "View"
+                    NavController navController = Navigation.findNavController(
+                        MainActivity.this, 
+                        R.id.nav_host_fragment_content_main
+                    );
+                    navController.navigate(R.id.nav_notifications);
+                }
+
+                @Override
+                public void onViewEvent(String eventId) {
+                    // Fetch event and navigate to event details
+                    com.example.sprite.Controllers.DatabaseService dbService = 
+                        new com.example.sprite.Controllers.DatabaseService();
+                    
+                    dbService.getEvent(eventId, task -> {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            com.example.sprite.Models.Event event = 
+                                task.getResult().toObject(com.example.sprite.Models.Event.class);
+                            
+                            if (event != null) {
+                                NavController navController = Navigation.findNavController(
+                                    MainActivity.this, 
+                                    R.id.nav_host_fragment_content_main
+                                );
+                                
+                                android.os.Bundle bundle = new android.os.Bundle();
+                                bundle.putSerializable("selectedEvent", event);
+                                navController.navigate(R.id.fragment_event_details, bundle);
+                            } else {
+                                // Fallback to notifications if event not found
+                                onViewNotification();
+                            }
+                        } else {
+                            // Fallback to notifications if event fetch fails
+                            onViewNotification();
+                        }
+                    });
+                }
             }
         );
         dialog.show();

@@ -34,6 +34,13 @@ public class NotificationPopupDialog extends Dialog {
          * Called when the user wants to view the notification in the list.
          */
         void onViewNotification();
+        
+        /**
+         * Called when the user wants to view the event details.
+         * 
+         * @param eventId The ID of the event to view
+         */
+        void onViewEvent(String eventId);
     }
 
     /**
@@ -85,7 +92,11 @@ public class NotificationPopupDialog extends Dialog {
         if (viewButton != null) {
             viewButton.setOnClickListener(v -> {
                 markAsReadAndDismiss();
-                if (listener != null) {
+                if (listener != null && notification != null && notification.getEventId() != null) {
+                    // Navigate to event details if eventId is available
+                    listener.onViewEvent(notification.getEventId());
+                } else if (listener != null) {
+                    // Fallback to viewing notification list if no eventId
                     listener.onViewNotification();
                 }
             });
