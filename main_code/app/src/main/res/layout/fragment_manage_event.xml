@@ -36,7 +36,7 @@
         android:textStyle="bold"
         app:backgroundTint="@color/green3"
         app:cornerRadius="10dp"
-        app:layout_constraintBottom_toTopOf="@id/drawReplacementsButton"
+        app:layout_constraintBottom_toTopOf="@id/runLotteryButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/viewEntrantsButton"
         app:layout_constraintWidth_percent="0.45"/>
@@ -53,25 +53,9 @@
         app:backgroundTint="@color/green3"
         app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/drawReplacementsButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent="0.45"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/drawReplacementsButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Draw Replacements"
-        android:textColor="@android:color/white"
-        android:textSize="11sp"
-        android:fontFamily="@font/inter_bold"
-        android:textStyle="bold"
-        app:backgroundTint="@color/green3"
-        app:cornerRadius="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/runLotteryButton"
-        app:layout_constraintWidth_percent="0.45"/>
+        app:layout_constraintEnd_toEndOf="@id/viewMapButton"
+        app:layout_constraintStart_toStartOf="@id/viewEntrantsButton"
+        app:layout_constraintWidth_percent="0.935"/>
 
 
 

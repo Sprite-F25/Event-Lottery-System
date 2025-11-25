@@ -31,7 +31,7 @@ public class ManageEventFragment extends Fragment {
     private ManageEventViewModel viewModel;
     private LotteryService lotteryService;
 
-    private MaterialButton runLotteryButton, drawReplacementsButton, viewEntrantsButton, viewMapButton;
+    private MaterialButton runLotteryButton, viewEntrantsButton, viewMapButton;
     private TextView titleView, descriptionView;
     private ImageView eventImageView;
 
@@ -61,7 +61,6 @@ public class ManageEventFragment extends Fragment {
 
         // Buttons
         runLotteryButton = view.findViewById(R.id.runLotteryButton);
-        drawReplacementsButton = view.findViewById(R.id.drawReplacementsButton);
         viewEntrantsButton = view.findViewById(R.id.viewEntrantsButton);
         viewMapButton = view.findViewById(R.id.viewMapButton);
 
@@ -86,6 +85,7 @@ public class ManageEventFragment extends Fragment {
                 descriptionView.setText(event.getDescription());
                 // TODO: load actual image here later
                 eventImageView.setImageResource(R.drawable.event_image);
+                updateLotteryButton();
             }
         });
 
@@ -106,30 +106,22 @@ public class ManageEventFragment extends Fragment {
                 return;
             }
 
+            // Check if lottery has been run
             if (selectedEvent.getStatus() == Event.EventStatus.LOTTERY_COMPLETED) {
-                Toast.makeText(requireContext(), "Lottery already completed.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            lotteryService.runLottery(selectedEvent);
-            // selectedEvent.setStatus(Event.EventStatus.LOTTERY_COMPLETED);
-            viewModel.setSelectedEvent(selectedEvent);
-            viewModel.setStatusLotteryComplete(selectedEvent);
-
-            Toast.makeText(requireContext(), "Lottery run successfully!", Toast.LENGTH_SHORT).show();
-        });
-
-        drawReplacementsButton.setOnClickListener(v -> {
-            if (selectedEvent == null) {
-                Toast.makeText(requireContext(), "No event selected.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            boolean success = lotteryService.drawReplacements(selectedEvent);
-            if (success) {
-                Toast.makeText(requireContext(), "Replacements drawn successfully!", Toast.LENGTH_SHORT).show();
+                // Draw replacements
+                boolean success = lotteryService.drawReplacements(selectedEvent);
+                if (success) {
+                    Toast.makeText(requireContext(), "Replacements drawn successfully!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(requireContext(), "No replacements drawn. Either no open slots or waitlist is empty.", Toast.LENGTH_SHORT).show();
+                }
             } else {
-                Toast.makeText(requireContext(), "No replacements drawn. Either no open slots or waitlist is empty.", Toast.LENGTH_SHORT).show();
+                // Run lottery
+                lotteryService.runLottery(selectedEvent);
+                viewModel.setSelectedEvent(selectedEvent);
+                viewModel.setStatusLotteryComplete(selectedEvent);
+                updateLotteryButton();
+                Toast.makeText(requireContext(), "Lottery run successfully!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -148,5 +140,20 @@ public class ManageEventFragment extends Fragment {
         viewMapButton.setOnClickListener(v ->
                 Toast.makeText(requireContext(), "Map feature in project part 4!", Toast.LENGTH_SHORT).show()
         );
+    }
+
+    /**
+     * Updates the lottery button text and behavior based on whether the lottery has been run.
+     */
+    private void updateLotteryButton() {
+        if (selectedEvent == null || runLotteryButton == null) {
+            return;
+        }
+
+        if (selectedEvent.getStatus() == Event.EventStatus.LOTTERY_COMPLETED) {
+            runLotteryButton.setText("Draw Replacements");
+        } else {
+            runLotteryButton.setText("Run Lottery");
+        }
     }
 }
