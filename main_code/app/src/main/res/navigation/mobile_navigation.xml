@@ -79,6 +79,11 @@
         android:label="Manage Images"
         tools:layout="@layout/fragment_manage_images" />
 
+    <fragment
+        android:id="@+id/nav_notification_logs"
+        android:name="com.example.sprite.screens.NotificationLogsFragment"
+        android:label="Notification Logs"
+        tools:layout="@layout/fragment_notification_logs" />
 
 <!--this is how to add a fragment into the nav bar-->
 <!--    <fragment-->

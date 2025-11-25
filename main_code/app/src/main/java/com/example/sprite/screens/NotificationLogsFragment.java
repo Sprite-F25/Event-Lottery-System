@@ -25,7 +25,7 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * Fragment that displays notification logs for organizers.
+ * Fragment that displays notification logs for organizers. (admins ???)
  * 
  * <p>This fragment shows a list of notification log entries with filtering
  * capabilities. Users can search by text and filter by notification type
