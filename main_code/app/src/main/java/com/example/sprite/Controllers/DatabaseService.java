@@ -1,13 +1,15 @@
 package com.example.sprite.Controllers;
 
 import com.example.sprite.Models.Event;
-import com.example.sprite.Models.User;
 import com.example.sprite.Models.Notification;
+import com.example.sprite.Models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.Map;
 
 /**
  * {@code DatabaseService} provides an abstraction layer for all Firestore database operations.
@@ -157,6 +159,15 @@ public class DatabaseService {
                 .delete()
                 .addOnCompleteListener(listener);
     }
+
+    public void updateEventFields(String eventId, Map<String, Object> updates, OnCompleteListener<Void> listener) {
+        FirebaseFirestore.getInstance()
+                .collection("events")
+                .document(eventId)
+                .update(updates)
+                .addOnCompleteListener(listener);
+    }
+
 
     /**
      * Retrieves all waiting list entries for a specific event.

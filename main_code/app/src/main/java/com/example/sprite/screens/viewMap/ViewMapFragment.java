@@ -1,40 +1,38 @@
 package com.example.sprite.screens.viewMap;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.sprite.Controllers.DatabaseService;
 import com.example.sprite.Models.Event;
 import com.example.sprite.R;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.firestore.GeoPoint;
 
+import org.osmdroid.config.Configuration;
+import org.osmdroid.util.BoundingBox;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Marker;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class ViewMapFragment extends Fragment implements OnMapReadyCallback {
+public class ViewMapFragment extends Fragment {
 
-    private MapView mapView;
-    private GoogleMap googleMap;
-    private Button recenterButton;
+    private static final String TAG = "ViewMapFragment";
 
-    private ViewMapViewModel mViewModel;
-
-    // Default location: Edmonton
-    private static final LatLng DEFAULT_LOCATION = new LatLng(53.5461, -113.4938);
-    private static final float DEFAULT_ZOOM = 12f;
+    private MapView map;
+    private ViewMapViewModel viewModel;
+    private DatabaseService databaseService;
 
     private Event currentEvent;
 
@@ -44,106 +42,111 @@ public class ViewMapFragment extends Fragment implements OnMapReadyCallback {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_map, container, false);
 
-        mapView = view.findViewById(R.id.map_view);
-        recenterButton = view.findViewById(R.id.fab_recenter);
+        // Initialize OSMDroid configuration
+        Configuration.getInstance().setUserAgentValue(getContext().getPackageName());
 
-        // Initialize MapView
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
+        map = view.findViewById(R.id.map);
+        map.setMultiTouchControls(true);
 
-        // Initialize ViewModel
-        mViewModel = new ViewModelProvider(this).get(ViewMapViewModel.class);
+        viewModel = new ViewModelProvider(this).get(ViewMapViewModel.class);
+        databaseService = new DatabaseService();
 
-        // Observe marker locations
-        mViewModel.getMarkerLocations().observe(getViewLifecycleOwner(), this::updateMarkers);
-
-        // Recenter button
-        recenterButton.setOnClickListener(v -> {
-            if (googleMap != null) {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM));
-            }
-        });
-
-        // Get Event from arguments
+        // Get event from arguments
         Bundle arguments = getArguments();
-        if (arguments != null && arguments.getSerializable("selectedEvent") instanceof Event) {
+        if (arguments != null) {
             currentEvent = (Event) arguments.getSerializable("selectedEvent");
-            if (currentEvent != null && currentEvent.getWaitingListLocations() != null) {
-                mViewModel.setEventLocationsMap((HashMap<String, GeoPoint>) currentEvent.getWaitingListLocations());
-            }
+        }
+
+        // Fetch locations and add markers
+        if (currentEvent != null) {
+            fetchWaitingListLocations();
         }
 
         return view;
     }
 
-    @Override
-    public void onMapReady(@NonNull GoogleMap map) {
-        googleMap = map;
+    private void fetchWaitingListLocations() {
+        String eventId = currentEvent.getEventId();
+        databaseService.getEvent(eventId, task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                Event updatedEvent = task.getResult().toObject(Event.class);
+                if (updatedEvent != null && updatedEvent.getWaitingListLocations() != null) {
+                    HashMap<String, com.google.firebase.firestore.GeoPoint> locationsMap =
+                            (HashMap<String, com.google.firebase.firestore.GeoPoint>) updatedEvent.getWaitingListLocations();
 
-        // Show markers if we already have them
-        List<LatLng> markers = mViewModel.getMarkerLocations().getValue();
-        if (markers != null && !markers.isEmpty()) {
-            updateMarkers(markers);
-        } else {
-            // Default to Edmonton
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM));
-        }
+                    // Convert Firestore GeoPoints to OSMDroid GeoPoints
+                    List<GeoPoint> points = new ArrayList<>();
+                    for (Map.Entry<String, com.google.firebase.firestore.GeoPoint> entry : locationsMap.entrySet()) {
+                        com.google.firebase.firestore.GeoPoint firebasePoint = entry.getValue();
+                        GeoPoint osmdroidPoint = new GeoPoint(firebasePoint.getLatitude(), firebasePoint.getLongitude());
+                        points.add(osmdroidPoint);
+
+                        // Add marker
+                        Marker marker = new Marker(map);
+                        marker.setPosition(osmdroidPoint);
+                        marker.setTitle(entry.getKey()); // userId as title
+                        map.getOverlays().add(marker);
+                    }
+
+                    // Zoom to fit all markers
+                    zoomToFitMarkers(points);
+                }
+            } else {
+                Log.e(TAG, "Failed to fetch event locations: " + task.getException());
+            }
+        });
     }
 
-    /**
-     * Add markers to the map
-     */
-    private void updateMarkers(List<LatLng> markerLocations) {
-        if (googleMap == null) return;
+    private void zoomToFitMarkers(List<GeoPoint> points) {
+        if (points == null || points.isEmpty()) return;
 
-        googleMap.clear();
-        for (LatLng latLng : markerLocations) {
-            googleMap.addMarker(new MarkerOptions().position(latLng));
+        double minLat = Double.MAX_VALUE, maxLat = -Double.MAX_VALUE;
+        double minLon = Double.MAX_VALUE, maxLon = -Double.MAX_VALUE;
+
+        // Calculate bounding box
+        for (GeoPoint point : points) {
+            minLat = Math.min(minLat, point.getLatitude());
+            maxLat = Math.max(maxLat, point.getLatitude());
+            minLon = Math.min(minLon, point.getLongitude());
+            maxLon = Math.max(maxLon, point.getLongitude());
         }
 
-        // Center map to first marker if exists
-        if (!markerLocations.isEmpty()) {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLocations.get(0), DEFAULT_ZOOM));
-        } else {
-            // Otherwise, default to Edmonton
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_LOCATION, DEFAULT_ZOOM));
+        // Add padding (~500 meters in degrees)
+        double latPadding = 0.005;
+        double lonPadding = 0.005;
+
+        BoundingBox bbox = new BoundingBox(
+                maxLat + latPadding,
+                maxLon + lonPadding,
+                minLat - latPadding,
+                minLon - lonPadding
+        );
+
+        // Zoom to bounding box
+        map.zoomToBoundingBox(bbox, true);
+
+        // Cap maximum zoom level to avoid over-zooming
+        double maxZoom = 15.0;
+        if (map.getZoomLevelDouble() > maxZoom) {
+            map.getController().setZoom(maxZoom);
         }
+
+        // Center the map on the midpoint
+        double centerLat = (minLat + maxLat) / 2;
+        double centerLon = (minLon + maxLon) / 2;
+        map.getController().setCenter(new GeoPoint(centerLat, centerLon));
     }
 
-    // MapView lifecycle methods
+
     @Override
     public void onResume() {
         super.onResume();
-        mapView.onResume();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mapView.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mapView.onStop();
+        if (map != null) map.onResume();
     }
 
     @Override
     public void onPause() {
-        mapView.onPause();
         super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        mapView.onDestroy();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
+        if (map != null) map.onPause();
     }
 }

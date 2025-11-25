@@ -2,7 +2,10 @@ package com.example.sprite.screens.organizer.eventDetails;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,12 +28,12 @@ import com.example.sprite.Models.Event;
 import com.example.sprite.Models.User;
 import com.example.sprite.Models.Waitlist;
 import com.example.sprite.R;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -312,66 +315,145 @@ public class EventDetailsFragment extends Fragment {
             return;
         }
 
-        // Check location permission first if geolocation is required
+        // Check location permission if geolocation is required
         if (currentEvent.isGeolocationRequired()) {
             if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
                     != PackageManager.PERMISSION_GRANTED) {
                 locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
-                return; // Will continue joining after permission is granted
+                return;
             }
         }
 
-        // Refresh event from database and continue with adding to waitlist
+        // Refresh event from database
         databaseService.getEvent(currentEvent.getEventId(), task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                Event updatedEvent = task.getResult().toObject(Event.class);
-                if (updatedEvent != null) {
-                    currentEvent = updatedEvent;
-
-                    Waitlist waitlist = new Waitlist(currentEvent);
-                    String userId = currentUser.getUserId();
-
-                    // Check if already on waitlist
-                    List<String> waitingList = currentEvent.getWaitingList() != null ?
-                            currentEvent.getWaitingList() : new ArrayList<>();
-
-                    if (waitingList.contains(userId)) {
-                        Toast.makeText(getContext(), "You are already on the waitlist", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    // Check if waitlist is full
-                    int maxWaitingListSize = currentEvent.getMaxWaitingListSize();
-                    if (maxWaitingListSize > 0 && waitingList.size() >= maxWaitingListSize) {
-                        Toast.makeText(getContext(), "Waitlist is full. Cannot join at this time.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    // Add to waitlist
-                    waitlist.addEntrantToWaitlist(userId);
-
-                    // Save location if required
-                    if (currentEvent.isGeolocationRequired()) {
-                        fetchAndSaveEntrantLocation(userId, waitlist);
-                    } else {
-                        // Update event in database if location not needed
-                        databaseService.updateEvent(currentEvent, updateTask -> {
-                            if (updateTask.isSuccessful()) {
-                                Toast.makeText(getContext(), "Successfully joined waitlist!", Toast.LENGTH_SHORT).show();
-                                setupButtons();
-                            } else {
-                                Toast.makeText(getContext(), "Failed to join waitlist", Toast.LENGTH_SHORT).show();
-                                Log.e(TAG, "Error updating event: " + updateTask.getException());
-                            }
-                        });
-                    }
-                }
-            } else {
+            if (!task.isSuccessful() || task.getResult() == null) {
                 Toast.makeText(getContext(), "Failed to load event", Toast.LENGTH_SHORT).show();
                 Log.e(TAG, "Error getting event: " + task.getException());
+                return;
+            }
+
+            Event updatedEvent = task.getResult().toObject(Event.class);
+            if (updatedEvent == null) return;
+            currentEvent = updatedEvent;
+
+            String userId = currentUser.getUserId();
+            List<String> waitingList = currentEvent.getWaitingList() != null ?
+                    currentEvent.getWaitingList() : new ArrayList<>();
+
+            // Already on waitlist?
+            if (waitingList.contains(userId)) {
+                Toast.makeText(getContext(), "You are already on the waitlist", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Waitlist full?
+            int maxWaitingListSize = currentEvent.getMaxWaitingListSize();
+            if (maxWaitingListSize > 0 && waitingList.size() >= maxWaitingListSize) {
+                Toast.makeText(getContext(), "Waitlist is full", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Add user to waitlist
+            waitingList.add(userId);
+            currentEvent.setWaitingList(waitingList);
+
+
+            if (currentEvent.isGeolocationRequired()) {
+                saveUserLocationWithoutPlayServices(userId);
+            } else {
+                // Update database directly if location not required
+                databaseService.updateEvent(currentEvent, updateTask -> {
+                    if (updateTask.isSuccessful()) {
+                        Toast.makeText(getContext(), "Successfully joined waitlist!", Toast.LENGTH_SHORT).show();
+                        setupButtons();
+                    } else {
+                        Toast.makeText(getContext(), "Failed to join waitlist", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Error updating event: " + updateTask.getException());
+                    }
+                });
             }
         });
     }
+
+    /**
+     * Saves user's last known location using Android's LocationManager.
+     * @param
+     *      userId User attempting to join the waitlist
+     */
+    @SuppressLint("MissingPermission")
+    private void saveUserLocationWithoutPlayServices(String userId) {
+        LocationManager locationManager = getActivity() != null
+                ? (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE)
+                : null;
+
+        if (locationManager == null) return;
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            Context context = getContext();
+            if (context != null) {
+                Toast.makeText(context, "Location permission not granted", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
+        Location lastKnown = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lastKnown == null) {
+            lastKnown = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+
+        if (lastKnown != null) {
+            saveLocationToEvent(userId, lastKnown);
+            return;
+        }
+
+        // Request single update from GPS
+        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new android.location.LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+                saveLocationToEvent(userId, location);
+            }
+            @Override public void onProviderEnabled(@NonNull String provider) {}
+            @Override public void onProviderDisabled(@NonNull String provider) {}
+            @Override public void onStatusChanged(String provider, int status, Bundle extras) {}
+        }, null);
+    }
+
+
+
+    private void saveLocationToEvent(String userId, Location location) {
+        if (location == null) {
+            Context context = getContext();
+            if (context != null) {
+                Toast.makeText(context, "Could not get device location", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
+        GeoPoint geo = new GeoPoint(location.getLatitude(), location.getLongitude());
+
+        if (currentEvent.getWaitingListLocations() == null) {
+            currentEvent.setWaitingListLocations(new HashMap<>());
+        }
+        currentEvent.getWaitingListLocations().put(userId, geo);
+
+        databaseService.updateEvent(currentEvent, updateTask -> {
+            Context context = getContext();
+            if (context == null) return; // Fragment detached
+
+            if (updateTask.isSuccessful()) {
+                Toast.makeText(context, "Successfully joined waitlist!", Toast.LENGTH_SHORT).show();
+                setupButtons();
+            } else {
+                Toast.makeText(context, "Failed to join waitlist", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Error updating event: " + updateTask.getException());
+            }
+        });
+    }
+
+
+
+
 
 
     /**
@@ -530,25 +612,31 @@ public class EventDetailsFragment extends Fragment {
      */
     @SuppressLint("MissingPermission")
     private void fetchAndSaveEntrantLocation(String userId, Waitlist waitlist) {
-        LocationServices.getFusedLocationProviderClient(requireContext())
-                .getLastLocation()
-                .addOnSuccessListener(location -> {
-                    if (location != null) {
-                        GeoPoint geo = new GeoPoint(location.getLatitude(), location.getLongitude());
-                        waitlist.addEntrantLocation(userId, geo);
-                    }
+        LocationManager locationManager = (LocationManager) requireContext()
+                .getSystemService(Context.LOCATION_SERVICE);
 
-                    // Always update event
-                    databaseService.updateEvent(currentEvent, updateTask -> {
-                        if (updateTask.isSuccessful()) {
-                            Toast.makeText(getContext(), "Successfully joined waitlist!", Toast.LENGTH_SHORT).show();
-                            setupButtons();
-                        } else {
-                            Toast.makeText(getContext(), "Failed to join waitlist", Toast.LENGTH_SHORT).show();
-                            Log.e(TAG, "Error updating event: " + updateTask.getException());
-                        }
-                    });
-                });
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Shouldn't happen because permission is checked before calling this method
+            return;
+        }
+
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (location != null) {
+            GeoPoint geo = new GeoPoint(location.getLatitude(), location.getLongitude());
+            waitlist.addEntrantLocation(userId, geo);
+        }
+
+        // Always update event
+        databaseService.updateEvent(currentEvent, updateTask -> {
+            if (updateTask.isSuccessful()) {
+                Toast.makeText(getContext(), "Successfully joined waitlist!", Toast.LENGTH_SHORT).show();
+                setupButtons();
+            } else {
+                Toast.makeText(getContext(), "Failed to join waitlist", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Error updating event: " + updateTask.getException());
+            }
+        });
     }
 
 
