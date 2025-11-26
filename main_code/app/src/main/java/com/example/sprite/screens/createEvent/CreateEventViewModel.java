@@ -1,6 +1,8 @@
 package com.example.sprite.screens.createEvent;
 
+import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
@@ -8,11 +10,16 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Controllers.DatabaseService;
+import com.example.sprite.Controllers.ImageService;
 import com.example.sprite.Models.Event;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * ViewModel for managing event creation data and operations.
@@ -26,6 +33,9 @@ import java.util.Date;
  */
 public class CreateEventViewModel extends ViewModel {
     private FirebaseUser firebaseUser = new Authentication_Service().getCurrentUser();
+    private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    private StorageReference storageReference = firebaseStorage.getReference();
+    private ImageService imageService = new ImageService();
     private MutableLiveData<String> title = new MutableLiveData<>();
     private MutableLiveData<Date> registrationStartDate = new MutableLiveData<>();
     private MutableLiveData<Date> registrationEndDate = new MutableLiveData<>();
@@ -38,40 +48,10 @@ public class CreateEventViewModel extends ViewModel {
     private MutableLiveData<Date> time = new MutableLiveData<>();
     private MutableLiveData<Date> startDate = new MutableLiveData<>();
     private MutableLiveData<Date> endDate = new MutableLiveData<>();
+    private MutableLiveData<Uri> localPosterUri = new MutableLiveData<>();
     private final DatabaseService db = new DatabaseService();
 
     private final MutableLiveData<Boolean> shouldResetFields = new MutableLiveData<>(false);
-    
-    /**
-     * Sets dummy event information for testing purposes.
-     * 
-     * @param event The event to populate with dummy data
-     */
-    private void setDummyEventInfo(Event event)
-    {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2025, 10, 10);
-        Date startDate = calendar.getTime();
-        calendar.set(2025, 10, 12);
-        Date endDate = calendar.getTime();
-        Date createTime = Calendar.getInstance().getTime();
-
-        event.setTitle("MyEvent");
-        event.setDescription("This is the description for the event");
-        event.setLocation("123 Street");
-        //event.setEventStartDate(); -> Not needed?
-        //event.setEventEndDate();
-        event.setRegistrationStartDate(startDate);
-        event.setRegistrationEndDate(endDate);
-        event.setMaxAttendees(5);
-        event.setMaxWaitingListSize(5); //Optional!!!
-        event.setPrice(10.25);
-        event.setPosterImageUrl("POSTER"); //NEED TO CHECK THIS
-        event.setStatus(Event.EventStatus.OPEN_FOR_REGISTRATION);
-        event.setCreatedAt(createTime);
-        //event.setEntrantLimit(); -> Not needed, there is already MaxAttendees?
-
-    }
 
 
     /**
@@ -185,6 +165,17 @@ public class CreateEventViewModel extends ViewModel {
     }
 
     /**
+     * Sets the local poster uri
+     * @param uri poster uri
+     */
+    public void setLocalPosterUri(Uri uri) {localPosterUri.setValue(uri);}
+
+    /**
+     * Gets the local poster uri
+     * @return Uri LocalPosterUri
+     */
+    public Uri getLocalPosterUri(){return localPosterUri.getValue();}
+    /**
      * Gets the LiveData indicating whether fields should be reset.
      * 
      * @return LiveData containing the reset flag
@@ -253,6 +244,9 @@ public class CreateEventViewModel extends ViewModel {
 
         if (date != null && date.getValue() != null)
             event.setDate(date.getValue());
+
+        if (time != null && time.getValue() != null)
+            event.setTime(time.getValue());
     }
 
     /**
@@ -336,15 +330,17 @@ public class CreateEventViewModel extends ViewModel {
 
         Event newEvent = new Event();
         setEventInfo(newEvent);
-
-        db.createEvent(newEvent, task -> {
-            if (task.isSuccessful()){
-                Log.d("Firestore", "Event Created Successfully");
-                shouldResetFields.setValue(Boolean.TRUE);
-            } else {
-                Log.e("Firestore", "Error Creating Event", task.getException());
-            }
+        imageService.setEventImageUri(newEvent, localPosterUri.getValue(), () -> {
+            db.createEvent(newEvent, task -> {
+                if (task.isSuccessful()){
+                    Log.d("Firestore", "Event Created Successfully");
+                    shouldResetFields.setValue(Boolean.TRUE);
+                } else {
+                    Log.e("Firestore", "Error Creating Event", task.getException());
+                }
+            });
         });
+
     }
 
     /**
@@ -366,6 +362,7 @@ public class CreateEventViewModel extends ViewModel {
         setLocation("");
         setDate(null);
         setTime(null);
+        setLocalPosterUri(null);
     }
 
 

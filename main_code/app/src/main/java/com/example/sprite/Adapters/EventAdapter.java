@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.sprite.Controllers.ImageService;
 import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 
@@ -75,6 +76,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         holder.title.setText(event.getTitle());
         holder.description.setText(event.getDescription());
         holder.location.setText(event.getLocation());
+        holder.image.setImageDrawable(null);
+        ImageService imageService = new ImageService();
+        imageService.loadImage(event.getPosterImageUrl(), holder.image);
 
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
         if (event.getEventStartDate() != null) {

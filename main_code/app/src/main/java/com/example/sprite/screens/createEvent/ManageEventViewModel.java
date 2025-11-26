@@ -1,9 +1,13 @@
 package com.example.sprite.screens.createEvent;
 
+import android.net.Uri;
+import android.widget.ImageView;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.sprite.Controllers.ImageService;
 import com.example.sprite.Models.Event;
 
 /**
@@ -42,5 +46,16 @@ public class ManageEventViewModel extends ViewModel {
 
         event.setStatus(Event.EventStatus.LOTTERY_COMPLETED);
         setSelectedEvent(event);
+    }
+
+    /**
+     * Sets the event image for the given event
+     * @param uri The Uri for the event image
+     * @param view the ImageView that needs to be updated
+     */
+    public void setEventImage(Uri uri, ImageView view)
+    {
+        ImageService imageService = new ImageService();
+        imageService.setEventImageUri(selectedEvent.getValue(), uri, () -> {view.setImageURI(uri);});
     }
 }

@@ -1,8 +1,14 @@
 package com.example.sprite.screens.createEvent;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.app.DatePickerDialog;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +64,9 @@ public class CreateEventFragment extends Fragment {
     private TextView eventStartDate;
     private Button createEventButton;
     private CreateEventViewModel mViewModel;
+    private Button editImageButton;
+    private ImageView eventImageView;
+    private ActivityResultLauncher<String> galleryLauncher;
 
     private EventInfoFragment eventInfoFragment;
 
@@ -102,9 +112,12 @@ public class CreateEventFragment extends Fragment {
         registrationEndDate = view.findViewById(R.id.end_date_input);
         eventStartDate = view.findViewById(R.id.event_start_date_input);
         createEventButton = view.findViewById(R.id.create_event_button);
+        editImageButton = view.findViewById(R.id.edit_image_button);
+        eventImageView = view.findViewById(R.id.event_image_view);
         eventInfoFragment =
                 (EventInfoFragment) getChildFragmentManager()
                         .findFragmentById(R.id.fragment_event_info_view);
+        setupGalleryLauncher();
     }
 
 
@@ -218,6 +231,7 @@ public class CreateEventFragment extends Fragment {
 
             }
         });
+        editImageButton.setOnClickListener( v-> galleryLauncher.launch("image/*"));
         createEventButton.setOnClickListener(
                 v -> validateAndCreateEvent());
         registrationStartDate.setOnClickListener(v ->
@@ -276,6 +290,12 @@ public class CreateEventFragment extends Fragment {
         String registrationStartDateText = registrationStartDate.getText().toString().trim();
         String registrationEndDateText = registrationEndDate.getText().toString().trim();
         String eventStartDateText = eventStartDate.getText().toString().trim();
+
+        // Validate Event Image
+        if (mViewModel.getLocalPosterUri() == null) {
+            Toast.makeText(getContext(), "Event Image is required", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Validate event title
         if (eventTitle.isEmpty() || eventTitle.equals("Event Title")) {
@@ -391,26 +411,25 @@ public class CreateEventFragment extends Fragment {
                     }
                 }
 
-//                if (dateInput != null) {
-//                    String eventDate = dateInput.getText().toString().trim();
-//                    if (eventDate.isEmpty()) {
-//                        Toast.makeText(getContext(), "Event Date is required", Toast.LENGTH_SHORT).show();
-//                        dateInput.requestFocus();
-//                        return;
-//                    }
-//                }
+                if (dateInput != null) {
+                  String eventDate = dateInput.getText().toString().trim();
+                    if (eventDate.isEmpty()) {
+                       Toast.makeText(getContext(), "Event Date is required", Toast.LENGTH_SHORT).show();
+                       dateInput.requestFocus();
+                        return;
+                    }
+               }
 
-//                if (timeInput != null) {
-//                        String eventTime = timeInput.getText().toString().trim();
-//                    if (eventTime.isEmpty()) {
-//                        Toast.makeText(getContext(), "Event Time is required", Toast.LENGTH_SHORT).show();
-//                        timeInput.requestFocus();
-//                        return;
-//                    }
-                //}
+               if (timeInput != null) {
+                       String eventTime = timeInput.getText().toString().trim();
+                   if (eventTime.isEmpty()) {
+                        Toast.makeText(getContext(), "Event Time is required", Toast.LENGTH_SHORT).show();
+                        timeInput.requestFocus();
+                        return;
+                    }
+                }
             }
         }
-
         // All validation passed, create the event
         mViewModel.createEvent();
     }
@@ -428,5 +447,19 @@ public class CreateEventFragment extends Fragment {
         registrationEndDate.setText("");
         eventStartDate.setText("");
         eventInfoFragment.setFields("", null, null);
+        Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.event_image);
+        eventImageView.setImageDrawable(drawable);
+    }
+    /**
+     * Sets up the gallery launcher and updates the event image view and uri
+     */
+    private void setupGalleryLauncher()
+    {
+        galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            if (uri != null) {
+                eventImageView.setImageURI(uri);
+                mViewModel.setLocalPosterUri(uri);
+            }
+        });
     }
 }

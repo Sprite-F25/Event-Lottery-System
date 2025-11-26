@@ -48,7 +48,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/createImageView"
+                android:id="@+id/event_image_back"
                 android:layout_width="0dp"
                 android:layout_height="256dp"
                 android:layout_marginStart="32dp"
@@ -61,8 +61,22 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageView
+                android:id="@+id/event_image_view"
+                android:layout_width="0dp"
+                android:layout_height="256dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/event_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/button"
+                android:id="@+id/edit_image_button"
                 android:layout_width="65dp"
                 android:layout_height="47dp"
                 android:layout_marginEnd="8dp"
@@ -75,8 +89,8 @@
                 android:textStyle="bold"
                 app:backgroundTint="@color/green3"
                 app:cornerRadius="10dp"
-                app:layout_constraintBottom_toBottomOf="@+id/createImageView"
-                app:layout_constraintEnd_toEndOf="@+id/createImageView" />
+                app:layout_constraintBottom_toBottomOf="@+id/event_image_view"
+                app:layout_constraintEnd_toEndOf="@+id/event_image_view" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_title_Input"
@@ -92,7 +106,7 @@
                 android:textSize="34sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/createImageView" />
+                app:layout_constraintTop_toBottomOf="@+id/event_image_view" />
 
             <FrameLayout
                 android:id="@+id/event_info_frame"
