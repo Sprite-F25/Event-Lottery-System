@@ -1,9 +1,6 @@
 package com.example.sprite.screens.createEvent;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +23,6 @@ import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 import com.example.sprite.screens.organizer.eventDetails.EventInfoFragment;
 import com.google.android.material.button.MaterialButton;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 /**
  * Fragment for managing a single event as an organizer.
@@ -46,7 +38,7 @@ public class ManageEventFragment extends Fragment {
     private ImageService imageService;
     private ActivityResultLauncher<String> galleryLauncher;
 
-    private MaterialButton runLotteryButton, drawReplacementsButton, viewEntrantsButton, viewMapButton;
+    private MaterialButton runLotteryButton, viewEntrantsButton, viewMapButton;
     private TextView titleView, descriptionView;
     private EventInfoFragment eventInfoFragment;
     private ImageView eventImageView;
@@ -78,7 +70,6 @@ public class ManageEventFragment extends Fragment {
 
         // Buttons
         runLotteryButton = view.findViewById(R.id.runLotteryButton);
-        drawReplacementsButton = view.findViewById(R.id.drawReplacementsButton);
         viewEntrantsButton = view.findViewById(R.id.viewEntrantsButton);
         viewMapButton = view.findViewById(R.id.viewMapButton);
         editImageButton = view.findViewById(R.id.edit_image_button2);
@@ -108,8 +99,8 @@ public class ManageEventFragment extends Fragment {
                 titleView.setText(event.getTitle());
                 descriptionView.setText(event.getDescription());
                 eventInfoFragment.setFields(event.getLocation(), event.getEventStartDate(), event.getTime());
-
                 imageService.loadImage(event.getPosterImageUrl(), eventImageView);
+                updateLotteryButton();
             }
         });
 
@@ -131,30 +122,22 @@ public class ManageEventFragment extends Fragment {
                 return;
             }
 
+            // Check if lottery has been run
             if (selectedEvent.getStatus() == Event.EventStatus.LOTTERY_COMPLETED) {
-                Toast.makeText(requireContext(), "Lottery already completed.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            lotteryService.runLottery(selectedEvent);
-            // selectedEvent.setStatus(Event.EventStatus.LOTTERY_COMPLETED);
-            viewModel.setSelectedEvent(selectedEvent);
-            viewModel.setStatusLotteryComplete(selectedEvent);
-
-            Toast.makeText(requireContext(), "Lottery run successfully!", Toast.LENGTH_SHORT).show();
-        });
-
-        drawReplacementsButton.setOnClickListener(v -> {
-            if (selectedEvent == null) {
-                Toast.makeText(requireContext(), "No event selected.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            boolean success = lotteryService.drawReplacements(selectedEvent);
-            if (success) {
-                Toast.makeText(requireContext(), "Replacements drawn successfully!", Toast.LENGTH_SHORT).show();
+                // Draw replacements
+                boolean success = lotteryService.drawReplacements(selectedEvent);
+                if (success) {
+                    Toast.makeText(requireContext(), "Replacements drawn successfully!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(requireContext(), "No replacements drawn. Either no open slots or waitlist is empty.", Toast.LENGTH_SHORT).show();
+                }
             } else {
-                Toast.makeText(requireContext(), "No replacements drawn. Either no open slots or waitlist is empty.", Toast.LENGTH_SHORT).show();
+                // Run lottery
+                lotteryService.runLottery(selectedEvent);
+                viewModel.setSelectedEvent(selectedEvent);
+                viewModel.setStatusLotteryComplete(selectedEvent);
+                updateLotteryButton();
+                Toast.makeText(requireContext(), "Lottery run successfully!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -173,6 +156,21 @@ public class ManageEventFragment extends Fragment {
         viewMapButton.setOnClickListener(v ->
                 Toast.makeText(requireContext(), "Map feature in project part 4!", Toast.LENGTH_SHORT).show()
         );
+    }
+
+    /**
+     * Updates the lottery button text and behavior based on whether the lottery has been run.
+     */
+    private void updateLotteryButton() {
+        if (selectedEvent == null || runLotteryButton == null) {
+            return;
+        }
+
+        if (selectedEvent.getStatus() == Event.EventStatus.LOTTERY_COMPLETED) {
+            runLotteryButton.setText("Draw Replacements");
+        } else {
+            runLotteryButton.setText("Run Lottery");
+        }
     }
     /**
      * Sets up the gallery launcher and updates the event image view and uri

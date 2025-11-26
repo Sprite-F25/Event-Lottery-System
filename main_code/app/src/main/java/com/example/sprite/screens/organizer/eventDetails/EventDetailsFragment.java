@@ -119,7 +119,7 @@ public class EventDetailsFragment extends Fragment {
                 ? currentEvent.getWaitingList().size()
                 : 0;
 
-        joinWaitlistButton.setText("Join Waitlist (" + waitlistSize + ")");
+        joinWaitlistButton.setText("Join Waitlist (Waitlist Size: " + waitlistSize + ")");
         return view;
     }
 
