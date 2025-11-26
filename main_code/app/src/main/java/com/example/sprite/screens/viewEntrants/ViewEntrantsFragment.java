@@ -240,6 +240,16 @@ public class ViewEntrantsFragment extends Fragment {
                 continue;
             }
 
+            // opted out of notifs
+            if (!entrant.isNotificationsEnabled()) {
+                Log.d(TAG, "User " + entrant.getUserId() + " opted out. Skipping notification.");
+                failureCount[0]++;
+                if (successCount[0] + failureCount[0] == totalCount) {
+                    showCompletionMessage(successCount[0], failureCount[0]);
+                }
+                continue;
+            }
+
             String notificationId = UUID.randomUUID().toString();
             Notification notification = new Notification(
                 notificationId,
@@ -309,12 +319,12 @@ public class ViewEntrantsFragment extends Fragment {
         MaterialButton cancelBtn = popupView.findViewById(R.id.createEventButton);
 
 
-        //why is there two?
-        confirmBtn.setOnClickListener(v -> {
-
-            mViewModel.cancelEntrant(currentEvent, entrant);
-            dialog.dismiss();
-        });
+//        //why is there two?
+//        confirmBtn.setOnClickListener(v -> {
+//
+//            mViewModel.cancelEntrant(currentEvent, entrant);
+//            dialog.dismiss();
+//        });
 
         confirmBtn.setOnClickListener(v -> {
             mViewModel.cancelEntrant(currentEvent, entrant);

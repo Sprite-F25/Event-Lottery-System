@@ -91,12 +91,12 @@ public class NotificationService {
 
         // Ensure isRead is explicitly set to false
         notification.setRead(false);
-        
+
         db.collection(COLLECTION_NAME)
                 .document(notification.getNotificationId())
                 .set(notification)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "Notification created successfully: " + notification.getNotificationId() + 
+                    Log.d(TAG, "Notification created successfully: " + notification.getNotificationId() +
                         " with isRead=" + notification.isRead());
                     callback.onSuccess(notification);
                 })
