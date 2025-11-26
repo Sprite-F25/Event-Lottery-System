@@ -1,5 +1,6 @@
 package com.example.sprite.Models;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
  *     <li>Event history</li>
  * </ul>
  */
-public class User {
+public class User implements Serializable {
     private String name;
     //private String userRole;
     private String userId;
