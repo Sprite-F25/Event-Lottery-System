@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -32,18 +31,17 @@ import com.example.sprite.Models.User;
 import com.example.sprite.Models.Waitlist;
 import com.example.sprite.R;
 import com.google.android.material.button.MaterialButton;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 /**
  * Fragment that displays event details for entrants and allows them to interact with events.
- * 
+ *
  * <p>This fragment shows comprehensive event information and provides action buttons
  * based on the user's relationship with the event:
  * <ul>
@@ -51,32 +49,34 @@ import java.util.List;
  *     <li><b>Leave Waitlist:</b> Available when user is on the waitlist</li>
  *     <li><b>Accept/Decline:</b> Available when user has been selected from the waitlist</li>
  * </ul>
- * 
+ *
  * <p>The fragment dynamically updates button visibility based on the user's current
- * status with the event (waiting list, selected, confirmed, or cancelled).</p>
+ * status with the event (waiting list, selected, confirmed, or cancelled), and whether
+ * registration is still open.</p>
  */
 public class EventDetailsFragment extends Fragment {
 
     private static final String TAG = "EventDetailsFragment";
+
     private ImageService imageService;
 
     private EventDetailsViewModel mViewModel;
     private EventDetailsBottomScreen bottomScreenFragment;
-    
+
     private MaterialButton joinWaitlistButton;
     private MaterialButton leaveWaitlistButton;
     private Button acceptButton;
     private Button declineButton;
-    
+
+    private ImageView eventImageView;
+
     private Event currentEvent;
     private User currentUser;
-    private ImageView eventImageView;
     private DatabaseService databaseService;
     private Authentication_Service authService;
 
-    // used to check location permissions per device
+    // Used to check location permissions per device
     private ActivityResultLauncher<String> locationPermissionLauncher;
-
 
     /**
      * Creates a new instance of EventDetailsFragment.
@@ -93,34 +93,41 @@ public class EventDetailsFragment extends Fragment {
         mViewModel = new ViewModelProvider(this).get(EventDetailsViewModel.class);
         databaseService = new DatabaseService();
         authService = new Authentication_Service();
-        locationPermissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
-                isGranted -> {
-                    if (isGranted) {
-                        joinWaitlist();
-                    } else {
-                        Toast.makeText(getContext(),
-                                "Cannot join waitlist without location permission",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
 
+        locationPermissionLauncher =
+                registerForActivityResult(
+                        new ActivityResultContracts.RequestPermission(),
+                        isGranted -> {
+                            if (isGranted) {
+                                joinWaitlist();
+                            } else {
+                                Toast.makeText(
+                                        getContext(),
+                                        "Cannot join waitlist without location permission",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            }
+                        }
+                );
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState
+    ) {
         View view = inflater.inflate(R.layout.fragment_event_details, container, false);
-        
-        // Initialize buttons
+
+        // --- UI references ---
         joinWaitlistButton = view.findViewById(R.id.join_waitlist_button);
         leaveWaitlistButton = view.findViewById(R.id.leave_waitlist_button);
         acceptButton = view.findViewById(R.id.accept_button);
         declineButton = view.findViewById(R.id.decline_button);
         eventImageView = view.findViewById(R.id.event_image_view);
 
-        // Get event from arguments
+        // --- Get event from arguments ---
         Bundle arguments = getArguments();
         if (arguments != null) {
             Serializable eventSerializable = arguments.getSerializable("selectedEvent");
@@ -128,24 +135,33 @@ public class EventDetailsFragment extends Fragment {
                 currentEvent = (Event) eventSerializable;
             }
         }
-        imageService = new ImageService();
-        imageService.loadImage(currentEvent.getPosterImageUrl(), eventImageView);
 
-        // Setup bottom screen fragment
-        bottomScreenFragment =
-                (EventDetailsBottomScreen) getChildFragmentManager()
-                        .findFragmentById(R.id.bottom_screen_fragment);
-        if (bottomScreenFragment != null) {
-            bottomScreenFragment.setArguments(this.getArguments());
+        // Load poster image if available
+        imageService = new ImageService();
+        if (currentEvent != null) {
+            imageService.loadImage(currentEvent.getPosterImageUrl(), eventImageView);
         }
-        
-        // Fetch current user and setup buttons
-        fetchCurrentUser();
-        int waitlistSize = (currentEvent.getWaitingList() != null)
+
+        // --- Bottom sheet fragment still gets the same arguments ---
+        bottomScreenFragment = (EventDetailsBottomScreen)
+                getChildFragmentManager().findFragmentById(R.id.bottom_screen_fragment);
+        if (bottomScreenFragment != null) {
+            bottomScreenFragment.setArguments(getArguments());
+        }
+
+        // Simple initial label text for join button – updated again later in setupButtons()
+        int waitlistSize = (currentEvent != null && currentEvent.getWaitingList() != null)
                 ? currentEvent.getWaitingList().size()
                 : 0;
+        if (joinWaitlistButton != null) {
+            joinWaitlistButton.setText(
+                    "Join Waitlist (Waitlist Size: " + waitlistSize + ")"
+            );
+        }
 
-        joinWaitlistButton.setText("Join Waitlist");// (Waitlist Size: " + waitlistSize + ")");
+        // Load current user and then configure buttons
+        fetchCurrentUser();
+
         return view;
     }
 
@@ -155,31 +171,31 @@ public class EventDetailsFragment extends Fragment {
         // Refresh event data and button visibility when fragment becomes visible
         if (currentEvent != null && currentUser != null) {
             refreshEventAndUpdateButtons();
-            bottomScreenFragment.setEventText();
+            if (bottomScreenFragment != null) {
+                bottomScreenFragment.setEventText();
+            }
         }
     }
 
     /**
-     * Refreshes the event from the database and updates button visibility.
+     * Refresh event from Firestore and then update buttons / status UI.
      */
     private void refreshEventAndUpdateButtons() {
-        if (currentEvent == null) {
-            return;
-        }
+        if (currentEvent == null) return;
 
         databaseService.getEvent(currentEvent.getEventId(), task -> {
             if (task.isSuccessful() && task.getResult() != null) {
                 Event updatedEvent = task.getResult().toObject(Event.class);
                 if (updatedEvent != null) {
                     currentEvent = updatedEvent;
-                    setupButtons(); // Update button visibility with fresh data
+                    setupButtons();
                 }
             }
         });
     }
 
     /**
-     * Fetches the current user and sets up button visibility and listeners.
+     * Load current user profile and then configure UI.
      */
     private void fetchCurrentUser() {
         if (!authService.isUserLoggedIn() || authService.getCurrentUser() == null) {
@@ -189,7 +205,6 @@ public class EventDetailsFragment extends Fragment {
         }
 
         String uid = authService.getCurrentUser().getUid();
-        
         authService.getUserProfile(uid, new Authentication_Service.AuthCallback() {
             @Override
             public void onSuccess(User user) {
@@ -206,7 +221,9 @@ public class EventDetailsFragment extends Fragment {
     }
 
     /**
-     * Sets up button visibility and click listeners based on user's status.
+     * Decide which buttons to show based on:
+     *  - registration open/closed
+     *  - entrant’s status (waitlist / selected / confirmed / cancelled)
      */
     private void setupButtons() {
         if (currentEvent == null || currentUser == null) {
@@ -215,82 +232,83 @@ public class EventDetailsFragment extends Fragment {
         }
 
         String userId = currentUser.getUserId();
-        List<String> waitingList = currentEvent.getWaitingList() != null ? 
-            currentEvent.getWaitingList() : new ArrayList<>();
-        List<String> selectedList = currentEvent.getSelectedAttendees() != null ? 
-            currentEvent.getSelectedAttendees() : new ArrayList<>();
-        List<String> confirmedList = currentEvent.getConfirmedAttendees() != null ? 
-            currentEvent.getConfirmedAttendees() : new ArrayList<>();
-        List<String> cancelledList = currentEvent.getCancelledAttendees() != null ? 
-            currentEvent.getCancelledAttendees() : new ArrayList<>();
+        List<String> waitingList = currentEvent.getWaitingList() != null
+                ? currentEvent.getWaitingList()
+                : new ArrayList<>();
+        List<String> selectedList = currentEvent.getSelectedAttendees() != null
+                ? currentEvent.getSelectedAttendees()
+                : new ArrayList<>();
+        List<String> confirmedList = currentEvent.getConfirmedAttendees() != null
+                ? currentEvent.getConfirmedAttendees()
+                : new ArrayList<>();
+        List<String> cancelledList = currentEvent.getCancelledAttendees() != null
+                ? currentEvent.getCancelledAttendees()
+                : new ArrayList<>();
 
-        // Check if user is confirmed - if so, hide all buttons
         boolean isConfirmed = confirmedList.contains(userId);
+        boolean isOnWaitlist = waitingList.contains(userId);
+        boolean isSelected = selectedList.contains(userId)
+                && !confirmedList.contains(userId)
+                && !cancelledList.contains(userId);
+
+        // Once confirmed, no more actions for this entrant.
         if (isConfirmed) {
             hideAllButtons();
+            updateBottomScreenFragment();
             return;
         }
-        
-        // Check if user is on waiting list
-        boolean isOnWaitlist = waitingList.contains(userId);
-        
-        // Check if user is selected (but not yet confirmed or cancelled)
-        boolean isSelected = selectedList.contains(userId) && 
-                           !confirmedList.contains(userId) && 
-                           !cancelledList.contains(userId);
 
-        // Set button visibility
-        if (isSelected) {
-            // User is selected - show accept/decline buttons
-            showAcceptDeclineButtons();
-        } else if (isOnWaitlist && currentEvent.getStatus()!= Event.EventStatus.LOTTERY_COMPLETED) {
-            // User is on waitlist - show leave waitlist button
-            showLeaveWaitlistButton();
-        } else if (currentEvent.getStatus() !=  Event.EventStatus.LOTTERY_COMPLETED){
-            // User is not on waitlist - show join waitlist button
-            showJoinWaitlistButton();
+        boolean registrationClosed = isRegistrationClosedForCurrentUser();
+
+        if (registrationClosed) {
+            // Registration closed:
+            // - selected entrants can still accept/decline
+            // - everyone else cannot change waitlist
+            if (isSelected) {
+                showAcceptDeclineButtons();
+            } else {
+                hideAllButtons();
+            }
         } else {
-            hideAllButtons();
+            // Registration open
+            if (isSelected) {
+                showAcceptDeclineButtons();
+            } else if (isOnWaitlist) {
+                showLeaveWaitlistButton();
+            } else {
+                showJoinWaitlistButton();
+            }
         }
+
         updateBottomScreenFragment();
-        // Setup click listeners
         setupClickListeners();
     }
 
     /**
-     * Refreshes the event info of the bottom screen fragment
+     * Refreshes the event info of the bottom-screen fragment.
      */
     private void updateBottomScreenFragment() {
-        bottomScreenFragment.setSelectedEvent(currentEvent);
-        bottomScreenFragment.setEventText();
+        if (bottomScreenFragment != null && currentEvent != null) {
+            bottomScreenFragment.setSelectedEvent(currentEvent);
+            bottomScreenFragment.setEventText();
+        }
     }
 
-
-
-    /**
-     * Sets up click listeners for all buttons.
-     */
     private void setupClickListeners() {
         if (joinWaitlistButton != null) {
             joinWaitlistButton.setOnClickListener(v -> joinWaitlist());
         }
-        
         if (leaveWaitlistButton != null) {
             leaveWaitlistButton.setOnClickListener(v -> leaveWaitlist());
         }
-        
         if (acceptButton != null) {
             acceptButton.setOnClickListener(v -> acceptInvitation());
         }
-        
         if (declineButton != null) {
             declineButton.setOnClickListener(v -> declineInvitation());
         }
     }
 
-    /**
-     * Shows only the join waitlist button.
-     */
     private void showJoinWaitlistButton() {
         if (joinWaitlistButton != null) joinWaitlistButton.setVisibility(View.VISIBLE);
         if (leaveWaitlistButton != null) leaveWaitlistButton.setVisibility(View.INVISIBLE);
@@ -298,9 +316,6 @@ public class EventDetailsFragment extends Fragment {
         if (declineButton != null) declineButton.setVisibility(View.INVISIBLE);
     }
 
-    /**
-     * Shows only the leave waitlist button.
-     */
     private void showLeaveWaitlistButton() {
         if (joinWaitlistButton != null) joinWaitlistButton.setVisibility(View.INVISIBLE);
         if (leaveWaitlistButton != null) leaveWaitlistButton.setVisibility(View.VISIBLE);
@@ -308,9 +323,6 @@ public class EventDetailsFragment extends Fragment {
         if (declineButton != null) declineButton.setVisibility(View.INVISIBLE);
     }
 
-    /**
-     * Shows only the accept and decline buttons.
-     */
     private void showAcceptDeclineButtons() {
         if (joinWaitlistButton != null) joinWaitlistButton.setVisibility(View.INVISIBLE);
         if (leaveWaitlistButton != null) leaveWaitlistButton.setVisibility(View.INVISIBLE);
@@ -318,9 +330,6 @@ public class EventDetailsFragment extends Fragment {
         if (declineButton != null) declineButton.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Hides all action buttons.
-     */
     private void hideAllButtons() {
         if (joinWaitlistButton != null) joinWaitlistButton.setVisibility(View.INVISIBLE);
         if (leaveWaitlistButton != null) leaveWaitlistButton.setVisibility(View.INVISIBLE);
@@ -329,8 +338,38 @@ public class EventDetailsFragment extends Fragment {
     }
 
     /**
+     * Returns true if registration is closed for this event.
+     * Registration is considered closed when:
+     *  - the current time is after registrationEndDate, OR
+     *  - the status is explicitly REGISTRATION_CLOSED or EVENT_COMPLETED.
+     *
+     * (Note: LOTTERY_COMPLETED alone does NOT necessarily close registration.)
+     */
+    private boolean isRegistrationClosedForCurrentUser() {
+        if (currentEvent == null) {
+            return false;
+        }
+
+        Event.EventStatus status = currentEvent.getStatus();
+        if (status == Event.EventStatus.REGISTRATION_CLOSED
+                || status == Event.EventStatus.EVENT_COMPLETED) {
+            return true;
+        }
+
+        Date end = currentEvent.getRegistrationEndDate();
+        if (end != null) {
+            Date now = new Date();
+            if (now.after(end)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Adds the current user to the event's waiting list.
-     * Checks if the waitlist is full before adding the user.
+     * Checks if the waitlist is full and if registration is open.
      */
     private void joinWaitlist() {
         if (currentEvent == null || currentUser == null) {
@@ -338,10 +377,21 @@ public class EventDetailsFragment extends Fragment {
             return;
         }
 
+        // Registration closed? Block join.
+        if (isRegistrationClosedForCurrentUser()) {
+            Toast.makeText(getContext(),
+                    "Registration is closed for this event",
+                    Toast.LENGTH_SHORT).show();
+            hideAllButtons();
+            return;
+        }
+
         // Check location permission if geolocation is required
         if (currentEvent.isGeolocationRequired()) {
-            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED) {
                 locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
                 return;
             }
@@ -351,7 +401,7 @@ public class EventDetailsFragment extends Fragment {
         databaseService.getEvent(currentEvent.getEventId(), task -> {
             if (!task.isSuccessful() || task.getResult() == null) {
                 Toast.makeText(getContext(), "Failed to load event", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Error getting event: " + task.getException());
+                Log.e(TAG, "Error getting event: ", task.getException());
                 return;
             }
 
@@ -359,39 +409,52 @@ public class EventDetailsFragment extends Fragment {
             if (updatedEvent == null) return;
             currentEvent = updatedEvent;
 
-            String userId = currentUser.getUserId();
-            List<String> waitingList = currentEvent.getWaitingList() != null ?
-                    currentEvent.getWaitingList() : new ArrayList<>();
-
-            // Already on waitlist?
-            if (waitingList.contains(userId)) {
-                Toast.makeText(getContext(), "You are already on the waitlist", Toast.LENGTH_SHORT).show();
+            // Check again with fresh data
+            if (isRegistrationClosedForCurrentUser()) {
+                Toast.makeText(getContext(),
+                        "Registration is closed for this event",
+                        Toast.LENGTH_SHORT).show();
+                hideAllButtons();
                 return;
             }
 
-            // Waitlist full?
+            String userId = currentUser.getUserId();
+            List<String> waitingList = currentEvent.getWaitingList() != null
+                    ? currentEvent.getWaitingList()
+                    : new ArrayList<>();
+
+            if (waitingList.contains(userId)) {
+                Toast.makeText(getContext(),
+                        "You are already on the waitlist",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             int maxWaitingListSize = currentEvent.getMaxWaitingListSize();
             if (maxWaitingListSize > 0 && waitingList.size() >= maxWaitingListSize) {
-                Toast.makeText(getContext(), "Waitlist is full", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),
+                        "Waitlist is full",
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Add user to waitlist
             waitingList.add(userId);
             currentEvent.setWaitingList(waitingList);
-
 
             if (currentEvent.isGeolocationRequired()) {
                 saveUserLocationWithoutPlayServices(userId);
             } else {
-                // Update database directly if location not required
                 databaseService.updateEvent(currentEvent, updateTask -> {
                     if (updateTask.isSuccessful()) {
-                        Toast.makeText(getContext(), "Successfully joined waitlist!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(),
+                                "Successfully joined waitlist!",
+                                Toast.LENGTH_SHORT).show();
                         setupButtons();
                     } else {
-                        Toast.makeText(getContext(), "Failed to join waitlist", Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "Error updating event: " + updateTask.getException());
+                        Toast.makeText(getContext(),
+                                "Failed to join waitlist",
+                                Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Error updating event: ", updateTask.getException());
                     }
                 });
             }
@@ -400,19 +463,22 @@ public class EventDetailsFragment extends Fragment {
 
     /**
      * Saves user's last known location using Android's LocationManager.
-     * @param
-     *      userId User attempting to join the waitlist
+     *
+     * @param userId User attempting to join the waitlist
      */
     @SuppressLint("MissingPermission")
     private void saveUserLocationWithoutPlayServices(String userId) {
-        LocationManager locationManager = getActivity() != null
-                ? (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE)
-                : null;
+        LocationManager locationManager =
+                getActivity() != null
+                        ? (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE)
+                        : null;
 
         if (locationManager == null) return;
 
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED) {
             Context context = getContext();
             if (context != null) {
                 Toast.makeText(context, "Location permission not granted", Toast.LENGTH_SHORT).show();
@@ -430,25 +496,28 @@ public class EventDetailsFragment extends Fragment {
             return;
         }
 
-        // Request single update from GPS
-        locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new android.location.LocationListener() {
-            @Override
-            public void onLocationChanged(@NonNull Location location) {
-                saveLocationToEvent(userId, location);
-            }
-            @Override public void onProviderEnabled(@NonNull String provider) {}
-            @Override public void onProviderDisabled(@NonNull String provider) {}
-            @Override public void onStatusChanged(String provider, int status, Bundle extras) {}
-        }, null);
+        locationManager.requestSingleUpdate(
+                LocationManager.GPS_PROVIDER,
+                new android.location.LocationListener() {
+                    @Override
+                    public void onLocationChanged(@NonNull Location location) {
+                        saveLocationToEvent(userId, location);
+                    }
+                    @Override public void onProviderEnabled(@NonNull String provider) {}
+                    @Override public void onProviderDisabled(@NonNull String provider) {}
+                    @Override public void onStatusChanged(String provider, int status, Bundle extras) {}
+                },
+                null
+        );
     }
-
-
 
     private void saveLocationToEvent(String userId, Location location) {
         if (location == null) {
             Context context = getContext();
             if (context != null) {
-                Toast.makeText(context, "Could not get device location", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,
+                        "Could not get device location",
+                        Toast.LENGTH_SHORT).show();
             }
             return;
         }
@@ -462,36 +531,49 @@ public class EventDetailsFragment extends Fragment {
 
         databaseService.updateEvent(currentEvent, updateTask -> {
             Context context = getContext();
-            if (context == null) return; // Fragment detached
+            if (context == null) return;
 
             if (updateTask.isSuccessful()) {
-                Toast.makeText(context, "Successfully joined waitlist!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,
+                        "Successfully joined waitlist!",
+                        Toast.LENGTH_SHORT).show();
                 setupButtons();
             } else {
-                Toast.makeText(context, "Failed to join waitlist", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Error updating event: " + updateTask.getException());
+                Toast.makeText(context,
+                        "Failed to join waitlist",
+                        Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Error updating event: ", updateTask.getException());
             }
         });
     }
 
-
-
-
-
-
     /**
      * Removes the current user from the event's waiting list.
+     * Also blocked when registration is closed.
      */
     private void leaveWaitlist() {
         if (currentEvent == null || currentUser == null) {
-            Toast.makeText(getContext(), "Unable to leave waitlist", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),
+                    "Unable to leave waitlist",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // If registration is closed, they can’t modify the waitlist anymore
+        if (isRegistrationClosedForCurrentUser()) {
+            Toast.makeText(getContext(),
+                    "Registration is closed – you can’t change the waitlist anymore",
+                    Toast.LENGTH_SHORT).show();
+            hideAllButtons();
             return;
         }
 
         databaseService.getEvent(currentEvent.getEventId(), task -> {
             if (!task.isSuccessful() || task.getResult() == null) {
-                Toast.makeText(getContext(), "Failed to load event", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Error getting event: " + task.getException());
+                Toast.makeText(getContext(),
+                        "Failed to load event",
+                        Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Error getting event: ", task.getException());
                 return;
             }
 
@@ -499,13 +581,24 @@ public class EventDetailsFragment extends Fragment {
             if (updatedEvent == null) return;
 
             currentEvent = updatedEvent;
-            String userId = currentUser.getUserId();
 
+            if (isRegistrationClosedForCurrentUser()) {
+                Toast.makeText(getContext(),
+                        "Registration is closed – you can’t change the waitlist anymore",
+                        Toast.LENGTH_SHORT).show();
+                hideAllButtons();
+                return;
+            }
+
+            String userId = currentUser.getUserId();
             List<String> waitingList = currentEvent.getWaitingList() != null
-                    ? currentEvent.getWaitingList() : new ArrayList<>();
+                    ? currentEvent.getWaitingList()
+                    : new ArrayList<>();
 
             if (!waitingList.contains(userId)) {
-                Toast.makeText(getContext(), "You are not on the waitlist", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),
+                        "You are not on the waitlist",
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -517,16 +610,19 @@ public class EventDetailsFragment extends Fragment {
 
             databaseService.updateEvent(currentEvent, updateTask -> {
                 if (updateTask.isSuccessful()) {
-                    Toast.makeText(getContext(), "Successfully left waitlist", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),
+                            "Successfully left waitlist",
+                            Toast.LENGTH_SHORT).show();
                     setupButtons();
                 } else {
-                    Toast.makeText(getContext(), "Failed to leave waitlist", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "Error updating event: " + updateTask.getException());
+                    Toast.makeText(getContext(),
+                            "Failed to leave waitlist",
+                            Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Error updating event: ", updateTask.getException());
                 }
             });
         });
     }
-
 
     /**
      * Accepts the invitation when user is selected from waitlist.
@@ -535,51 +631,58 @@ public class EventDetailsFragment extends Fragment {
      */
     private void acceptInvitation() {
         if (currentEvent == null || currentUser == null) {
-            Toast.makeText(getContext(), "Unable to accept invitation", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),
+                    "Unable to accept invitation",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Refresh event from database first
         databaseService.getEvent(currentEvent.getEventId(), task -> {
             if (task.isSuccessful() && task.getResult() != null) {
                 Event updatedEvent = task.getResult().toObject(Event.class);
                 if (updatedEvent != null) {
                     currentEvent = updatedEvent;
-                    
+
                     String userId = currentUser.getUserId();
-                    List<String> selectedList = currentEvent.getSelectedAttendees() != null ? 
-                        currentEvent.getSelectedAttendees() : new ArrayList<>();
-                    List<String> confirmedList = currentEvent.getConfirmedAttendees() != null ? 
-                        currentEvent.getConfirmedAttendees() : new ArrayList<>();
-                    
+                    List<String> selectedList = currentEvent.getSelectedAttendees() != null
+                            ? currentEvent.getSelectedAttendees()
+                            : new ArrayList<>();
+                    List<String> confirmedList = currentEvent.getConfirmedAttendees() != null
+                            ? currentEvent.getConfirmedAttendees()
+                            : new ArrayList<>();
+
                     if (!selectedList.contains(userId)) {
-                        Toast.makeText(getContext(), "You are not selected for this event", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(),
+                                "You are not selected for this event",
+                                Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    
-                    // Add to confirmed list if not already there
+
                     if (!confirmedList.contains(userId)) {
                         confirmedList.add(userId);
                         currentEvent.setConfirmedAttendees(confirmedList);
                     }
-                    
-                    // Update event in database
+
                     databaseService.updateEvent(currentEvent, updateTask -> {
                         if (updateTask.isSuccessful()) {
-                            Toast.makeText(getContext(), "Invitation accepted!", Toast.LENGTH_SHORT).show();
-                            // Hide all buttons after accepting - user is now confirmed
+                            Toast.makeText(getContext(),
+                                    "Invitation accepted!",
+                                    Toast.LENGTH_SHORT).show();
                             hideAllButtons();
                         } else {
-                            Toast.makeText(getContext(), "Failed to accept invitation", Toast.LENGTH_SHORT).show();
-                            Log.e(TAG, "Error updating event: " + updateTask.getException());
-                            // Still refresh buttons in case of error
+                            Toast.makeText(getContext(),
+                                    "Failed to accept invitation",
+                                    Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error updating event: ", updateTask.getException());
                             setupButtons();
                         }
                     });
                 }
             } else {
-                Toast.makeText(getContext(), "Failed to load event", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Error getting event: " + task.getException());
+                Toast.makeText(getContext(),
+                        "Failed to load event",
+                        Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Error getting event: ", task.getException());
             }
         });
     }
@@ -590,37 +693,42 @@ public class EventDetailsFragment extends Fragment {
      */
     private void declineInvitation() {
         if (currentEvent == null || currentUser == null) {
-            Toast.makeText(getContext(), "Unable to decline invitation", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(),
+                    "Unable to decline invitation",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Refresh event from database first
         databaseService.getEvent(currentEvent.getEventId(), task -> {
             if (task.isSuccessful() && task.getResult() != null) {
                 Event updatedEvent = task.getResult().toObject(Event.class);
                 if (updatedEvent != null) {
                     currentEvent = updatedEvent;
-                    
+
                     Waitlist waitlist = new Waitlist(currentEvent);
                     String userId = currentUser.getUserId();
-                    
-                    // Move to cancelled list
+
                     waitlist.moveToCancelled(userId);
-                    
-                    // Update event in database
+
                     databaseService.updateEvent(currentEvent, updateTask -> {
                         if (updateTask.isSuccessful()) {
-                            Toast.makeText(getContext(), "Invitation declined", Toast.LENGTH_SHORT).show();
-                            setupButtons(); // Refresh button visibility
+                            Toast.makeText(getContext(),
+                                    "Invitation declined",
+                                    Toast.LENGTH_SHORT).show();
+                            setupButtons();
                         } else {
-                            Toast.makeText(getContext(), "Failed to decline invitation", Toast.LENGTH_SHORT).show();
-                            Log.e(TAG, "Error updating event: " + updateTask.getException());
+                            Toast.makeText(getContext(),
+                                    "Failed to decline invitation",
+                                    Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error updating event: ", updateTask.getException());
                         }
                     });
                 }
             } else {
-                Toast.makeText(getContext(), "Failed to load event", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Error getting event: " + task.getException());
+                Toast.makeText(getContext(),
+                        "Failed to load event",
+                        Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Error getting event: ", task.getException());
             }
         });
     }
@@ -638,9 +746,10 @@ public class EventDetailsFragment extends Fragment {
         LocationManager locationManager = (LocationManager) requireContext()
                 .getSystemService(Context.LOCATION_SERVICE);
 
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Shouldn't happen because permission is checked before calling this method
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
 
@@ -650,17 +759,18 @@ public class EventDetailsFragment extends Fragment {
             waitlist.addEntrantLocation(userId, geo);
         }
 
-        // Always update event
         databaseService.updateEvent(currentEvent, updateTask -> {
             if (updateTask.isSuccessful()) {
-                Toast.makeText(getContext(), "Successfully joined waitlist!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),
+                        "Successfully joined waitlist!",
+                        Toast.LENGTH_SHORT).show();
                 setupButtons();
             } else {
-                Toast.makeText(getContext(), "Failed to join waitlist", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Error updating event: " + updateTask.getException());
+                Toast.makeText(getContext(),
+                        "Failed to join waitlist",
+                        Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Error updating event: ", updateTask.getException());
             }
         });
     }
-
-
 }
