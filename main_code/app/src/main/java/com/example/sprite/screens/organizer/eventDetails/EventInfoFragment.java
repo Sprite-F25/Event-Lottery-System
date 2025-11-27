@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sprite.R;
@@ -49,6 +50,11 @@ public class EventInfoFragment extends Fragment {
     private EditText locationInput;
     private TextView timeInput;
     private TextView dateInput;
+
+    private ImageView editLocation;
+    private ImageView editDate;
+    private ImageView editTime;
+
     private Boolean isEditable = Boolean.FALSE;
 
     /**
@@ -77,11 +83,17 @@ public class EventInfoFragment extends Fragment {
         locationInput = view.findViewById(R.id.location_input);
         dateInput = view.findViewById(R.id.date_input);
         timeInput = view.findViewById(R.id.time_input);
+        editLocation = view.findViewById(R.id.edit_location_icon);
+        editDate = view.findViewById(R.id.edit_date_icon);
+        editTime = view.findViewById(R.id.edit_time_icon);
     }
 
     private void setUpListeners()
     {
         if (isEditable) {
+            editLocation.setVisibility(View.VISIBLE);
+            editDate.setVisibility(View.VISIBLE);
+            editTime.setVisibility(View.VISIBLE);
             locationInput.setFocusable(true);
             locationInput.setClickable(true);
             locationInput.addTextChangedListener(new TextWatcher() {
@@ -102,7 +114,11 @@ public class EventInfoFragment extends Fragment {
             });
             dateInput.setOnClickListener(v -> mCreateEventViewModel.setDate(getDate()));
             timeInput.setOnClickListener(v -> mCreateEventViewModel.setTime(getTime()));
+
         } else {
+            editLocation.setVisibility(View.INVISIBLE);
+            editDate.setVisibility(View.INVISIBLE);
+            editTime.setVisibility(View.INVISIBLE);
             locationInput.setFocusable(false);
             locationInput.setClickable(false);
         }
