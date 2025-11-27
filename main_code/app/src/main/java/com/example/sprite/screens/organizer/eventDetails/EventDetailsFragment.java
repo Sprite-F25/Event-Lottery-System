@@ -232,12 +232,14 @@ public class EventDetailsFragment extends Fragment {
         if (isSelected) {
             // User is selected - show accept/decline buttons
             showAcceptDeclineButtons();
-        } else if (isOnWaitlist) {
+        } else if (isOnWaitlist && currentEvent.getStatus()!= Event.EventStatus.LOTTERY_COMPLETED) {
             // User is on waitlist - show leave waitlist button
             showLeaveWaitlistButton();
-        } else {
+        } else if (currentEvent.getStatus() !=  Event.EventStatus.LOTTERY_COMPLETED){
             // User is not on waitlist - show join waitlist button
             showJoinWaitlistButton();
+        } else {
+            hideAllButtons();
         }
 
         // Setup click listeners

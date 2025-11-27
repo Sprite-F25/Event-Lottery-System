@@ -318,14 +318,6 @@ public class ViewEntrantsFragment extends Fragment {
         MaterialButton confirmBtn = popupView.findViewById(R.id.createEventButton2);
         MaterialButton cancelBtn = popupView.findViewById(R.id.createEventButton);
 
-
-//        //why is there two?
-//        confirmBtn.setOnClickListener(v -> {
-//
-//            mViewModel.cancelEntrant(currentEvent, entrant);
-//            dialog.dismiss();
-//        });
-
         confirmBtn.setOnClickListener(v -> {
             mViewModel.cancelEntrant(currentEvent, entrant);
             dialog.dismiss();

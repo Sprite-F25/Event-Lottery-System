@@ -98,16 +98,21 @@ public class ManageEventFragment extends Fragment {
         });
 
         // Geolocation
+
         viewModel.getGeolocationRequired().observe(getViewLifecycleOwner(), required -> {
             if (required != null) {
                 geolocationToggle.setChecked(required);
             }
         });
+
+        viewMapButton.setEnabled(geolocationToggle.isChecked());
+        viewMapButton.setAlpha(geolocationToggle.isChecked() ? 1f : 0.9f);
         geolocationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             viewModel.setGeolocationRequired(isChecked);
-            Toast.makeText(requireContext(),
-                    "Geolocation requirement " + (isChecked ? "enabled" : "disabled"),
-                    Toast.LENGTH_SHORT).show();
+
+            // Enable/disable viewMap button
+            viewMapButton.setEnabled(isChecked);
+            viewMapButton.setAlpha(isChecked ? 1f : 0.9f);
         });
 
         setupButtonListeners();
