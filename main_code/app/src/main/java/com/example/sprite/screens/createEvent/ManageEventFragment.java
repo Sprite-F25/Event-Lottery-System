@@ -23,6 +23,7 @@ import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 import com.example.sprite.screens.organizer.eventDetails.EventInfoFragment;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 /**
  * Fragment for managing a single event as an organizer.
@@ -42,6 +43,7 @@ public class ManageEventFragment extends Fragment {
     private TextView titleView, descriptionView;
     private EventInfoFragment eventInfoFragment;
     private ImageView eventImageView;
+    private SwitchMaterial geolocationToggle;
     private Button editImageButton;
 
     private Event selectedEvent;
@@ -82,6 +84,7 @@ public class ManageEventFragment extends Fragment {
         eventInfoFragment =
                 (EventInfoFragment) getChildFragmentManager()
                         .findFragmentById(R.id.fragment_event_info_view);
+        geolocationToggle = view.findViewById(R.id.geolocationToggle);
 
         viewModel = new ViewModelProvider(this).get(ManageEventViewModel.class);
         lotteryService = new LotteryService();
@@ -93,6 +96,11 @@ public class ManageEventFragment extends Fragment {
             viewModel.setSelectedEvent(selectedEvent);
         }
 
+        // Initialize geolocation toggle from event attribute
+        if (selectedEvent != null) {
+            geolocationToggle.setChecked(selectedEvent.isGeolocationRequired());
+        }
+
         viewModel.getSelectedEvent().observe(getViewLifecycleOwner(), event -> {
             if (event != null) {
                 selectedEvent = event;
@@ -102,6 +110,24 @@ public class ManageEventFragment extends Fragment {
                 imageService.loadImage(event.getPosterImageUrl(), eventImageView);
                 updateLotteryButton();
             }
+        });
+
+        // Geolocation
+
+        viewModel.getGeolocationRequired().observe(getViewLifecycleOwner(), required -> {
+            if (required != null) {
+                geolocationToggle.setChecked(required);
+            }
+        });
+
+        viewMapButton.setEnabled(geolocationToggle.isChecked());
+        viewMapButton.setAlpha(geolocationToggle.isChecked() ? 1f : 0.9f);
+        geolocationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            viewModel.setGeolocationRequired(isChecked);
+
+            // Enable/disable viewMap button
+            viewMapButton.setEnabled(isChecked);
+            viewMapButton.setAlpha(isChecked ? 1f : 0.9f);
         });
 
         setupButtonListeners();
@@ -153,9 +179,11 @@ public class ManageEventFragment extends Fragment {
             Navigation.findNavController(v).navigate(R.id.fragment_view_entrants, bundle);
         });
 
-        viewMapButton.setOnClickListener(v ->
-                Toast.makeText(requireContext(), "Map feature in project part 4!", Toast.LENGTH_SHORT).show()
-        );
+        viewMapButton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("selectedEvent", selectedEvent);
+            Navigation.findNavController(v).navigate(R.id.fragment_view_map, bundle);
+        });
     }
 
     /**

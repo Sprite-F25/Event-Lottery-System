@@ -86,6 +86,53 @@
                 android:paddingStart="0dp"
                 android:paddingTop="8dp" />
 
+            <!-- Section 3: Notification Preferences -->
+            <TextView
+                android:id="@+id/tv_notification_heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Notifications"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:paddingTop="32dp"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                android:id="@+id/tv_notification_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Choose whether you want to receive notifications from organizers and admins."
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:lineSpacingExtra="4dp"
+                android:paddingBottom="16dp" />
+
+            <!-- Toggle switch with label -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingBottom="8dp">
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch_notifications_opt_out"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp" />
+
+                <TextView
+                    android:id="@+id/tv_notifications_opt_out_label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Receive notifications from organizers and admins"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black" />
+            </LinearLayout>
+
+
         </LinearLayout>
     </ScrollView>
 

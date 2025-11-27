@@ -1,9 +1,13 @@
 package com.example.sprite.Models;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an event in the system. Events can be created by organizers
@@ -58,6 +62,8 @@ public class Event implements Serializable {
     private Boolean geolocation;
 
     private int entrantLimit;
+    private Map<String, GeoPoint> waitingListLocations;
+
 
 
     /**
@@ -123,6 +129,7 @@ public class Event implements Serializable {
         this.createdAt = new Date();
         this.updatedAt = new Date();
         this.geolocationRequired = false;
+        this.waitingListLocations = new HashMap<>();
     }
 
     /**
@@ -596,6 +603,27 @@ public class Event implements Serializable {
     public void setWaitingList(List<String> waitingList) {
         this.waitingList = waitingList;
     }
+
+
+    /**
+     * Returns a mapping of user IDs to the geographic location where they joined the waitlist.
+     *
+     * @return A map of user IDs to GeoPoint locations
+     */
+    public Map<String, GeoPoint> getWaitingListLocations() {
+        return waitingListLocations;
+    }
+
+    /**
+     * Sets the list of user IDs and locations on the waiting list for this event.
+     *
+     * @param waitingListLocations a map from user IDs to GeoPoint objects.
+     *
+     */
+    public void setWaitingListLocations(Map<String, GeoPoint> waitingListLocations) {
+        this.waitingListLocations = waitingListLocations;
+    }
+
 }
 
 

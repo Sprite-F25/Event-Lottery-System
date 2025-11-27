@@ -205,4 +205,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Geolocation toggle -->
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/geolocationToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Require Geolocation"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="32dp"
+        app:layout_constraintBottom_toTopOf="@id/viewMapButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,11 +3,14 @@ package com.example.sprite.screens.createEvent;
 import android.net.Uri;
 import android.widget.ImageView;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.sprite.Controllers.ImageService;
+import com.example.sprite.Controllers.DatabaseService;
 import com.example.sprite.Models.Event;
 
 /**
@@ -18,6 +21,7 @@ import com.example.sprite.Models.Event;
 public class ManageEventViewModel extends ViewModel {
 
     private final MutableLiveData<Event> selectedEvent = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> geolocationRequired = new MutableLiveData<>();
 
     /**
      * Returns a LiveData object to observe the currently selected event.
@@ -58,4 +62,40 @@ public class ManageEventViewModel extends ViewModel {
         ImageService imageService = new ImageService();
         imageService.setEventImageUri(selectedEvent.getValue(), uri, () -> {view.setImageURI(uri);});
     }
+
+    /**
+     * Returns a LiveData object representing whether geolocation is required for the selected event.
+     *
+     * @return LiveData containing a Boolean indicating geolocation requirement.
+     */
+    public LiveData<Boolean> getGeolocationRequired() {
+        return geolocationRequired;
+    }
+
+    /**
+     * Sets the geolocation requirement for the selected event.
+     * Updates the LiveData and modifies the selected Event's property.
+     *
+     * @param required True if geolocation should be required, false otherwise.
+     */
+    public void setGeolocationRequired(Boolean required) {
+        geolocationRequired.setValue(required);
+
+        Event event = selectedEvent.getValue();
+        if (event != null) {
+            event.setGeolocationRequired(required);
+            setSelectedEvent(event);
+        }
+
+        DatabaseService dbService = new DatabaseService();
+        assert event != null;
+        dbService.updateEvent(event, task -> {
+            if (task.isSuccessful()) {
+                Log.i("ManageEventViewModel", "Geolocation requirement updated successfully: " + event.getEventId());
+            } else {
+                Log.e("ManageEventViewModel", "Failed to update geolocation requirement", task.getException());
+            }
+        });
+    }
+
 }
