@@ -298,7 +298,7 @@ public class CreateEventFragment extends Fragment {
         }
 
         // Validate event title
-        if (eventTitle.isEmpty() || eventTitle.equals("Event Title")) {
+        if (eventTitle.isEmpty()) {
             Toast.makeText(getContext(), "Event Title is required", Toast.LENGTH_SHORT).show();
             eventTitleInput.requestFocus();
             return;
