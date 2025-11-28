@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ public class EventDetailsBottomScreen extends Fragment {
     private TextView titleView;
     private TextView descView;
     private TextView priceView;
+    private TextView waitingListText;
 
     private EventInfoFragment eventInfoFragment;
 
@@ -51,6 +53,7 @@ public class EventDetailsBottomScreen extends Fragment {
         titleView = view.findViewById(R.id.event_title_view);
         descView = view.findViewById(R.id.desc_view);
         priceView = view.findViewById(R.id.price_view);
+        waitingListText = view.findViewById(R.id.waiting_count_text);
         eventInfoFragment =
                 (EventInfoFragment) getChildFragmentManager()
                         .findFragmentById(R.id.fragment_event_info_view);
@@ -70,6 +73,15 @@ public class EventDetailsBottomScreen extends Fragment {
     }
 
     /**
+     * Updates the selectedEvent
+     * @param event the selected event
+     */
+    public void setSelectedEvent(Event event)
+    {
+        selectedEvent = event;
+    }
+
+    /**
      * Updates the UI with event information.
      * 
      * <p>Sets the title, description, price, and location/date/time fields
@@ -82,6 +94,9 @@ public class EventDetailsBottomScreen extends Fragment {
         String formattedPrice = String.format("$%.2f", selectedEvent.getPrice());
         priceView.setText(formattedPrice);
         eventInfoFragment.setFields(selectedEvent.getLocation(), selectedEvent.getEventStartDate(), selectedEvent.getTime());
+        if (selectedEvent.getWaitingList()!= null)
+            waitingListText.setText(String.valueOf(selectedEvent.getWaitingList().size()));
+        else { waitingListText.setText("0");}
     }
 
 }

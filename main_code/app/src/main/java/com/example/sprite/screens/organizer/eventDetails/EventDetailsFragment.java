@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -144,7 +145,7 @@ public class EventDetailsFragment extends Fragment {
                 ? currentEvent.getWaitingList().size()
                 : 0;
 
-        joinWaitlistButton.setText("Join Waitlist (Waitlist Size: " + waitlistSize + ")");
+        joinWaitlistButton.setText("Join Waitlist");// (Waitlist Size: " + waitlistSize + ")");
         return view;
     }
 
@@ -154,6 +155,7 @@ public class EventDetailsFragment extends Fragment {
         // Refresh event data and button visibility when fragment becomes visible
         if (currentEvent != null && currentUser != null) {
             refreshEventAndUpdateButtons();
+            bottomScreenFragment.setEventText();
         }
     }
 
@@ -250,10 +252,20 @@ public class EventDetailsFragment extends Fragment {
         } else {
             hideAllButtons();
         }
-
+        updateBottomScreenFragment();
         // Setup click listeners
         setupClickListeners();
     }
+
+    /**
+     * Refreshes the event info of the bottom screen fragment
+     */
+    private void updateBottomScreenFragment() {
+        bottomScreenFragment.setSelectedEvent(currentEvent);
+        bottomScreenFragment.setEventText();
+    }
+
+
 
     /**
      * Sets up click listeners for all buttons.
