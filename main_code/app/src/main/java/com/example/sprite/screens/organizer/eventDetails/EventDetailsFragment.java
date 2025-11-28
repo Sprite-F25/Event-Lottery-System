@@ -31,12 +31,11 @@ import com.example.sprite.Models.User;
 import com.example.sprite.Models.Waitlist;
 import com.example.sprite.R;
 import com.google.android.material.button.MaterialButton;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -237,14 +236,16 @@ public class EventDetailsFragment extends Fragment {
                            !confirmedList.contains(userId) && 
                            !cancelledList.contains(userId);
 
+        Date currentDate = new Date();
+        Date regDate = currentEvent.getRegistrationEndDate();
         // Set button visibility
         if (isSelected) {
             // User is selected - show accept/decline buttons
             showAcceptDeclineButtons();
-        } else if (isOnWaitlist && currentEvent.getStatus()!= Event.EventStatus.LOTTERY_COMPLETED) {
+        } else if (isOnWaitlist && currentEvent.getStatus()!= Event.EventStatus.LOTTERY_COMPLETED && regDate.after(currentDate)) {
             // User is on waitlist - show leave waitlist button
             showLeaveWaitlistButton();
-        } else if (currentEvent.getStatus() !=  Event.EventStatus.LOTTERY_COMPLETED){
+        } else if (currentEvent.getStatus() !=  Event.EventStatus.LOTTERY_COMPLETED && regDate.after(currentDate)){
             // User is not on waitlist - show join waitlist button
             showJoinWaitlistButton();
         } else {
