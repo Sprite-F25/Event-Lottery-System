@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sprite.R;
@@ -49,6 +50,11 @@ public class EventInfoFragment extends Fragment {
     private EditText locationInput;
     private TextView timeInput;
     private TextView dateInput;
+
+    private ImageView editLocation;
+    private ImageView editDate;
+    private ImageView editTime;
+
     private Boolean isEditable = Boolean.FALSE;
 
     /**
@@ -70,7 +76,6 @@ public class EventInfoFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getViews(view);
-        setUpListeners();
 
     }
     private void getViews(View view)
@@ -78,20 +83,28 @@ public class EventInfoFragment extends Fragment {
         locationInput = view.findViewById(R.id.location_input);
         dateInput = view.findViewById(R.id.date_input);
         timeInput = view.findViewById(R.id.time_input);
+        editLocation = view.findViewById(R.id.edit_location_icon);
+        editDate = view.findViewById(R.id.edit_date_icon);
+        editTime = view.findViewById(R.id.edit_time_icon);
     }
 
     private void setUpListeners()
     {
         if (isEditable) {
+            editLocation.setVisibility(View.VISIBLE);
+            editDate.setVisibility(View.VISIBLE);
+            editTime.setVisibility(View.VISIBLE);
+            locationInput.setFocusable(true);
+            locationInput.setClickable(true);
             locationInput.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void afterTextChanged(Editable s) {
-
+                    mCreateEventViewModel.setLocation(s.toString());
                 }
 
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    mCreateEventViewModel.setLocation(s.toString());
+
                 }
 
                 @Override
@@ -101,6 +114,13 @@ public class EventInfoFragment extends Fragment {
             });
             dateInput.setOnClickListener(v -> mCreateEventViewModel.setDate(getDate()));
             timeInput.setOnClickListener(v -> mCreateEventViewModel.setTime(getTime()));
+
+        } else {
+            editLocation.setVisibility(View.INVISIBLE);
+            editDate.setVisibility(View.INVISIBLE);
+            editTime.setVisibility(View.INVISIBLE);
+            locationInput.setFocusable(false);
+            locationInput.setClickable(false);
         }
     }
 
@@ -156,7 +176,7 @@ public class EventInfoFragment extends Fragment {
             Log.w("EventInfoFragment", "Parent fragment not recognized");
         }
 
-        // TODO: Use the ViewModel
+        setUpListeners();
     }
 
     /**
@@ -170,14 +190,21 @@ public class EventInfoFragment extends Fragment {
     {
         String eventDate = "";
         String eventTime = "";
-        locationInput.setText(l);
-        if (d != null && t != null){
-            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        String eventLocation = "";
+        if (d != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", Locale.getDefault());
             eventDate = sdf.format(d);
-            sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        }
+        if (t != null){
+            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
             eventTime = sdf.format(t);
+        }
+        if (l != null)
+        {
+            eventLocation = l;
         }
         dateInput.setText(eventDate);
         timeInput.setText(eventTime);
+        locationInput.setText(eventLocation);
     }
 }

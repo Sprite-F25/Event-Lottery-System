@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -24,11 +25,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Controllers.DatabaseService;
+import com.example.sprite.Controllers.ImageService;
 import com.example.sprite.Models.Event;
 import com.example.sprite.Models.User;
 import com.example.sprite.Models.Waitlist;
 import com.example.sprite.R;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.io.Serializable;
@@ -53,6 +57,7 @@ import java.util.List;
 public class EventDetailsFragment extends Fragment {
 
     private static final String TAG = "EventDetailsFragment";
+    private ImageService imageService;
 
     private EventDetailsViewModel mViewModel;
     private EventDetailsBottomScreen bottomScreenFragment;
@@ -64,6 +69,7 @@ public class EventDetailsFragment extends Fragment {
     
     private Event currentEvent;
     private User currentUser;
+    private ImageView eventImageView;
     private DatabaseService databaseService;
     private Authentication_Service authService;
 
@@ -111,7 +117,8 @@ public class EventDetailsFragment extends Fragment {
         leaveWaitlistButton = view.findViewById(R.id.leave_waitlist_button);
         acceptButton = view.findViewById(R.id.accept_button);
         declineButton = view.findViewById(R.id.decline_button);
-        
+        eventImageView = view.findViewById(R.id.event_image_view);
+
         // Get event from arguments
         Bundle arguments = getArguments();
         if (arguments != null) {
@@ -120,7 +127,9 @@ public class EventDetailsFragment extends Fragment {
                 currentEvent = (Event) eventSerializable;
             }
         }
-        
+        imageService = new ImageService();
+        imageService.loadImage(currentEvent.getPosterImageUrl(), eventImageView);
+
         // Setup bottom screen fragment
         bottomScreenFragment =
                 (EventDetailsBottomScreen) getChildFragmentManager()

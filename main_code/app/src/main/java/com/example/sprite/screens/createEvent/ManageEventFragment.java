@@ -4,19 +4,24 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.example.sprite.Controllers.ImageService;
 import com.example.sprite.Controllers.LotteryService;
 import com.example.sprite.Models.Event;
 import com.example.sprite.R;
+import com.example.sprite.screens.organizer.eventDetails.EventInfoFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
@@ -31,11 +36,15 @@ public class ManageEventFragment extends Fragment {
 
     private ManageEventViewModel viewModel;
     private LotteryService lotteryService;
+    private ImageService imageService;
+    private ActivityResultLauncher<String> galleryLauncher;
 
     private MaterialButton runLotteryButton, viewEntrantsButton, viewMapButton;
     private TextView titleView, descriptionView;
+    private EventInfoFragment eventInfoFragment;
     private ImageView eventImageView;
     private SwitchMaterial geolocationToggle;
+    private Button editImageButton;
 
     private Event selectedEvent;
 
@@ -65,15 +74,21 @@ public class ManageEventFragment extends Fragment {
         runLotteryButton = view.findViewById(R.id.runLotteryButton);
         viewEntrantsButton = view.findViewById(R.id.viewEntrantsButton);
         viewMapButton = view.findViewById(R.id.viewMapButton);
+        editImageButton = view.findViewById(R.id.edit_image_button2);
+        setupGalleryLauncher();
 
         // Views
         titleView = view.findViewById(R.id.eventTitleView);
         descriptionView = view.findViewById(R.id.editDescriptionTextView);
-        eventImageView = view.findViewById(R.id.createImageView);
+        eventImageView = view.findViewById(R.id.event_image_view);
+        eventInfoFragment =
+                (EventInfoFragment) getChildFragmentManager()
+                        .findFragmentById(R.id.fragment_event_info_view);
         geolocationToggle = view.findViewById(R.id.geolocationToggle);
 
         viewModel = new ViewModelProvider(this).get(ManageEventViewModel.class);
         lotteryService = new LotteryService();
+        imageService = new ImageService();
 
         // Get event from arguments
         if (getArguments() != null) {
@@ -91,8 +106,8 @@ public class ManageEventFragment extends Fragment {
                 selectedEvent = event;
                 titleView.setText(event.getTitle());
                 descriptionView.setText(event.getDescription());
-                // TODO: load actual image here later
-                eventImageView.setImageResource(R.drawable.event_image);
+                eventInfoFragment.setFields(event.getLocation(), event.getEventStartDate(), event.getTime());
+                imageService.loadImage(event.getPosterImageUrl(), eventImageView);
                 updateLotteryButton();
             }
         });
@@ -125,6 +140,7 @@ public class ManageEventFragment extends Fragment {
      * Handles lottery running, replacements, entrant viewing, and map display.
      */
     private void setupButtonListeners() {
+        editImageButton.setOnClickListener( v -> galleryLauncher.launch("image/*"));
 
         runLotteryButton.setOnClickListener(v -> {
             if (selectedEvent == null) {
@@ -183,5 +199,16 @@ public class ManageEventFragment extends Fragment {
         } else {
             runLotteryButton.setText("Run Lottery");
         }
+    }
+    /**
+     * Sets up the gallery launcher and updates the event image view and uri
+     */
+    private void setupGalleryLauncher()
+    {
+        galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            if (uri != null) {
+                viewModel.setEventImage(uri, eventImageView);
+            }
+        });
     }
 }

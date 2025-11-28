@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.ext.junit)
     implementation(libs.core)
     implementation(libs.recyclerview)
+    implementation(libs.firebase.storage)
     //implementation(libs.fragment)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

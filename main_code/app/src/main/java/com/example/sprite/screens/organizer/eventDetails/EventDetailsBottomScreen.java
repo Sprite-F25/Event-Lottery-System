@@ -79,7 +79,8 @@ public class EventDetailsBottomScreen extends Fragment {
     {
         titleView.setText(selectedEvent.getTitle());
         descView.setText(selectedEvent.getDescription());
-        priceView.setText(String.valueOf(selectedEvent.getPrice()));
+        String formattedPrice = String.format("$%.2f", selectedEvent.getPrice());
+        priceView.setText(formattedPrice);
         eventInfoFragment.setFields(selectedEvent.getLocation(), selectedEvent.getEventStartDate(), selectedEvent.getTime());
     }
 

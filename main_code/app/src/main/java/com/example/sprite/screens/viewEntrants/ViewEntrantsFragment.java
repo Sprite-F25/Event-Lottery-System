@@ -1,6 +1,8 @@
 package com.example.sprite.screens.viewEntrants;
 
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,7 +31,13 @@ import com.example.sprite.Models.Event;
 import com.example.sprite.Models.Notification;
 import com.example.sprite.R;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -135,10 +144,7 @@ public class ViewEntrantsFragment extends Fragment {
 
         // Export CSV FAB click
         exportFab.setOnClickListener(v -> {
-            // TODO: Implement CSV export logic - part 4
-
-
-
+            createCSV();
         });
 
         adapter.setOnCancelClickListener(entrant -> {
@@ -326,5 +332,82 @@ public class ViewEntrantsFragment extends Fragment {
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
+    }
+    /**
+     * Creates a CSV for the final list of entrants
+     */
+    private void createCSV()
+    {
+        StringBuilder csvBuilder = new StringBuilder();
+
+        csvBuilder.append("Name\n");
+
+
+        List<Entrant> entrants = mViewModel.getCurrentEntrantList().getValue();
+
+        if (entrants == null || entrants.isEmpty())
+        {
+            Toast.makeText(getContext(), "No entrants in final list", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        for (Entrant entrant : entrants)
+        {
+            csvBuilder.append(entrant.getName()).append("\n");
+        }
+
+        try {
+            File tempCSV = createTempCSV(csvBuilder.toString());
+            shareCSV(tempCSV);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "CSV export failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Creates the csv file
+     * @param csvString string for the csv content
+     * @return the csv file
+     * @throws IOException
+     */
+    private File createTempCSV(String csvString) throws IOException{
+        File cacheDir = new File(requireContext().getCacheDir(), "temp_csv");
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs();
+        }
+
+        // Temporary file
+        String filename = "final_entrants_" + currentEvent.getEventId() + ".csv";
+        File csvFile = new File(cacheDir, filename);
+
+        FileWriter writer = new FileWriter(csvFile);
+        writer.write(csvString);
+        writer.flush();
+        writer.close();
+
+        return csvFile;
+    }
+
+    /**
+     * Starts the share file activity and shares the csv file
+     * @param file the csv file to share
+     */
+    private void shareCSV(File file) {
+        Uri uri = FileProvider.getUriForFile(
+                requireContext(),
+                requireContext().getPackageName() + ".fileprovider",
+                file
+        );
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/csv");
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        startActivity(Intent.createChooser(shareIntent, "Share Entrants CSV"));
+
+        file.delete();
     }
 }

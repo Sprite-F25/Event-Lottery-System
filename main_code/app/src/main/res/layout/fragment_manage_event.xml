@@ -78,13 +78,26 @@
 
 
             <ImageView
-                android:id="@+id/createImageView"
+                android:id="@+id/event_image_view2"
                 android:layout_width="0dp"
                 android:layout_height="256dp"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="64dp"
                 android:layout_marginEnd="32dp"
-                android:scaleType="center"
+                android:scaleType="fitCenter"
+                android:src="@drawable/event_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/event_image_view"
+                android:layout_width="0dp"
+                android:layout_height="256dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="64dp"
+                android:layout_marginEnd="32dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/event_image"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -99,8 +112,8 @@
                 android:background="@android:color/transparent"
                 android:scaleType="center"
                 android:src="@drawable/editbutton"
-                app:layout_constraintEnd_toEndOf="@id/createImageView"
-                app:layout_constraintTop_toBottomOf="@id/createImageView" />
+                app:layout_constraintEnd_toEndOf="@id/event_image_view"
+                app:layout_constraintTop_toBottomOf="@id/event_image_view" />
 
             <ImageButton
                 android:id="@+id/imageButton3"
@@ -110,25 +123,30 @@
                 android:layout_marginEnd="12dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/qrbutton"
-                app:layout_constraintEnd_toEndOf="@id/createImageView"
+                app:layout_constraintEnd_toEndOf="@id/event_image_view"
                 app:layout_constraintTop_toBottomOf="@+id/imageButton2" />
 
 
-            <ImageButton
-                android:id="@+id/addImageButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/edit_image_button2"
+                android:layout_width="65dp"
+                android:layout_height="47dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:background="#00FFFFFF"
-                android:contentDescription="add image"
-                android:src="@drawable/add_images_button"
-                app:layout_constraintBottom_toBottomOf="@+id/createImageView"
-                app:layout_constraintEnd_toEndOf="@+id/createImageView" />
+                android:text="Edit"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/green3"
+                app:cornerRadius="10dp"
+                app:layout_constraintBottom_toBottomOf="@+id/event_image_view"
+                app:layout_constraintEnd_toEndOf="@+id/event_image_view" />
 
             <TextView
                 android:id="@+id/eventTitleView"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="32dp"
@@ -137,15 +155,19 @@
                 android:textColor="@color/black"
                 android:textSize="34sp"
                 android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/imageButton2"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/createImageView" />
+                app:layout_constraintTop_toBottomOf="@+id/event_image_view" />
 
             <FrameLayout
                 android:id="@+id/event_info_frame"
-                android:layout_width="211dp"
+                android:layout_width="0dp"
                 android:layout_height="76dp"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toStartOf="@+id/imageButton3"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/eventTitleView">
 

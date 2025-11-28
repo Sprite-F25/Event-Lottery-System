@@ -48,7 +48,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/createImageView"
+                android:id="@+id/event_image_back"
                 android:layout_width="0dp"
                 android:layout_height="256dp"
                 android:layout_marginStart="32dp"
@@ -61,8 +61,22 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageView
+                android:id="@+id/event_image_view"
+                android:layout_width="0dp"
+                android:layout_height="256dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/event_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/button"
+                android:id="@+id/edit_image_button"
                 android:layout_width="65dp"
                 android:layout_height="47dp"
                 android:layout_marginEnd="8dp"
@@ -75,24 +89,29 @@
                 android:textStyle="bold"
                 app:backgroundTint="@color/green3"
                 app:cornerRadius="10dp"
-                app:layout_constraintBottom_toBottomOf="@+id/createImageView"
-                app:layout_constraintEnd_toEndOf="@+id/createImageView" />
+                app:layout_constraintBottom_toBottomOf="@+id/event_image_view"
+                app:layout_constraintEnd_toEndOf="@+id/event_image_view" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_title_Input"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="32dp"
-                android:fontFamily="@font/inter_bold"
-                android:text="Event Title"
+
+                android:layout_marginEnd="32dp"
                 android:background="@null"
+                android:fontFamily="@font/inter_bold"
+                android:hint="Event Title"
                 android:inputType="text"
+                android:padding="6dp"
                 android:textColor="@color/black"
                 android:textSize="34sp"
                 android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/createImageView" />
+                app:layout_constraintTop_toBottomOf="@+id/event_image_view" />
 
             <FrameLayout
                 android:id="@+id/event_info_frame"
@@ -142,9 +161,11 @@
                 android:layout_width="0dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="4dp"
                 android:background="@null"
+                android:hint="0"
                 android:inputType="number"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="@+id/maxEntrantsTextView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/maxEntrantsTextView" />
@@ -153,9 +174,11 @@
                 android:id="@+id/waiting_list_size_input"
                 android:layout_width="0dp"
                 android:layout_height="20dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="4dp"
                 android:background="@null"
+                android:hint="0"
                 android:inputType="number"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="@+id/waitlingListTextView"
                 app:layout_constraintStart_toStartOf="@+id/waitlingListTextView"
                 app:layout_constraintTop_toBottomOf="@+id/maxEntrantsTextView" />
@@ -165,7 +188,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:fontFamily="@font/inter_bold"
                 android:text="Price"
                 android:textColor="@color/black"
@@ -177,9 +200,11 @@
                 android:id="@+id/price_input"
                 android:layout_width="0dp"
                 android:layout_height="20dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 android:background="@null"
+                android:hint="0"
                 android:inputType="numberDecimal"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="@+id/maxEntrantsTextView"
                 app:layout_constraintStart_toStartOf="@+id/selectPriceTextView"
                 app:layout_constraintTop_toBottomOf="@+id/selectPriceTextView" />
@@ -192,6 +217,7 @@
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/inter_bold"
                 android:text="Start Date"
+                android:textAlignment="viewStart"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -216,12 +242,14 @@
                 android:layout_height="20dp"
                 android:layout_marginTop="8dp"
                 android:background="@null"
+                android:hint="Month, DD YYYY"
                 app:layout_constraintEnd_toEndOf="@+id/max_entrants_input"
                 app:layout_constraintStart_toStartOf="@+id/start_date_title_text"
                 app:layout_constraintTop_toBottomOf="@+id/start_date_title_text" />
 
             <TextView
                 android:id="@+id/end_date_input"
+                android:hint="Month, DD YYYY"
                 android:layout_width="0dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="8dp"
@@ -245,14 +273,14 @@
 
             <TextView
                 android:id="@+id/event_start_date_input"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="20dp"
                 android:layout_marginTop="8dp"
                 android:background="@null"
                 android:clickable="true"
                 android:focusable="false"
+                android:hint="Month, DD YYYY"
                 android:textColor="@color/black"
-                app:layout_constraintEnd_toEndOf="@+id/max_entrants_input"
                 app:layout_constraintStart_toStartOf="@+id/event_start_date_title_text"
                 app:layout_constraintTop_toBottomOf="@+id/event_start_date_title_text" />
 
@@ -277,8 +305,10 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="32dp"
                 android:layout_marginBottom="200dp"
-                android:fontFamily="@font/inter"
                 android:background="@null"
+                android:fontFamily="@font/inter"
+                android:hint="Description goes here ..."
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
