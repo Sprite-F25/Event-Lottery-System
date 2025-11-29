@@ -258,6 +258,17 @@ public class DatabaseService {
                 .addOnCompleteListener(listener);
     }
 
+    /**
+     * Fetches all users documents from Firestore.
+     *
+     * @param listener Callback triggered with a {@link QuerySnapshot} of users.
+     */
+    public void getAllUsers(OnCompleteListener<QuerySnapshot> listener) {
+        db.collection("users")
+                .get()
+                .addOnCompleteListener(listener);
+    }
+
 }
 
 

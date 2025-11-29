@@ -21,8 +21,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:textSize="10dp"
-                android:text="Are you sure? This cannot be undone!\nYou will be sent back to welcome page upon deletion."
+                android:textSize="14dp"
+                android:text="Are you sure? This cannot be undone!"
                 app:layout_constraintStart_toStartOf="@+id/title_question"
                 app:layout_constraintTop_toBottomOf="@+id/title_question" />
 
@@ -33,7 +33,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/inter_bold"
-                android:text="Remove Profile?"
+                android:text="Remove/Delete Profile?"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
