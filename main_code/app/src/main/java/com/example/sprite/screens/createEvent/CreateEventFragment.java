@@ -292,10 +292,10 @@ public class CreateEventFragment extends Fragment {
         String eventStartDateText = eventStartDate.getText().toString().trim();
 
         // Validate Event Image
-        if (mViewModel.getLocalPosterUri() == null) {
-            Toast.makeText(getContext(), "Event Image is required", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        //if (mViewModel.getLocalPosterUri() == null) {
+        //    Toast.makeText(getContext(), "Event Image is required", Toast.LENGTH_SHORT).show();
+        //    return;
+        //}
 
         // Validate event title
         if (eventTitle.isEmpty()) {

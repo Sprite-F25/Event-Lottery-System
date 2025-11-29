@@ -6,46 +6,42 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sprite.Controllers.QRCodeService;
 import com.example.sprite.Models.Event;
 import com.example.sprite.R;
+import com.google.android.material.button.MaterialButton;
 import com.google.zxing.WriterException;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
-/**
- * Fragment that shows the promotional QR code for a single {@link Event}.
- *
- * The fragment expects an Event to be passed in its arguments bundle under
- * the key "selectedEvent" (same key you’re already using for EventDetails).
- *
- * It generates a QR code that encodes the event id using QRCodeService and
- * displays it in the ImageView with id R.id.qr_image_view in
- * fragment_q_r_code_popup.xml.
- *
- * This covers the organizer side of:
- * US 02.01.01 – create event + generate unique promotional QR code
- * that links back to that event in-app.
- */
 public class QRCodePopup extends Fragment {
 
-    private QRCodePopupViewModel mViewModel;
-
-    private ImageView qrImageView;
-    private QRCodeService qrCodeService;
     private Event currentEvent;
 
+    // Views from fragment_q_r_code_popup.xml
+    private TextView popupTitleTextView;
+    private TextView textView4;   // Event title
+    private TextView textView5;   // Date
+    private TextView textView7;   // Location
+    private ImageView imageView9; // QR image
+    private MaterialButton cancelButton;
+    private MaterialButton displayButton;
+
+    private QRCodeService qrCodeService;
+
     public QRCodePopup() {
-
+        // Required empty public constructor
     }
-
 
     public static QRCodePopup newInstance(Event event) {
         QRCodePopup fragment = new QRCodePopup();
@@ -58,54 +54,77 @@ public class QRCodePopup extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(QRCodePopupViewModel.class);
+
         qrCodeService = new QRCodeService();
 
-
-        Bundle args = getArguments();
-        if (args != null) {
-            Serializable serializable = args.getSerializable("selectedEvent");
+        if (getArguments() != null) {
+            Serializable serializable = getArguments().getSerializable("selectedEvent");
             if (serializable instanceof Event) {
                 currentEvent = (Event) serializable;
             }
         }
     }
 
+    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View root =
-                inflater.inflate(R.layout.fragment_q_r_code_popup, container, false);
-        qrImageView = root.findViewById(R.id.qr_image_view);
-        return root;
+
+        return inflater.inflate(R.layout.fragment_q_r_code_popup, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view,
                               @Nullable Bundle savedInstanceState) {
+
         super.onViewCreated(view, savedInstanceState);
 
+        // Bind views
+        popupTitleTextView = view.findViewById(R.id.popupTitleTextView);
+        textView4 = view.findViewById(R.id.textView4);
+        textView5 = view.findViewById(R.id.textView5);
+        textView7 = view.findViewById(R.id.textView7);
+        imageView9 = view.findViewById(R.id.imageView9);
+        cancelButton = view.findViewById(R.id.createEventButton);
+        displayButton = view.findViewById(R.id.createEventButton2);
+
         if (currentEvent == null) {
-            Toast.makeText(requireContext(),
-                    "No event supplied for QR code", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Event not received", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (qrImageView == null) {
-            Toast.makeText(requireContext(),
-                    "ImageView with id qr_image_view missing in layout",
-                    Toast.LENGTH_SHORT).show();
-            return;
+        // Set text fields
+        popupTitleTextView.setText("QR Code");
+        textView4.setText(currentEvent.getTitle());
+        textView7.setText(currentEvent.getLocation());
+
+        Date date = currentEvent.getEventStartDate();
+        if (date != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+            textView5.setText(sdf.format(date));
+        } else {
+            textView5.setText("No date");
         }
+
+        // Cancel closes the popup
+        cancelButton.setOnClickListener(v -> requireActivity().onBackPressed());
+
+        // Display generates QR
+        displayButton.setOnClickListener(v -> generateQRCode());
+    }
+
+    private void generateQRCode() {
+        if (currentEvent == null) return;
 
         try {
-
-            Bitmap bitmap = qrCodeService.generateEventQRCode(currentEvent, 800);
-            qrImageView.setImageBitmap(bitmap);
+            Bitmap qrBitmap = qrCodeService.generateEventQRCode(currentEvent, 800);
+            imageView9.setImageBitmap(qrBitmap);
+            Toast.makeText(requireContext(), "QR Code Generated", Toast.LENGTH_SHORT).show();
         } catch (WriterException e) {
             Toast.makeText(requireContext(),
-                    "Failed to generate QR code", Toast.LENGTH_SHORT).show();
+                    "Failed to generate QR code",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 }

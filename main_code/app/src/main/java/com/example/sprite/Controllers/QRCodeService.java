@@ -38,7 +38,7 @@ public class QRCodeService {
 
     public QRCodeService() {
         this.qrCodeWriter = new QRCodeWriter();
-        this.qCodeReader = new QRCodeReader();
+        this.qrCodeReader = new QRCodeReader();
     }
 
     /**
