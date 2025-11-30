@@ -31,8 +31,10 @@ public class DatabaseService {
 
     /** Initializes a new instance of {@code DatabaseService} with a Firestore reference. */
     public DatabaseService() {
-        db = FirebaseFirestore.getInstance();
+        db =  FirebaseFirestore.getInstance("lottery-presentation");
     }
+//    FirebaseFirestore lotteryDb = FirebaseFirestore.getInstance("lottery-presentation");
+
 
     // ----------------------------
     // 🔹 User Operations

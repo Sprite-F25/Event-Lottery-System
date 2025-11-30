@@ -174,8 +174,61 @@ public class SignInActivity extends AppCompatActivity {
             public void onFailure(String error) {
                 signInButton.setEnabled(true);
                 signInButton.setText("Sign In");
-                Toast.makeText(SignInActivity.this, "Sign-in failed: " + error, Toast.LENGTH_LONG).show();
+                
+                // Parse error message to provide user-friendly feedback
+                String errorMessage = getErrorMessage(error);
+                Toast.makeText(SignInActivity.this, errorMessage, Toast.LENGTH_LONG).show();
             }
         });
+    }
+    
+    /**
+     * Converts Firebase authentication error messages into user-friendly messages.
+     * 
+     * @param error The error message from Firebase
+     * @return A user-friendly error message
+     */
+    private String getErrorMessage(String error) {
+        if (error == null) {
+            return "An error occurred. Please try again.";
+        }
+        
+        error = error.toLowerCase();
+        
+        // Check for specific Firebase error codes
+        if (error.contains("there is no user record corresponding to this identifier") ||
+            error.contains("error_user_not_found") ||
+            error.contains("user-not-found")) {
+            return "Account doesn't exist. Please check your email or sign up.";
+        }
+        
+        if (error.contains("the password is invalid") ||
+            error.contains("error_wrong_password") ||
+            error.contains("wrong-password") ||
+            error.contains("invalid-credential")) {
+            return "Incorrect password. Please try again.";
+        }
+        
+        if (error.contains("error_invalid_email") ||
+            error.contains("invalid-email")) {
+            return "Invalid email address. Please check your email format.";
+        }
+        
+        if (error.contains("error_user_disabled") ||
+            error.contains("user-disabled")) {
+            return "This account has been disabled. Please contact support.";
+        }
+        
+        if (error.contains("error_too_many_requests") ||
+            error.contains("too-many-requests")) {
+            return "Too many failed attempts. Please try again later.";
+        }
+        
+        if (error.contains("network") || error.contains("connection")) {
+            return "Network error. Please check your internet connection.";
+        }
+        
+        // Default error message
+        return "Account doesn't exist or password is incorrect. Please try again.";
     }
 }
