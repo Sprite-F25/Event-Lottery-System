@@ -94,7 +94,8 @@ public class ViewEntrantsViewModel extends ViewModel {
 
         List<Entrant> loadedEntrants = new ArrayList<>();
         for (String id : entrantIds) {
-            FirebaseFirestore.getInstance()
+            FirebaseFirestore.getInstance("lottery-presentation")
+            //FirebaseFirestore.getInstance()
                     .collection("users")
                     .document(id)
                     .addSnapshotListener((doc, e) -> {
