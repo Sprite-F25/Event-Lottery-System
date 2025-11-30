@@ -269,6 +269,14 @@ public class DatabaseService {
                 .addOnCompleteListener(listener);
     }
 
+    public void deleteUser(String id, OnCompleteListener<Void> listener) {
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(id)
+                .delete()
+                .addOnCompleteListener(listener);
+    }
+
 }
 
 

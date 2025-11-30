@@ -7,7 +7,9 @@
     android:layout_margin="8dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="12dp"
-    app:useCompatPadding="true">
+    app:useCompatPadding="true"
+    android:clickable="true"
+    android:focusable="true">
 
     <!-- Horizontal layout: text on left, button on right -->
     <LinearLayout
