@@ -216,25 +216,26 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/inter_bold"
-                android:text="Start Date"
+                android:text="Registration Start"
                 android:textAlignment="viewStart"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/price_input" />
 
+
             <TextView
                 android:id="@+id/end_date_title_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/inter_bold"
-                android:text="End Date"
+                android:text="Registration End"
                 android:textColor="@color/black"
                 android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@id/waitlingListTextView"
+                app:layout_constraintStart_toEndOf="@+id/start_date_title_text"
                 app:layout_constraintTop_toBottomOf="@+id/price_input" />
-
 
             <TextView
                 android:id="@+id/start_date_input"
@@ -243,19 +244,19 @@
                 android:layout_marginTop="8dp"
                 android:background="@null"
                 android:hint="Month, DD YYYY"
-                app:layout_constraintEnd_toEndOf="@+id/max_entrants_input"
+                app:layout_constraintEnd_toEndOf="@+id/start_date_title_text"
                 app:layout_constraintStart_toStartOf="@+id/start_date_title_text"
                 app:layout_constraintTop_toBottomOf="@+id/start_date_title_text" />
 
             <TextView
                 android:id="@+id/end_date_input"
-                android:hint="Month, DD YYYY"
                 android:layout_width="0dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="8dp"
                 android:background="@null"
-                app:layout_constraintEnd_toEndOf="@+id/waiting_list_size_input"
-                app:layout_constraintStart_toStartOf="@+id/waiting_list_size_input"
+                android:hint="Month, DD YYYY"
+                app:layout_constraintEnd_toEndOf="@+id/end_date_title_text"
+                app:layout_constraintStart_toStartOf="@+id/end_date_title_text"
                 app:layout_constraintTop_toBottomOf="@+id/start_date_title_text" />
 
             <TextView

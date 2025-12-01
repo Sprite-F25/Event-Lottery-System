@@ -6,7 +6,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +33,7 @@ import android.widget.Toast;
 
 import com.example.sprite.R;
 import com.example.sprite.screens.organizer.eventDetails.EventInfoFragment;
+import com.google.android.material.button.MaterialButton;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -420,7 +424,38 @@ public class CreateEventFragment extends Fragment {
             }
         }
         // All validation passed, create the event
-        mViewModel.createEvent();
+        createEventPopup();
+    }
+
+    public void createEventPopup()
+    {
+        LayoutInflater popupInflater = LayoutInflater.from(requireContext());
+        View popupView = popupInflater.inflate(R.layout.fragment_confirm_popup, null);
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(popupView);
+
+        AlertDialog dialog = builder.create();
+
+        TextView title = popupView.findViewById(R.id.popupTitleTextView);
+        title.setText("Create Event");
+
+        TextView confirmText = popupView.findViewById(R.id.popup_dialog);
+        confirmText.setText("Are you sure you want to create this event");
+
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        MaterialButton confirmBtn = popupView.findViewById(R.id.createEventButton2);
+        MaterialButton cancelBtn = popupView.findViewById(R.id.createEventButton);
+
+        confirmBtn.setOnClickListener(view1 -> {
+            mViewModel.createEvent();
+            dialog.dismiss();
+        });
+
+        cancelBtn.setOnClickListener(view12 -> dialog.dismiss());
+        dialog.show();
     }
 
     /**
