@@ -31,8 +31,7 @@ public class NotificationLogAdapter
                     return a.message.equals(b.message) && a.dateText.equals(b.dateText);
                 }
                 @Override public boolean areContentsTheSame(@NonNull NotificationLogEntry a, @NonNull NotificationLogEntry b) {
-                    return a.organizerName.equals(b.organizerName)
-                            && a.eventTitle.equals(b.eventTitle)
+                    return a.eventTitle.equals(b.eventTitle)
                             && a.type == b.type;
                 }
             };
@@ -47,7 +46,7 @@ public class NotificationLogAdapter
     @Override
     public void onBindViewHolder(@NonNull VH h, int position) {
         NotificationLogEntry it = getItem(position);
-        h.orgHeader.setText("Organizer: " + it.organizerName + "  •  Event: " + it.eventTitle);
+        h.orgHeader.setText("Event: " + it.eventTitle);
         h.message.setText(it.message);
         h.type.setText(it.type.name());
         h.date.setText(it.dateText);

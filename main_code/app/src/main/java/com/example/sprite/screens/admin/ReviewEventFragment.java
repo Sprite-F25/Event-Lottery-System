@@ -48,10 +48,34 @@ public class ReviewEventFragment extends Fragment {
         removeImageButton = view.findViewById(R.id.removeImageButton);
         MaterialButton deleteButton = view.findViewById(R.id.delete_button);
 
-        // Placeholder functionality
-        removeImageButton.setOnClickListener(v ->
-                eventImageView.setImageResource(R.drawable.event_image)
-        );
+        // Handle remove image button
+        removeImageButton.setOnClickListener(v -> {
+            LayoutInflater ImgPopupInflater = LayoutInflater.from(requireContext());
+            View ImgPopupView = ImgPopupInflater.inflate(R.layout.fragment_confirm_popup, null);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setView(ImgPopupView);
+
+            AlertDialog dialog = builder.create();
+
+            TextView title = ImgPopupView.findViewById(R.id.popupTitleTextView);
+            title.setText("Delete Image");
+
+            TextView confirmText = ImgPopupView.findViewById(R.id.textView3);
+            confirmText.setText("Are you sure you want to delete this image? This action cannot be undone.");
+
+            MaterialButton confirmBtn = ImgPopupView.findViewById(R.id.createEventButton2);
+            MaterialButton cancelBtn = ImgPopupView.findViewById(R.id.createEventButton);
+
+            confirmBtn.setOnClickListener(view1 -> {
+                viewModel.deleteImage(selectedEvent.getPosterImageUrl());
+                dialog.dismiss();
+                //Navigation.findNavController(requireView()).popBackStack(); // go back to list
+            });
+
+            cancelBtn.setOnClickListener(view12 -> dialog.dismiss());
+            dialog.show();
+        });
 
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(ReviewEventViewModel.class);
