@@ -1,12 +1,14 @@
 package com.example.sprite.screens.createEvent;
 
+import android.app.Application;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Controllers.DatabaseService;
@@ -31,7 +33,7 @@ import java.util.UUID;
  * <p>The ViewModel uses LiveData to observe changes in form fields and
  * provides a mechanism to reset the form after successful event creation.</p>
  */
-public class CreateEventViewModel extends ViewModel {
+public class CreateEventViewModel extends AndroidViewModel {
     private FirebaseUser firebaseUser = new Authentication_Service().getCurrentUser();
     private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     private StorageReference storageReference = firebaseStorage.getReference();
@@ -51,6 +53,10 @@ public class CreateEventViewModel extends ViewModel {
     private final DatabaseService db = new DatabaseService();
 
     private final MutableLiveData<Boolean> shouldResetFields = new MutableLiveData<>(false);
+
+    public CreateEventViewModel(@NonNull Application application) {
+        super(application);
+    }
 
 
     /**
@@ -324,6 +330,7 @@ public class CreateEventViewModel extends ViewModel {
             db.createEvent(newEvent, task -> {
                 if (task.isSuccessful()){
                     Log.d("Firestore", "Event Created Successfully");
+                    Toast.makeText(getApplication(), "Event created successfully!", Toast.LENGTH_SHORT).show();
                     shouldResetFields.setValue(Boolean.TRUE);
                 } else {
                     Log.e("Firestore", "Error Creating Event", task.getException());
