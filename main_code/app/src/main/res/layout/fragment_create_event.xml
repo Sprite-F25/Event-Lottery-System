@@ -150,7 +150,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/inter_bold"
-                android:text="Waiting List Size"
+                android:text="Waiting List Size (Optional)"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/maxEntrantsTextView"
