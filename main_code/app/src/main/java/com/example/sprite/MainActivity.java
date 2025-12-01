@@ -138,6 +138,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Refreshes the navigation menu based on the current user's role.
+     * This method can be called from fragments when the user's role changes.
+     */
+    public void refreshNavigationMenu() {
+        NavigationView navigationView = binding.navView;
+        if (navigationView != null) {
+            loadUserProfileAndSetMenu(navigationView);
+        }
+    }
+
+    /**
      * Loads the current user's profile and updates the navigation menu accordingly.
      *
      * @param navigationView The navigation drawer's {@link NavigationView}.
