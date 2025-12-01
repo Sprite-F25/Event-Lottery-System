@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.sprite.screens.organizer.eventDetails.EventDetailsFragment">
 
-
     <ImageView
         android:id="@+id/event_image_view"
         android:layout_width="0dp"
@@ -17,7 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/event_image" />
-
 
     <ImageView
         android:id="@+id/imageView8"
@@ -66,6 +64,19 @@
         </LinearLayout>
     </ScrollView>
 
+    <TextView
+        android:id="@+id/registration_status_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registration closed"
+        android:textColor="@android:color/holo_red_dark"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/join_waitlist_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <ImageView
         android:id="@+id/bottomGradient"
         android:layout_width="0dp"
@@ -74,6 +85,23 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/view_qr_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
+        android:text="View QR"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:fontFamily="@font/inter_bold"
+        android:textSize="16sp"
+        app:backgroundTint="@color/green3"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/join_waitlist_button"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/join_waitlist_button"

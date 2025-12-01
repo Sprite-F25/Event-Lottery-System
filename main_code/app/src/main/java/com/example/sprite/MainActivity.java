@@ -69,14 +69,14 @@ public class MainActivity extends AppCompatActivity {
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
 
-        // Load user profile and setup navigation menu
+
         loadUserProfileAndSetMenu(navigationView);
 
-        // Configure app bar navigation destinations
+
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_notifications, 
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_notifications,
                 R.id.nav_events_list, R.id.nav_create_event, R.id.nav_profile, R.id.nav_site_criteria,
-                R.id.nav_history)
+                R.id.nav_history, R.id.nav_scan_qr)
                 .setOpenableLayout(drawer)
                 .build();
 
@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        // Handle menu item clicks (e.g., sign-out)
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -102,6 +101,12 @@ public class MainActivity extends AppCompatActivity {
             if (id == R.id.nav_events_list) {
                 drawer.closeDrawers();
                 navController.navigate(R.id.nav_events_list);
+                return true;
+            }
+
+            if (id == R.id.nav_scan_qr) {
+                drawer.closeDrawers();
+                navController.navigate(R.id.nav_scan_qr);
                 return true;
             }
 
@@ -162,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Set temporary header while loading
+
         View headerView = navigationView.getHeaderView(0);
         TextView textViewName = headerView.findViewById(R.id.textViewName);
         TextView textViewEmail = headerView.findViewById(R.id.textViewEmail);
@@ -196,8 +201,8 @@ public class MainActivity extends AppCompatActivity {
                         navigationView.inflateMenu(R.menu.app_bar_entrant);
                         break;
                 }
-                
-                // Check for unread notifications and show popup
+
+
                 checkForUnreadNotifications(userId);
             }
 
@@ -256,18 +261,18 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Checks for unread notifications and displays a popup if any exist.
-     * 
+     *
      * @param userId The current user's ID
      */
     private void checkForUnreadNotifications(String userId) {
         NotificationService notificationService = new NotificationService();
-        
-        notificationService.getUnreadNotificationsForEntrant(userId, 
+
+        notificationService.getUnreadNotificationsForEntrant(userId,
             new NotificationService.NotificationListCallback() {
                 @Override
                 public void onSuccess(List<Notification> notifications) {
                     if (notifications != null && !notifications.isEmpty()) {
-                        // Show popup for the first unread notification
+
                         Notification firstUnread = notifications.get(0);
                         showNotificationPopup(firstUnread, notificationService);
                     }
@@ -275,14 +280,14 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(String error) {
-                    // Silently fail - don't show error to user
+
                 }
             });
     }
 
     /**
      * Shows a popup dialog for an unread notification.
-     * 
+     *
      * @param notification The notification to display
      * @param notificationService The service to mark notification as read
      */
@@ -294,9 +299,9 @@ public class MainActivity extends AppCompatActivity {
             new NotificationPopupDialog.NotificationPopupListener() {
                 @Override
                 public void onViewNotification() {
-                    // Navigate to notifications fragment when user clicks "View"
+
                     NavController navController = Navigation.findNavController(
-                        MainActivity.this, 
+                        MainActivity.this,
                         R.id.nav_host_fragment_content_main
                     );
                     navController.navigate(R.id.nav_notifications);
@@ -304,30 +309,30 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onViewEvent(String eventId) {
-                    // Fetch event and navigate to event details
-                    com.example.sprite.Controllers.DatabaseService dbService = 
+
+                    com.example.sprite.Controllers.DatabaseService dbService =
                         new com.example.sprite.Controllers.DatabaseService();
-                    
+
                     dbService.getEvent(eventId, task -> {
                         if (task.isSuccessful() && task.getResult() != null) {
-                            com.example.sprite.Models.Event event = 
+                            com.example.sprite.Models.Event event =
                                 task.getResult().toObject(com.example.sprite.Models.Event.class);
-                            
+
                             if (event != null) {
                                 NavController navController = Navigation.findNavController(
-                                    MainActivity.this, 
+                                    MainActivity.this,
                                     R.id.nav_host_fragment_content_main
                                 );
-                                
+
                                 android.os.Bundle bundle = new android.os.Bundle();
                                 bundle.putSerializable("selectedEvent", event);
                                 navController.navigate(R.id.fragment_event_details, bundle);
                             } else {
-                                // Fallback to notifications if event not found
+
                                 onViewNotification();
                             }
                         } else {
-                            // Fallback to notifications if event fetch fails
+
                             onViewNotification();
                         }
                     });
