@@ -269,6 +269,13 @@ public class DatabaseService {
                 .addOnCompleteListener(listener);
     }
 
+    /**
+     * Deletes a user document from the Firestore "users" collection.
+     *
+     * @param id        The unique Firestore document ID of the user to delete.
+     * @param listener  Callback invoked when the delete operation completes,
+     *                  providing success or failure information.
+     */
     public void deleteUser(String id, OnCompleteListener<Void> listener) {
         FirebaseFirestore.getInstance()
                 .collection("users")

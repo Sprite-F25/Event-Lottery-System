@@ -11,6 +11,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ViewModel responsible for retrieving, organizing, and managing user data.
+ * <p>
+ * This ViewModel exposes separate LiveData streams for entrants, organizers,
+ * administrators, and the full user list. It communicates with the
+ * {@link DatabaseService} to load and delete users from Firestore.
+ */
 public class ManageUsersViewModel extends ViewModel {
 
     private final MutableLiveData<List<User>> entrants = new MutableLiveData<>();
@@ -20,22 +27,41 @@ public class ManageUsersViewModel extends ViewModel {
 
     private final DatabaseService dbService = new DatabaseService();
 
+    /**
+     * @return LiveData list of all users with the ENTRANT role.
+     */
     public LiveData<List<User>> getEntrants() {
         return entrants;
     }
 
+    /**
+     * @return LiveData list of all users with the ORGANIZER role.
+     */
     public LiveData<List<User>> getOrganizers() {
         return organizers;
     }
+
+    /**
+     * @return LiveData list of all users with the Admin role.
+     */
     public LiveData<List<User>> getAdmin() {
         return admin;
     }
 
+    /**
+     * @return LiveData list of all users.
+     */
     public LiveData<List<User>> getAllUsers() {
         return allUsers;
     }
 
-    // Load all users from database
+    /**
+     * Fetches all users from Firestore via the DatabaseService.
+     * <p>
+     * When the request completes, users are categorized into Entrants,
+     * Organizers, and Admins, and each corresponding LiveData list is updated.
+     * If the fetch fails, all lists are reset to empty.
+     */
     public void loadAllUsers() {
         dbService.getAllUsers(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
@@ -77,6 +103,11 @@ public class ManageUsersViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Deletes a user from the database and reloads the user lists on success.
+     *
+     * @param user The user to remove from Firestore.
+     */
     public void deleteUser(User user) {
         dbService.deleteUser(user.getUserId(), task -> {
             if (task.isSuccessful()) {

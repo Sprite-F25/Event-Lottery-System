@@ -23,6 +23,11 @@ import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 
+/**
+ * Fragment that allows an admin to browse, filter, and delete users.
+ * Provides UI controls for viewing Entrants, Organizers, Admins, or all users,
+ * and displays a confirmation dialog before performing deletions.
+ */
 public class ManageUsersFragment extends Fragment {
 
     private MaterialButton entrantsButton, organizersButton, adminButton;
@@ -30,10 +35,23 @@ public class ManageUsersFragment extends Fragment {
     private ManageUsersViewModel viewModel;
     private FilterType currentFilter = FilterType.ALL; // Track current filter
 
+    /**
+     * Represents the available user filters for the RecyclerView.
+     */
     private enum FilterType {
         ALL, ENTRANTS, ORGANIZERS, ADMIN
     }
 
+    /**
+     * Initializes the fragment UI, sets up RecyclerView, observes ViewModel data,
+     * and configures filtering and deletion behaviors.
+     *
+     * @param inflater  LayoutInflater used to inflate the fragment's layout.
+     * @param container Optional parent view that this fragment's UI will be attached to.
+     * @param savedInstanceState If non-null, the fragment is being restored from a prior state.
+     *
+     * @return The root View of the fragment layout.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.fragment_manage_users, container, false);
@@ -86,6 +104,9 @@ public class ManageUsersFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Applies the currently active filter to update the RecyclerView contents.
+     */
     private void applyCurrentFilter() {
         switch (currentFilter) {
             case ENTRANTS:
@@ -104,6 +125,10 @@ public class ManageUsersFragment extends Fragment {
         }
     }
 
+    /**
+     * Updates the UI color state of filter buttons so the selected filter
+     * appears highlighted while the others appear unselected.
+     */
     private void updateButtonColors() {
         int selectedColor = ContextCompat.getColor(requireContext(), R.color.dark_grey);
         int unselectedColor = ContextCompat.getColor(requireContext(), R.color.green3);
@@ -116,19 +141,33 @@ public class ManageUsersFragment extends Fragment {
                 currentFilter == FilterType.ADMIN ? selectedColor : unselectedColor));
     }
 
+    /** Displays all users in the list. */
     public void displayUsers(){
         adapter.submitList(viewModel.getAllUsers().getValue());
     }
+
+    /** Displays only users with the Entrant role. */
     public void displayEntrants(){
         adapter.submitList(viewModel.getEntrants().getValue());
     }
+
+    /** Displays only users with the Organizer role. */
     public void displayOrganizers(){
         adapter.submitList(viewModel.getOrganizers().getValue());
     }
+
+    /** Displays only users with the Admin role. */
     public void displayAdmin(){
         adapter.submitList(viewModel.getAdmin().getValue());
     }
 
+    /**
+     * Shows a confirmation popup prompting the admin to delete a user.
+     * "Cancel" will close the dialog, while "Delete" removes the user
+     * through the ViewModel and refreshes the displayed list.
+     *
+     * @param user The user selected for deletion.
+     */
     private void showDeletePopup(User user) {
         View popupView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_profile_delete_popup, null);
 
