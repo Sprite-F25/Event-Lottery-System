@@ -26,6 +26,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Fragment responsible for displaying a map view with event-related markers.
+ * <p>
+ * This fragment fetches waiting list locations for a selected event from the database
+ * and displays them on an OSMDroid MapView.
+ */
 public class ViewMapFragment extends Fragment {
 
     private static final String TAG = "ViewMapFragment";
@@ -36,6 +42,14 @@ public class ViewMapFragment extends Fragment {
 
     private Event currentEvent;
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           LayoutInflater to inflate views in the fragment
+     * @param container          Optional parent view that fragment's UI should be attached to
+     * @param savedInstanceState Saved state bundle
+     * @return the root view of the fragment
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -65,6 +79,9 @@ public class ViewMapFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Fetches waiting list locations from the database and adds markers to the map.
+     */
     private void fetchWaitingListLocations() {
         String eventId = currentEvent.getEventId();
         databaseService.getEvent(eventId, task -> {
@@ -97,6 +114,11 @@ public class ViewMapFragment extends Fragment {
         });
     }
 
+    /**
+     * Zooms the map to fit all provided markers, adding padding and centering the map.
+     *
+     * @param points List of GeoPoints representing marker locations
+     */
     private void zoomToFitMarkers(List<GeoPoint> points) {
         if (points == null || points.isEmpty()) return;
 
@@ -137,13 +159,18 @@ public class ViewMapFragment extends Fragment {
         map.getController().setCenter(new GeoPoint(centerLat, centerLon));
     }
 
-
+    /**
+     * Resumes the map when the fragment resumes.
+     */
     @Override
     public void onResume() {
         super.onResume();
         if (map != null) map.onResume();
     }
 
+    /**
+     * Pauses the map when the fragment pauses.
+     */
     @Override
     public void onPause() {
         super.onPause();
