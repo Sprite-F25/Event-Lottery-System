@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.sprite.Controllers.ImageService;
 import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 import com.example.sprite.screens.history.HistoryViewModel.EventHistoryItem;
@@ -97,6 +98,11 @@ public class HistoryEventAdapter extends RecyclerView.Adapter<HistoryEventAdapte
             // Set status chip
             holder.statusChip.setText(status);
             holder.statusChip.setChipBackgroundColorResource(getStatusColor(status));
+
+            // Load event image
+            holder.image.setImageDrawable(null);
+            ImageService imageService = new ImageService();
+            imageService.loadImage(event.getPosterImageUrl(), holder.image);
 
             // Set click listener
             holder.itemView.setOnClickListener(v -> {

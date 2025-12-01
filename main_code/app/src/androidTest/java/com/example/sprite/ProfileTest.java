@@ -166,6 +166,16 @@ public class ProfileTest {
                 .perform(ViewActions.typeText(email), ViewActions.closeSoftKeyboard());
         Thread.sleep(200);
 
+        onView(withId(R.id.inputPhone))
+                .perform(ViewActions.typeText("1234567890"), ViewActions.closeSoftKeyboard());
+        Thread.sleep(200);
+
+
+
+
+
+
+
         onView(withId(R.id.inputPassword))
                 .perform(ViewActions.typeText(password), ViewActions.closeSoftKeyboard());
         Thread.sleep(200);
@@ -175,10 +185,9 @@ public class ProfileTest {
         Thread.sleep(200);
 
         onView(withId(R.id.radioEntrant)).perform(click());
-        onView(withId(R.id.checkTerms)).perform(click());
         onView(withId(R.id.btnSignUp)).perform(click());
 
-        Thread.sleep(3000);
+        //Thread.sleep(3000);
     }
     /**
      * helper: sign-in for testing

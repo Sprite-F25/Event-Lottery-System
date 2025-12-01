@@ -140,7 +140,7 @@ public class HistoryFragment extends Fragment {
     private void navigateToEventDetails(Event event) {
         if (event != null && event.getEventId() != null) {
             Bundle bundle = new Bundle();
-            bundle.putSerializable("event", event);
+            bundle.putSerializable("selectedEvent", event);
             Navigation.findNavController(requireView())
                     .navigate(R.id.fragment_event_details, bundle);
         }
