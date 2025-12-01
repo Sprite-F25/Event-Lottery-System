@@ -1,23 +1,29 @@
 package com.example.sprite.screens.admin;
 
+import android.util.Log;
+import android.widget.ImageView;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.sprite.Controllers.DatabaseService;
+import com.example.sprite.Controllers.ImageService;
 import com.example.sprite.Models.Event;
+import com.example.sprite.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
-* ADD CLASS DESCRIPTION HERE
-*
+* ViewModel for viewing and deleting events in the admin interface.
+ *
+ * <p>This ViewModel manages a list of events for viewing their images,
+ *   and provides functionality to delete images from the database.</p>
  */
 public class ManageImagesViewModel extends ViewModel {
     private final MutableLiveData<List<Event>> events = new MutableLiveData<>();
-    private final MutableLiveData<List<Event>> filteredEvents = new MutableLiveData<>();
     private final DatabaseService dbService = new DatabaseService();
 
     private List<Event> allEvents = new ArrayList<>();
@@ -50,8 +56,21 @@ public class ManageImagesViewModel extends ViewModel {
             } else {
                 allEvents = new ArrayList<>();
                 events.setValue(allEvents);
-                filteredEvents.setValue(allEvents);
             }
         });
+    }
+
+    /**
+     * Deletes an image
+     * @param event the selected Event whose image will be removed
+     */
+    public void removeImage(Event event)
+    {
+        ImageService imageService = new ImageService();
+        if (event == null) {
+            Log.e("ManageImagesVM", "No image selected");
+            return;
+        }
+        imageService.removeImage(event);
     }
 }

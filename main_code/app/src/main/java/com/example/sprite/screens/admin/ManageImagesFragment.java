@@ -1,5 +1,8 @@
 package com.example.sprite.screens.admin;
 
+import android.app.AlertDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,13 +21,16 @@ import com.example.sprite.Adapters.ImagesEventAdapter;
 import com.example.sprite.Models.User;
 import com.example.sprite.R;
 import com.example.sprite.screens.eventsList.EventsListViewModel;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 
 /**
-* ADD CLASS DESCRIPTION HERE
+* Fragment for admins to view and delete images.
 *
-*
+ * <p>This fragment allows administrators to view a all images, and delete images.
+ *   It displays all images as a list, and provides a delete button
+ *  with confirmation dialog when images are clicked.</p>
  */
 
 public class ManageImagesFragment extends Fragment {
@@ -71,6 +77,37 @@ public class ManageImagesFragment extends Fragment {
             }
         });
 
+        adapter.setOnItemClickListener(event -> {
+            LayoutInflater popupInflater = LayoutInflater.from(requireContext());
+            View popupView = popupInflater.inflate(R.layout.fragment_confirm_popup, null);
 
-    }
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setView(popupView);
+
+            AlertDialog dialog = builder.create();
+
+            TextView title = popupView.findViewById(R.id.popupTitleTextView);
+            title.setText("Delete Image");
+
+            TextView confirmText = popupView.findViewById(R.id.popup_dialog);
+            confirmText.setText("Are you sure you want to delete this image? \nThis action cannot be undone.");
+
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+            MaterialButton confirmBtn = popupView.findViewById(R.id.createEventButton2);
+            MaterialButton cancelBtn = popupView.findViewById(R.id.createEventButton);
+
+            confirmBtn.setOnClickListener(view1 -> {
+                mViewModel.removeImage(event);
+                mViewModel.loadAllEvents();
+                dialog.dismiss();
+            });
+
+            cancelBtn.setOnClickListener(view12 -> dialog.dismiss());
+            dialog.show();
+        });
+
+
+    };
 }
