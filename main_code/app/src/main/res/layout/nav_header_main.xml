@@ -11,13 +11,13 @@
 
     <ImageView
         android:id="@+id/imageViewProfile"
-        android:layout_width="72dp"
+        android:layout_width="127dp"
         android:layout_height="72dp"
-        android:src="@drawable/ic_nav_profile"
-        android:scaleType="centerCrop"
+        android:layout_marginTop="4dp"
         android:background="@color/white"
-        android:padding="4dp"
-        android:layout_marginTop="10dp"/>
+        android:padding="0dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo_meet_sprite" />
 
     <TextView
         android:id="@+id/textViewName"
