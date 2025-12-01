@@ -2,7 +2,6 @@ package com.example.sprite.screens.createEvent;
 
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
@@ -16,10 +15,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * ViewModel for managing event creation data and operations.
@@ -42,6 +39,7 @@ public class CreateEventViewModel extends ViewModel {
     private MutableLiveData<String> description = new MutableLiveData<>();
     private MutableLiveData<String> location = new MutableLiveData<>();
     private MutableLiveData<Integer> maxAttendees = new MutableLiveData<>();
+
     private MutableLiveData<Integer> maxWaitingList = new MutableLiveData<>();
     private MutableLiveData<Double> price = new MutableLiveData<>();
     private MutableLiveData<Date> date = new MutableLiveData<>();
@@ -164,6 +162,16 @@ public class CreateEventViewModel extends ViewModel {
      * Gets the local poster uri
      * @return Uri LocalPosterUri
      */
+
+    /**
+     * Gets the maxWaitingListSize
+     *
+     * @return
+     *      maxWaitingList size
+     */
+    public MutableLiveData<Integer> getMaxWaitingList() {
+        return maxWaitingList;
+    }
     public Uri getLocalPosterUri(){return localPosterUri.getValue();}
     /**
      * Gets the LiveData indicating whether fields should be reset.
@@ -314,7 +322,8 @@ public class CreateEventViewModel extends ViewModel {
         }
 
         if (maxWaitingListValue == null || maxWaitingListValue <= 0) {
-            Log.e("CreateEventViewModel", "Max Waiting List Size is required and must be greater than 0");
+            maxWaitingListValue = 1000;
+            maxWaitingList.setValue(maxWaitingListValue);
             return;
         }
 
