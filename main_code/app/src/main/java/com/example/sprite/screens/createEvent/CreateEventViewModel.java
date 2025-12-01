@@ -3,6 +3,7 @@ package com.example.sprite.screens.createEvent;
 import android.app.Application;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -330,7 +331,6 @@ public class CreateEventViewModel extends AndroidViewModel {
         if (maxWaitingListValue == null || maxWaitingListValue <= 0) {
             maxWaitingListValue = 1000;
             maxWaitingList.setValue(maxWaitingListValue);
-            return;
         }
 
         Event newEvent = new Event();
