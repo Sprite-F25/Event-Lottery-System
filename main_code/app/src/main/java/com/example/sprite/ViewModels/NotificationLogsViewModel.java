@@ -1,9 +1,14 @@
 package com.example.sprite.ViewModels;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.sprite.Models.NotificationLogEntry;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -29,26 +34,58 @@ public class NotificationLogsViewModel extends ViewModel {
 
     /**
      * Loads notification log entries.
-     * 
-     * <p>Currently loads demo data for UI testing. In production, this should
-     * load data from Firestore. After loading, applies any active filters.</p>
+     *
+     * <p>loads data from Firestore. After loading, applies any active filters.</p>
      */
     public void load() {
-        // demo data for UI bring-up
-        List<NotificationLogEntry> demo = List.of(
-                new NotificationLogEntry("Jane Doe", "Art Expo", "Entrant invited to register", "Oct 30, 2025 3:12 PM", NotificationLogEntry.Type.INVITED),
-                new NotificationLogEntry("Jane Doe", "Art Expo", "Entrant accepted", "Oct 30, 2025 3:42 PM", NotificationLogEntry.Type.ACCEPTED),
-                new NotificationLogEntry("John Smith", "Music Fest", "Entrant declined", "Oct 29, 2025 10:18 AM", NotificationLogEntry.Type.DECLINED),
-                new NotificationLogEntry("John Smith", "Music Fest", "Replacement drawn from waitlist", "Oct 29, 2025 10:20 AM", NotificationLogEntry.Type.REPLACEMENT)
-        );
-        allLogs.setValue(demo);
-        applyFilters();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("notifications")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    List<NotificationLogEntry> notificationList = new ArrayList<>();
+
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        String eventTitle = doc.getString("eventTitle");
+                        String message = doc.getString("message");
+
+                        Timestamp timestamp = doc.getTimestamp("createdAt");
+                        String createdAt = "";
+                        if (timestamp != null) {
+                            createdAt = timestamp.toDate().toString();
+                        }
+
+                        String typeString = doc.getString("type");
+                        NotificationLogEntry.Type typeEnum = NotificationLogEntry.Type.OTHER; // default type
+                        if (typeString != null) {
+                            try {
+                                typeEnum = NotificationLogEntry.Type.valueOf(typeString);
+                            } catch (IllegalArgumentException e) {
+                                Log.e("NotificationLogs", "Unknown enum type: " + typeString);
+                                typeEnum = NotificationLogEntry.Type.OTHER;
+                            }
+                        }
+
+                        NotificationLogEntry entry =
+                                new NotificationLogEntry(
+                                        eventTitle,
+                                        message,
+                                        createdAt,
+                                        typeEnum
+                                );
+                        notificationList.add(entry);
+                    }
+                    // Update LiveData
+                    allLogs.setValue(notificationList);
+                    applyFilters();
+                });
     }
+
 
     /**
      * Sets the search query for filtering notification logs.
      * 
-     * <p>The search query filters logs by organizer name, event title, or message.
+     * <p>The search query filters logs by event title, or message.
      * The filter is applied immediately after setting the query.</p>
      * 
      * @param q The search query string
@@ -86,11 +123,11 @@ public class NotificationLogsViewModel extends ViewModel {
 
         List<NotificationLogEntry> out = src.stream()
                 .filter(it -> q.isEmpty()
-                        || it.organizerName.toLowerCase(Locale.ROOT).contains(q)
                         || it.eventTitle.toLowerCase(Locale.ROOT).contains(q)
                         || it.message.toLowerCase(Locale.ROOT).contains(q))
                 .filter(it -> local.isEmpty() || local.contains(it.type))
                 .collect(Collectors.toList());
         visibleLogs.setValue(out);
+        Log.d("DEBUG", "Types = " + local.toString());
     }
 }

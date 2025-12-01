@@ -25,11 +25,11 @@ import java.util.EnumSet;
 import java.util.Set;
 
 /**
- * Fragment that displays notification logs for organizers.
+ * Fragment that displays notification logs for Admins.
  * 
  * <p>This fragment shows a list of notification log entries with filtering
  * capabilities. Users can search by text and filter by notification type
- * (invited, accepted, declined, replacement, waitlist joined/left).</p>
+ * (invited, cancelled, not invited, other).</p>
  */
 public class NotificationLogsFragment extends Fragment {
 
@@ -79,15 +79,14 @@ public class NotificationLogsFragment extends Fragment {
 
         chips.setOnCheckedStateChangeListener((group, checkedIds) -> {
             Set<NotificationLogEntry.Type> set = EnumSet.noneOf(NotificationLogEntry.Type.class);
-            if (checkedIds.contains(R.id.ch_invited))     set.add(NotificationLogEntry.Type.INVITED);
-            if (checkedIds.contains(R.id.ch_accepted))    set.add(NotificationLogEntry.Type.ACCEPTED);
-            if (checkedIds.contains(R.id.ch_declined))    set.add(NotificationLogEntry.Type.DECLINED);
-            if (checkedIds.contains(R.id.ch_replacement)) set.add(NotificationLogEntry.Type.REPLACEMENT);
-            if (checkedIds.contains(R.id.ch_waitlist))    set.add(NotificationLogEntry.Type.WAITLIST_JOINED);
+            if (checkedIds.contains(R.id.ch_invited))     set.add(NotificationLogEntry.Type.SELECTED_FROM_WAITLIST);
+            if (checkedIds.contains(R.id.ch_declined))    set.add(NotificationLogEntry.Type.CANCELLED);
+            if (checkedIds.contains(R.id.ch_not_invited)) set.add(NotificationLogEntry.Type.NOT_SELECTED_FROM_WAITLIST);
+            if (checkedIds.contains(R.id.ch_other))    set.add(NotificationLogEntry.Type.OTHER);
             vm.setTypeFilter(set);
         });
 
-        // demo data for now (replace with Firestore later)
+        // load firestore data
         vm.load();
     }
 }

@@ -58,4 +58,24 @@ public class ReviewEventViewModel extends ViewModel {
                         Log.e("ReviewEvent", "Error deleting event", e));
     }
 
+    /**
+     * Deletes an image from Firestore.
+     *
+     * [COMPLETE THIS LATER]
+     */
+    public void deleteImage(String imageURL) {
+        // Does this work ???? I Dunno!!!!!
+        /**
+        if (imageURL == null ) return;
+        FirebaseFirestore.getInstance()
+                .collection("images")
+                .document(imageURL)
+                .delete()
+                .addOnSuccessListener(aVoid ->
+                        Log.d("ReviewEvent", "Image deleted successfully"))
+                .addOnFailureListener(e ->
+                        Log.e("ReviewEvent", "Error deleting image", e));
+         */
+    }
+
 }

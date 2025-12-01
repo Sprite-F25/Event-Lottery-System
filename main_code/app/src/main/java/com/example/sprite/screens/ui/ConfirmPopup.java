@@ -21,14 +21,14 @@ import com.example.sprite.R;
  * throughout the app, such as deleting events or canceling operations.</p>
  */
 public class ConfirmPopup extends Fragment {
-
+    /**
     private ConfirmPopupViewModel mViewModel;
 
-    /**
+
      * Creates a new instance of ConfirmPopup.
      *
      * @return A new ConfirmPopup instance
-     */
+
     public static ConfirmPopup newInstance() {
         return new ConfirmPopup();
     }
@@ -45,5 +45,5 @@ public class ConfirmPopup extends Fragment {
         mViewModel = new ViewModelProvider(this).get(ConfirmPopupViewModel.class);
         // TODO: Use the ViewModel
     }
-
+    */
 }
