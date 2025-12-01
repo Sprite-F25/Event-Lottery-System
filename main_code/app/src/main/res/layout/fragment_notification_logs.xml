@@ -34,25 +34,33 @@
             android:id="@+id/ch_invited"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/logs_chip_invited" />
+            android:text="@string/logs_chip_invited"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/ch_declined"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancelled" />
+            android:text="Cancelled"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/ch_not_invited"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Not Invited" />
+            android:text="Not Invited"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/ch_other"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Other" />
+            android:text="Other"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            />
     </com.google.android.material.chip.ChipGroup>
 
 

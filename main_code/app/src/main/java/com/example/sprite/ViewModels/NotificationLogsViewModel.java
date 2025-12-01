@@ -128,5 +128,6 @@ public class NotificationLogsViewModel extends ViewModel {
                 .filter(it -> local.isEmpty() || local.contains(it.type))
                 .collect(Collectors.toList());
         visibleLogs.setValue(out);
+        Log.d("DEBUG", "Types = " + local.toString());
     }
 }
