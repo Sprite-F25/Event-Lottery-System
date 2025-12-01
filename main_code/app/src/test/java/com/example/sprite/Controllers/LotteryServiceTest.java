@@ -124,6 +124,7 @@ public class LotteryServiceTest {
     @Test
     public void testDrawReplacements() {
         Event e = createMockEvent();
+        e.setStatus(Event.EventStatus.LOTTERY_COMPLETED);
 
         List<String> waitlistList = new ArrayList<>(e.getWaitingList());
         when(mockWaitlist.getWaitingList()).thenReturn(waitlistList);
