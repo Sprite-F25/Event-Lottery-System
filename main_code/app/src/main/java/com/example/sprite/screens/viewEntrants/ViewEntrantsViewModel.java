@@ -86,7 +86,7 @@ public class ViewEntrantsViewModel extends ViewModel {
      * 
      * @param entrantIds The list of entrant user IDs to fetch
      */
-    private void fetchEntrants(List<String> entrantIds) {
+    protected void fetchEntrants(List<String> entrantIds) {
         if (entrantIds == null || entrantIds.isEmpty()) {
             currentEntrantList.setValue(new ArrayList<>());
             return;
