@@ -8,14 +8,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import android.os.SystemClock;
-
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.example.sprite.Controllers.NotificationService;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,10 +27,19 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertNotNull;
-
+/**
+ * Instrumented tests for the Profile functionality.
+ * 
+ * <p>Tests include:
+ * <ul>
+ *   <li>Displaying profile information correctly</li>
+ *   <li>Updating profile information</li>
+ *   <li>Deleting user profile</li>
+ * </ul>
+ */
 @RunWith(AndroidJUnit4.class)
 public class ProfileTest {
+    
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     
@@ -42,6 +48,7 @@ public class ProfileTest {
     private static final String TEST_EMAIL_UPDATE = "update.test@ualberta.ca";
     private static final String TEST_EMAIL_DELETE = "delete.test@ualberta.ca";
     private static final String TEST_PASSWORD = "testpass123";
+    private static final String TEST_PHONE = "1234567890";
 
     @Rule
     public ActivityScenarioRule<WelcomeActivity> activityRule =
@@ -49,11 +56,17 @@ public class ProfileTest {
 
     @Before
     public void setup() {
-        // launch welcome activity
+        // Initialize Firebase if not already initialized
+        try {
+            FirebaseApp.initializeApp(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        } catch (IllegalStateException e) {
+            // Firebase is already initialized, which is fine
+        }
+        
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        // sign out any existing user
+        // Sign out any existing user
         if (auth.getCurrentUser() != null) {
             auth.signOut();
         }
@@ -63,11 +76,11 @@ public class ProfileTest {
         deleteTestUser(TEST_EMAIL_UPDATE, TEST_PASSWORD);
         deleteTestUser(TEST_EMAIL_DELETE, TEST_PASSWORD);
 
-        // wait for activity to be ready
+        // Wait for activity to be ready
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
     
@@ -138,21 +151,58 @@ public class ProfileTest {
 
     @After
     public void tearDown() {
-        // sign out and optionally delete test user
+        // Sign out and optionally delete test user
         if (auth.getCurrentUser() != null) {
-            String userId = auth.getCurrentUser().getUid();
+            try {
+                CountDownLatch latch = new CountDownLatch(1);
+                FirebaseUser user = auth.getCurrentUser();
+                String userId = user.getUid();
 
-            // delete user from Firestore
-            db.collection("users").document(userId).delete();
+                // Delete from Firestore first, then Auth
+                db.collection("users").document(userId).delete()
+                        .addOnCompleteListener(deleteFirestoreTask -> {
+                            // Delete from Firebase Auth
+                            user.delete()
+                                    .addOnCompleteListener(deleteAuthTask -> {
+                                        auth.signOut();
+                                        latch.countDown();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        // If deletion fails, just sign out
+                                        auth.signOut();
+                                        latch.countDown();
+                                    });
+                        })
+                        .addOnFailureListener(e -> {
+                            // If Firestore deletion fails, still try to delete from Auth
+                            user.delete()
+                                    .addOnCompleteListener(deleteAuthTask -> {
+                                        auth.signOut();
+                                        latch.countDown();
+                                    })
+                                    .addOnFailureListener(e2 -> {
+                                        auth.signOut();
+                                        latch.countDown();
+                                    });
+                        });
 
-            // delete user from Firebase Auth
-            auth.getCurrentUser().delete();
+                // Wait for cleanup to complete (with timeout)
+                latch.await(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                auth.signOut();
+            } catch (Exception e) {
+                // If any error occurs, at least sign out
+                auth.signOut();
+            }
+        } else {
+            // Ensure we're signed out even if no user
             auth.signOut();
         }
     }
 
     /**
-     * helper: sign-up for testing
+     * Helper: sign-up for testing
      */
     private void signUp(String email, String name, String password) throws InterruptedException {
         onView(withId(R.id.btnSignUp)).perform(click());
@@ -167,14 +217,8 @@ public class ProfileTest {
         Thread.sleep(200);
 
         onView(withId(R.id.inputPhone))
-                .perform(ViewActions.typeText("1234567890"), ViewActions.closeSoftKeyboard());
+                .perform(ViewActions.typeText(TEST_PHONE), ViewActions.closeSoftKeyboard());
         Thread.sleep(200);
-
-
-
-
-
-
 
         onView(withId(R.id.inputPassword))
                 .perform(ViewActions.typeText(password), ViewActions.closeSoftKeyboard());
@@ -187,10 +231,12 @@ public class ProfileTest {
         onView(withId(R.id.radioEntrant)).perform(click());
         onView(withId(R.id.btnSignUp)).perform(click());
 
-        //Thread.sleep(3000);
+        // Wait for sign up to complete and navigation to MainActivity
+        Thread.sleep(5000);
     }
+
     /**
-     * helper: sign-in for testing
+     * Helper: sign-in for testing
      */
     private void signIn(String email, String password) throws InterruptedException {
         onView(withId(R.id.btnSignIn)).perform(click());
@@ -206,33 +252,46 @@ public class ProfileTest {
 
         onView(withId(R.id.btnSignIn)).perform(click());
 
-        // wait for signin
-        Thread.sleep(3000);
+        // Wait for sign in and navigation to MainActivity
+        Thread.sleep(5000);
     }
+
     /**
-     * helper: navigate to profile
+     * Helper: navigate to profile
      */
     private void navigateToProfile() throws InterruptedException {
-        Thread.sleep(10000);
+        // Wait for MainActivity to fully load
+        Thread.sleep(5000);
+        
+        // Open navigation drawer
         onView(withContentDescription("Open navigation drawer")).perform(click());
-        Thread.sleep(500);
-
-        onView(withId(R.id.nav_profile)).perform(click());
         Thread.sleep(1000);
+
+        // Navigate to profile
+        onView(withId(R.id.nav_profile)).perform(click());
+        
+        // Wait for profile fragment to load and data to be fetched
+        // ProfileFragment loads user data asynchronously, so we need to wait
+        Thread.sleep(5000);
     }
+
     /**
-     * helper: signout for testing
+     * Helper: sign out for testing
      */
     private void signOut() throws InterruptedException {
-        // open navigation drawer
+        // Open navigation drawer
         onView(withContentDescription("Open navigation drawer")).perform(click());
-        Thread.sleep(500);
-        // click on signout
-        onView(withId(R.id.nav_signout)).perform(click());
         Thread.sleep(1000);
+        
+        // Click on sign out
+        onView(withId(R.id.nav_signout)).perform(click());
+        
+        // Wait for sign out to complete and navigation to WelcomeActivity
+        Thread.sleep(3000);
     }
+
     /**
-     * testing whether or not the display displays correctly
+     * Testing whether or not the display displays correctly
      */
     @Test
     public void testDisplayProfile() throws InterruptedException {
@@ -243,15 +302,24 @@ public class ProfileTest {
         signUp(testEmail, testName, TEST_PASSWORD);
         navigateToProfile();
 
-        // check if name and email are displayed
+        // Wait a bit more for profile data to load (async operation)
+        Thread.sleep(3000);
+
+        // Check if name and email are displayed
+        // Use isDisplayed() first to ensure view is visible
+        onView(withId(R.id.name_edit_text))
+                .check(matches(isDisplayed()));
         onView(withId(R.id.name_edit_text))
                 .check(matches(withText(testName)));
+        
+        onView(withId(R.id.email_edit_text))
+                .check(matches(isDisplayed()));
         onView(withId(R.id.email_edit_text))
                 .check(matches(withText(testEmail)));
     }
 
     /**
-     * testing if the profile updates correctly
+     * Testing if the profile updates correctly
      */
     @Test
     public void testUpdateProfile() throws InterruptedException {
@@ -260,33 +328,43 @@ public class ProfileTest {
         String originalName = "Original Name";
         String updatedName = "Updated Name";
 
-        // create account
+        // Create account
         signUp(testEmail, originalName, TEST_PASSWORD);
 
-        // navigate to profile
+        // Navigate to profile
         navigateToProfile();
+        
+        // Wait for profile data to load
+        Thread.sleep(3000);
 
-        // update profile name
+        // Update profile name
         onView(withId(R.id.name_edit_text))
                 .perform(ViewActions.replaceText(updatedName), ViewActions.closeSoftKeyboard());
-        Thread.sleep(500);
+        Thread.sleep(1000);
 
-        // save changes
+        // Save changes
         onView(withId(R.id.edit_profile_button)).perform(click());
-        Thread.sleep(2000);
+        
+        // Wait for update to complete (async operation)
+        Thread.sleep(4000);
 
-        // sign out and sign in
+        // Sign out and sign in
         signOut();
         signIn(testEmail, TEST_PASSWORD);
         navigateToProfile();
+        
+        // Wait for profile to reload with updated data
+        Thread.sleep(3000);
 
-        // verify updated name is displayed
+        // Verify updated name is displayed
+        onView(withId(R.id.name_edit_text))
+                .check(matches(isDisplayed()));
         onView(withId(R.id.name_edit_text))
                 .check(matches(withText(updatedName)));
     }
 
     /**
-     * tests if profile deletes correctly
+     * Tests if profile deletes correctly
      */
     @Test
     public void testDeleteProfile() throws InterruptedException {
@@ -297,18 +375,25 @@ public class ProfileTest {
         signUp(testEmail, testName, TEST_PASSWORD);
 
         navigateToProfile();
+        
+        // Wait for profile to load
+        Thread.sleep(3000);
 
+        // Click delete profile button
         onView(withId(R.id.delete_profile_button)).perform(click());
-        Thread.sleep(500);
+        Thread.sleep(1000); // Wait for dialog to appear
 
+        // Confirm deletion
         onView(withId(R.id.confirm_delete_button)).perform(click());
 
-        Thread.sleep(2000);
+        // Wait for deletion to complete and navigation to sign in screen
+        Thread.sleep(3000);
 
-        // sign in, should fail
-        onView(withId(R.id.btnSignIn)).perform(click());
-        Thread.sleep(500);
+        // Verify we're on the sign in screen (profile deletion should navigate here)
+        // Check that sign in button is visible, indicating we're on SignInActivity
+        onView(withId(R.id.btnSignIn)).check(matches(isDisplayed()));
 
+        // Attempt to sign in with deleted account - should fail
         onView(withId(R.id.inputEmail))
                 .perform(ViewActions.typeText(testEmail), ViewActions.closeSoftKeyboard());
         Thread.sleep(200);
@@ -318,9 +403,14 @@ public class ProfileTest {
         Thread.sleep(200);
 
         onView(withId(R.id.btnSignIn)).perform(click());
-        Thread.sleep(2000);
+        Thread.sleep(3000); // Wait for sign in attempt to complete
 
-        // verify sign in failed
+        // Verify sign in failed - we should still be on sign in screen
+        // The sign in button should still be visible (not navigated to MainActivity)
         onView(withId(R.id.btnSignIn)).check(matches(isDisplayed()));
+        
+        // Also verify we're still on the sign in screen by checking the email field is still visible
+        onView(withId(R.id.inputEmail)).check(matches(isDisplayed()));
     }
 }
+

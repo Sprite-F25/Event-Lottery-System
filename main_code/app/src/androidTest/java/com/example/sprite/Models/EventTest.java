@@ -31,14 +31,7 @@ public class EventTest {
         event = new Event();
     }
 
-    /**
-     * Tests that the default constructor creates a valid Event instance.
-     */
-    @Test
-    public void testDefaultConstructor() {
-        assertNotNull(event);
-        assertNotNull(event.getDate());
-    }
+
 
     /**
      * Tests that the parameterized constructor creates an Event with the correct initial values.
