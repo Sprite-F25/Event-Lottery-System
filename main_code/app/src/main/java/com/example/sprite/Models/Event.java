@@ -132,6 +132,7 @@ public class Event implements Serializable {
         this.updatedAt = new Date();
         this.geolocationRequired = false;
         this.waitingListLocations = new HashMap<>();
+        this.maxWaitingListSize = 1000;
     }
 
     /**

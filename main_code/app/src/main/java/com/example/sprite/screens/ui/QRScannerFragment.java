@@ -1,5 +1,7 @@
 package com.example.sprite.screens.ui;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,8 +9,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -18,11 +23,11 @@ import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 import com.journeyapps.barcodescanner.DefaultDecoderFactory;
-import com.google.zxing.BarcodeFormat;
 
 import java.util.Collections;
 
@@ -35,6 +40,30 @@ public class QRScannerFragment extends Fragment {
 
     private DecoratedBarcodeView barcodeView;
     private DatabaseService databaseService;
+
+    // Runtime permission launcher for CAMERA
+    private ActivityResultLauncher<String> cameraPermissionLauncher;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Set up the permission launcher once
+        cameraPermissionLauncher =
+                registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+                        isGranted -> {
+                            if (isGranted) {
+                                // Start / resume camera once permission is granted
+                                if (barcodeView != null) {
+                                    barcodeView.resume();
+                                }
+                            } else {
+                                Toast.makeText(requireContext(),
+                                        "Camera permission is required to scan QR codes",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        });
+    }
 
     @Nullable
     @Override
@@ -49,26 +78,52 @@ public class QRScannerFragment extends Fragment {
 
         databaseService = new DatabaseService();
 
-        // Configure ZXing
+        // Configure ZXing to only look for QR codes
         barcodeView.getBarcodeView().setDecoderFactory(
                 new DefaultDecoderFactory(Collections.singletonList(BarcodeFormat.QR_CODE))
         );
-
 
         scanButton.setOnClickListener(v -> startScan());
 
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // As soon as the fragment is visible, make sure we have camera permission
+        checkCameraPermissionAndStartPreview();
+    }
+
     /**
-     * Starts a single-scan operation. On first successful scan,
-     * we look up the event and navigate to its details fragment.
+     * Checks camera permission; if granted, starts the preview.
+     * If not, launches the permission dialog.
+     */
+    private void checkCameraPermissionAndStartPreview() {
+        if (barcodeView == null || !isAdded()) {
+            return;
+        }
+
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED) {
+            barcodeView.resume();
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    /**
+     * Starts a single-scan operation. Assumes the camera preview is already running.
+     * On first successful scan, we look up the event and navigate to its details fragment.
      */
     private void startScan() {
         if (barcodeView == null) return;
 
-        Toast.makeText(requireContext(), "Point the camera at the QR code", Toast.LENGTH_SHORT)
-                .show();
+        Toast.makeText(requireContext(),
+                "Point the camera at the QR code",
+                Toast.LENGTH_SHORT).show();
 
         barcodeView.decodeSingle(new BarcodeCallback() {
             @Override
@@ -119,9 +174,8 @@ public class QRScannerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (barcodeView != null) {
-            barcodeView.resume();
-        }
+        // Whenever we come back to this fragment, re-check permission & preview
+        checkCameraPermissionAndStartPreview();
     }
 
     @Override
