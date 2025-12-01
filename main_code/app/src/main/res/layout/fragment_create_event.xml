@@ -208,6 +208,19 @@
                 app:layout_constraintEnd_toEndOf="@+id/maxEntrantsTextView"
                 app:layout_constraintStart_toStartOf="@+id/selectPriceTextView"
                 app:layout_constraintTop_toBottomOf="@+id/selectPriceTextView" />
+            <TextView
+                android:id="@+id/registration_period_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/inter_bold"
+                android:text="Registration Period"
+                android:textAlignment="viewStart"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/price_input" />
 
             <TextView
                 android:id="@+id/start_date_title_text"
@@ -221,7 +234,7 @@
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/price_input" />
+                app:layout_constraintTop_toBottomOf="@+id/registration_period_text" />
 
             <TextView
                 android:id="@+id/end_date_title_text"
@@ -233,7 +246,7 @@
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@id/waitlingListTextView"
-                app:layout_constraintTop_toBottomOf="@+id/price_input" />
+                app:layout_constraintTop_toBottomOf="@+id/registration_period_text" />
 
 
             <TextView
