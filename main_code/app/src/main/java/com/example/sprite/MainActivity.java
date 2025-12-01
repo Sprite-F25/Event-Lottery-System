@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_notifications,
+                R.id.nav_notifications,
                 R.id.nav_events_list, R.id.nav_create_event, R.id.nav_profile, R.id.nav_site_criteria,
                 R.id.nav_history, R.id.nav_manage_images, R.id.nav_notification_logs, R.id.nav_manage_users)
               
@@ -116,11 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
 
-            if (id == R.id.nav_notification_test) {
-                drawer.closeDrawers();
-                navController.navigate(R.id.nav_notification_test);
-                return true;
-            }
+
 
             if (id == R.id.nav_history) {
                 drawer.closeDrawers();
