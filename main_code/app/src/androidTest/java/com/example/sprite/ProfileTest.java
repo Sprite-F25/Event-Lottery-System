@@ -72,16 +72,16 @@ public class ProfileTest {
         }
 
         // Delete test user accounts if they exist
-        deleteTestUser(TEST_EMAIL_DISPLAY, TEST_PASSWORD);
-        deleteTestUser(TEST_EMAIL_UPDATE, TEST_PASSWORD);
-        deleteTestUser(TEST_EMAIL_DELETE, TEST_PASSWORD);
+//        deleteTestUser(TEST_EMAIL_DISPLAY, TEST_PASSWORD);
+//        deleteTestUser(TEST_EMAIL_UPDATE, TEST_PASSWORD);
+//        deleteTestUser(TEST_EMAIL_DELETE, TEST_PASSWORD);
 
-        // Wait for activity to be ready
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+//        // Wait for activity to be ready
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//        }
     }
     
     /**
@@ -205,33 +205,72 @@ public class ProfileTest {
      * Helper: sign-up for testing
      */
     private void signUp(String email, String name, String password) throws InterruptedException {
+        // Navigate to sign up screen
         onView(withId(R.id.btnSignUp)).perform(click());
-        Thread.sleep(500);
+        Thread.sleep(1000); // Wait for SignUpActivity to load
 
+        // Fill in the form
         onView(withId(R.id.inputFullName))
                 .perform(ViewActions.typeText(name), ViewActions.closeSoftKeyboard());
-        Thread.sleep(200);
+        Thread.sleep(300);
 
         onView(withId(R.id.inputEmail))
                 .perform(ViewActions.typeText(email), ViewActions.closeSoftKeyboard());
-        Thread.sleep(200);
+        Thread.sleep(300);
 
         onView(withId(R.id.inputPhone))
                 .perform(ViewActions.typeText(TEST_PHONE), ViewActions.closeSoftKeyboard());
-        Thread.sleep(200);
+        Thread.sleep(300);
 
         onView(withId(R.id.inputPassword))
                 .perform(ViewActions.typeText(password), ViewActions.closeSoftKeyboard());
-        Thread.sleep(200);
+        Thread.sleep(300);
 
         onView(withId(R.id.inputConfirmPassword))
                 .perform(ViewActions.typeText(password), ViewActions.closeSoftKeyboard());
+        Thread.sleep(300);
+
+        // Select role
+        onView(withId(R.id.radioEntrant)).perform(click());
         Thread.sleep(200);
 
-        onView(withId(R.id.radioEntrant)).perform(click());
+        // Click sign up button
         onView(withId(R.id.btnSignUp)).perform(click());
 
         // Wait for sign up to complete and navigation to MainActivity
+        // SignUpActivity does async operations: createUserWithEmail -> updateUserProfile -> navigate
+        // This can take time, so we wait and check for MainActivity
+        int maxWaitTime = 30000; // 30 seconds max
+        int waited = 0;
+        int checkInterval = 1000; // Check every second
+        
+        while (waited < maxWaitTime) {
+            Thread.sleep(checkInterval);
+            waited += checkInterval;
+            
+            try {
+                // Try to find a MainActivity-specific view (navigation drawer)
+                // If we can find it, we've successfully navigated
+                onView(withContentDescription("Open navigation drawer"))
+                        .check(matches(isDisplayed()));
+                // Successfully navigated to MainActivity
+                Thread.sleep(2000); // Give it a bit more time to fully load
+                return;
+            } catch (Exception e) {
+                // Still on SignUpActivity, continue waiting
+                // Check if we're still on signup page (button should be visible)
+                try {
+                    onView(withId(R.id.btnSignUp)).check(matches(isDisplayed()));
+                    // Still on signup page, continue waiting
+                } catch (Exception e2) {
+                    // Button not found, might have navigated or error occurred
+                    // Wait a bit more and check again
+                }
+            }
+        }
+        
+        // If we get here, navigation might have failed
+        // Give it one more chance with a final wait
         Thread.sleep(5000);
     }
 
@@ -261,18 +300,18 @@ public class ProfileTest {
      */
     private void navigateToProfile() throws InterruptedException {
         // Wait for MainActivity to fully load
-        Thread.sleep(5000);
+        Thread.sleep(8000);
         
         // Open navigation drawer
         onView(withContentDescription("Open navigation drawer")).perform(click());
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         // Navigate to profile
         onView(withId(R.id.nav_profile)).perform(click());
         
         // Wait for profile fragment to load and data to be fetched
         // ProfileFragment loads user data asynchronously, so we need to wait
-        Thread.sleep(5000);
+        Thread.sleep(10000);
     }
 
     /**
@@ -302,18 +341,51 @@ public class ProfileTest {
         signUp(testEmail, testName, TEST_PASSWORD);
         navigateToProfile();
 
-        // Wait a bit more for profile data to load (async operation)
-        Thread.sleep(3000);
-
-        // Check if name and email are displayed
-        // Use isDisplayed() first to ensure view is visible
+        // Wait for profile data to load (async operation)
+        // ProfileFragment.loadUserProfile() is async, so we need to wait for the data
+        // Retry mechanism to wait for async data loading
+        int maxAttempts = 15;
+        int attempt = 0;
+        boolean nameFound = false;
+        boolean emailFound = false;
+        
+        while ((!nameFound || !emailFound) && attempt < maxAttempts) {
+            Thread.sleep(2000);
+            attempt++;
+            
+            try {
+                // Check if name field is visible and has the expected text
+                onView(withId(R.id.name_edit_text))
+                        .check(matches(isDisplayed()));
+                onView(withId(R.id.name_edit_text))
+                        .check(matches(withText(testName)));
+                nameFound = true;
+            } catch (Exception e) {
+                // Name not loaded yet, will retry
+            }
+            
+            try {
+                // Check if email field is visible and has the expected text
+                onView(withId(R.id.email_edit_text))
+                        .check(matches(isDisplayed()));
+                onView(withId(R.id.email_edit_text))
+                        .check(matches(withText(testEmail)));
+                emailFound = true;
+            } catch (Exception e) {
+                // Email not loaded yet, will retry
+            }
+        }
+        
+        // Final assertions - these will fail if data didn't load after all retries
+        // Ensure views are displayed
         onView(withId(R.id.name_edit_text))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.name_edit_text))
-                .check(matches(withText(testName)));
-        
         onView(withId(R.id.email_edit_text))
                 .check(matches(isDisplayed()));
+        
+        // Check the actual text content
+        onView(withId(R.id.name_edit_text))
+                .check(matches(withText(testName)));
         onView(withId(R.id.email_edit_text))
                 .check(matches(withText(testEmail)));
     }
