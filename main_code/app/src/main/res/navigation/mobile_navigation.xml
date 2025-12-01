@@ -99,6 +99,12 @@
         tools:layout="@layout/fragment_manage_images" />
 
     <fragment
+        android:id="@+id/nav_manage_users"
+        android:name="com.example.sprite.screens.manageUsers.ManageUsersFragment"
+        android:label="Manage Users"
+        tools:layout="@layout/fragment_manage_users" />
+
+    <fragment
         android:id="@+id/nav_notification_logs"
         android:name="com.example.sprite.screens.NotificationLogsFragment"
         android:label="Notification Logs"

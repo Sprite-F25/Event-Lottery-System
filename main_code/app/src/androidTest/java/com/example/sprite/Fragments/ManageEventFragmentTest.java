@@ -104,7 +104,7 @@ public class ManageEventFragmentTest {
 
         launchFragment(event);
 
-        onView(withId(R.id.drawReplacementsButton)).perform(click());
+        onView(withId(R.id.runLotteryButton)).perform(click());
     }
 
     /**
