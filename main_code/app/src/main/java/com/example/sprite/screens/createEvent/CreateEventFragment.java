@@ -6,7 +6,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +33,7 @@ import android.widget.Toast;
 
 import com.example.sprite.R;
 import com.example.sprite.screens.organizer.eventDetails.EventInfoFragment;
+import com.google.android.material.button.MaterialButton;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -61,7 +65,6 @@ public class CreateEventFragment extends Fragment {
     private EditText priceInput;
     private TextView registrationStartDate;
     private TextView registrationEndDate;
-    private TextView eventStartDate;
     private Button createEventButton;
     private CreateEventViewModel mViewModel;
     private Button editImageButton;
@@ -109,7 +112,6 @@ public class CreateEventFragment extends Fragment {
         priceInput = view.findViewById(R.id.price_input);
         registrationStartDate = view.findViewById(R.id.start_date_input);
         registrationEndDate = view.findViewById(R.id.end_date_input);
-        eventStartDate = view.findViewById(R.id.event_start_date_input);
         createEventButton = view.findViewById(R.id.create_event_button);
         editImageButton = view.findViewById(R.id.edit_image_button);
         eventImageView = view.findViewById(R.id.event_image_view);
@@ -237,8 +239,6 @@ public class CreateEventFragment extends Fragment {
                 setDate(registrationStartDate, date -> mViewModel.setRegistrationStartDate(date)));
         registrationEndDate.setOnClickListener(v ->
                 setDate(registrationEndDate, date -> mViewModel.setRegistrationEndDate(date)));
-        eventStartDate.setOnClickListener(v ->
-                setDate(eventStartDate, date -> mViewModel.setEventStartDate(date)));
         mViewModel.getShouldResetFields().observe(getViewLifecycleOwner(), shouldReset->{
             if (Boolean.TRUE.equals(shouldReset))
             {
@@ -288,15 +288,15 @@ public class CreateEventFragment extends Fragment {
         String priceText = priceInput.getText().toString().trim();
         String registrationStartDateText = registrationStartDate.getText().toString().trim();
         String registrationEndDateText = registrationEndDate.getText().toString().trim();
-        String eventStartDateText = eventStartDate.getText().toString().trim();
 
         // Validate Event Image
-        //if (mViewModel.getLocalPosterUri() == null) {
-        //    Toast.makeText(getContext(), "Event Image is required", Toast.LENGTH_SHORT).show();
-        //    return;
-        //}
+        if (mViewModel.getLocalPosterUri() == null) {
+            Toast.makeText(getContext(), "Event Image is required", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        if (eventTitle.isEmpty() || eventTitle.equals("Event Title")) {
+        // Validate event title
+        if (eventTitle.isEmpty()) {
             Toast.makeText(getContext(), "Event Title is required", Toast.LENGTH_SHORT).show();
             eventTitleInput.requestFocus();
             return;
@@ -385,12 +385,6 @@ public class CreateEventFragment extends Fragment {
             return;
         }
 
-        // Validate event start date
-        if (eventStartDateText.isEmpty()) {
-            Toast.makeText(getContext(), "Event Start Date is required", Toast.LENGTH_SHORT).show();
-            eventStartDate.requestFocus();
-            return;
-        }
 
         // Validate location, date, and time from EventInfoFragment
         if (eventInfoFragment != null) {
@@ -428,7 +422,39 @@ public class CreateEventFragment extends Fragment {
                 }
             }
         }
-        mViewModel.createEvent();
+        // All validation passed, create the event
+        createEventPopup();
+    }
+
+    public void createEventPopup()
+    {
+        LayoutInflater popupInflater = LayoutInflater.from(requireContext());
+        View popupView = popupInflater.inflate(R.layout.fragment_confirm_popup, null);
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(popupView);
+
+        AlertDialog dialog = builder.create();
+
+        TextView title = popupView.findViewById(R.id.popupTitleTextView);
+        title.setText("Create Event");
+
+        TextView confirmText = popupView.findViewById(R.id.popup_dialog);
+        confirmText.setText("Are you sure you want to create this event");
+
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        MaterialButton confirmBtn = popupView.findViewById(R.id.createEventButton2);
+        MaterialButton cancelBtn = popupView.findViewById(R.id.createEventButton);
+
+        confirmBtn.setOnClickListener(view1 -> {
+            mViewModel.createEvent();
+            dialog.dismiss();
+        });
+
+        cancelBtn.setOnClickListener(view12 -> dialog.dismiss());
+        dialog.show();
     }
 
     /**
@@ -442,7 +468,6 @@ public class CreateEventFragment extends Fragment {
         priceInput.setText("");
         registrationStartDate.setText("");
         registrationEndDate.setText("");
-        eventStartDate.setText("");
         eventInfoFragment.setFields("", null, null);
         Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.event_image);
         eventImageView.setImageDrawable(drawable);

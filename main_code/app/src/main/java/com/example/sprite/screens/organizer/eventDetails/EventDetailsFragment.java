@@ -56,8 +56,6 @@ import java.util.List;
 public class EventDetailsFragment extends Fragment {
 
     private static final String TAG = "EventDetailsFragment";
-
-    private EventDetailsViewModel mViewModel;
     private EventDetailsBottomScreen bottomScreenFragment;
 
     private MaterialButton joinWaitlistButton;
@@ -90,7 +88,6 @@ public class EventDetailsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(EventDetailsViewModel.class);
         databaseService = new DatabaseService();
         authService = new Authentication_Service();
         imageService = new ImageService();

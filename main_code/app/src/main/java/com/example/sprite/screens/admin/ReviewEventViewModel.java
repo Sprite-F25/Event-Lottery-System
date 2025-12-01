@@ -1,12 +1,15 @@
 package com.example.sprite.screens.admin;
 
 import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.sprite.Controllers.ImageService;
 import com.example.sprite.Models.Event;
+import com.example.sprite.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
@@ -59,23 +62,19 @@ public class ReviewEventViewModel extends ViewModel {
     }
 
     /**
-     * Deletes an image from Firestore.
-     *
-     * [COMPLETE THIS LATER]
+     * Removes the event image and sets it to null
+     * @param view the event image view that needs to be updated
      */
-    public void deleteImage(String imageURL) {
-        // Does this work ???? I Dunno!!!!!
-        /**
-        if (imageURL == null ) return;
-        FirebaseFirestore.getInstance()
-                .collection("images")
-                .document(imageURL)
-                .delete()
-                .addOnSuccessListener(aVoid ->
-                        Log.d("ReviewEvent", "Image deleted successfully"))
-                .addOnFailureListener(e ->
-                        Log.e("ReviewEvent", "Error deleting image", e));
-         */
+    public void removeEventImage(ImageView view)
+    {
+
+        ImageService imageService = new ImageService();
+        if (selectedEvent.getValue() == null) {
+            Log.e("ReviewEventVM", "No event selected");
+        return;
+        }
+        imageService.removeImage(selectedEvent.getValue());
+        view.setImageResource(R.drawable.event_image);
     }
 
 }

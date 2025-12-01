@@ -27,7 +27,9 @@ public class ImageService {
      * @param view The ImageView to be updated
      */
     public void loadImage(String imageUrl, ImageView view) {
-        if (imageUrl == null || imageUrl.isEmpty()) {
+        if (imageUrl == null || imageUrl.trim().isEmpty()
+                || imageUrl.equalsIgnoreCase("POSTER")
+                || imageUrl.equalsIgnoreCase("null")){
             return;
         }
 
@@ -66,12 +68,21 @@ public class ImageService {
                     Log.e("EventImage", "Failed to load image: " + imageUrl, e);
                 });
     }
+
+    /**
+     * Sets the image uri of an event an uploads the image to firestore storage
+     * @param event The selected event
+     * @param uri uri of image
+     * @param onComplete Runnable to ensure images are stored first before returning
+     */
     public void setEventImageUri(Event event, Uri uri, Runnable onComplete)
     {
         if (uri == null) {
             onComplete.run();
             return;
         }
+
+        removeImage(event);
 
         String fileName = "event_posters/" + UUID.randomUUID().toString() + ".jpg";
 
@@ -105,6 +116,40 @@ public class ImageService {
                 ).addOnFailureListener(e ->
                 { Log.e("Storage", "Upload failed", e);
                     onComplete.run();
+                });
+    }
+
+    /**
+     * Removes image reference from event and removes image from storage
+     * @param event the event to remove the image from
+     */
+    public void removeImage(Event event)
+    {
+        String imageUrl = event.getPosterImageUrl();
+
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            return;
+        }
+        StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
+
+        imageRef.delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("DeleteImage", "Image deleted from Firebase Storage");{
+                        FirebaseFirestore.getInstance()
+                                .collection("events")
+                                .document(event.getEventId())
+                                .update("posterImageUrl", null)
+                                .addOnSuccessListener(v -> {
+                                    Log.d("DeleteImage", "Image URL removed from Firestore");
+                                    event.setPosterImageUrl(null);
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e("DeleteImage", "Failed to remove image URL from Firestore", e);
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("DeleteImage", "Failed to delete image", e);
                 });
     }
 }
