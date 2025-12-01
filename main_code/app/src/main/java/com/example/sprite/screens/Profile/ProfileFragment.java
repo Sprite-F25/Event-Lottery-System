@@ -3,6 +3,8 @@ package com.example.sprite.screens.Profile;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -196,15 +198,23 @@ public class ProfileFragment extends Fragment {
      */
     private void showDeleteConfirmationPopup() {
         // inflate the popup layout
-        View popupView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_profile_delete_popup, null);
+        View popupView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_confirm_popup, null);
 
         // create an AlertDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(popupView);
         AlertDialog dialog = builder.create();
 
-        MaterialButton cancelButton = popupView.findViewById(R.id.cancel_button);
-        MaterialButton confirmButton = popupView.findViewById(R.id.confirm_delete_button);
+        TextView title = popupView.findViewById(R.id.popupTitleTextView);
+        title.setText("Delete Profile");
+
+        TextView confirmText = popupView.findViewById(R.id.popup_dialog);
+        confirmText.setText("Are you sure you want to delete this Profile? \nThis action cannot be undone.");
+
+        MaterialButton cancelButton = popupView.findViewById(R.id.createEventButton);
+        MaterialButton confirmButton = popupView.findViewById(R.id.createEventButton2);
+
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         // Cancel button closes dialog
         cancelButton.setOnClickListener(v -> dialog.dismiss());

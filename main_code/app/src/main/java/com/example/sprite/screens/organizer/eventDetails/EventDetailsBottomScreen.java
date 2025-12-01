@@ -31,6 +31,7 @@ public class EventDetailsBottomScreen extends Fragment {
     private TextView priceView;
     private TextView waitingListText;
     private TextView statusLabel;
+    private TextView locationRequiredText;
 
     private EventInfoFragment eventInfoFragment;
 
@@ -55,6 +56,7 @@ public class EventDetailsBottomScreen extends Fragment {
         priceView = view.findViewById(R.id.price_view);
         waitingListText = view.findViewById(R.id.waiting_count_text);
         statusLabel = view.findViewById(R.id.event_status_label);
+        locationRequiredText = view.findViewById(R.id.location_require_text);
         eventInfoFragment =
                 (EventInfoFragment) getChildFragmentManager()
                         .findFragmentById(R.id.fragment_event_info_view);
@@ -99,6 +101,13 @@ public class EventDetailsBottomScreen extends Fragment {
 
         if (statusLabel != null && selectedEvent.getStatus() != null) {
             statusLabel.setText(formatStatus(selectedEvent.getStatus()));
+        }
+
+        if (selectedEvent.isGeolocationRequired())
+        {
+            locationRequiredText.setText("Required");
+        } else{
+            locationRequiredText.setText("Not Required");
         }
     }
 

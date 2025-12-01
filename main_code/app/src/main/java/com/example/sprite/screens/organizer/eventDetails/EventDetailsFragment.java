@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -60,7 +61,7 @@ public class EventDetailsFragment extends Fragment {
 
     private MaterialButton joinWaitlistButton;
     private MaterialButton leaveWaitlistButton;
-    private MaterialButton viewQrButton;
+    private ImageButton viewQrButton;
     private Button acceptButton;
     private Button declineButton;
 
