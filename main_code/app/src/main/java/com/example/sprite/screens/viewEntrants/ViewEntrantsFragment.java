@@ -31,11 +31,8 @@ import com.example.sprite.Models.Event;
 import com.example.sprite.Models.Notification;
 import com.example.sprite.R;
 import com.google.android.material.button.MaterialButton;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -318,7 +315,7 @@ public class ViewEntrantsFragment extends Fragment {
         title.setText("Cancel Entrant");
 
         // Set the confirmation text
-        TextView confirmText = popupView.findViewById(R.id.textView3);
+        TextView confirmText = popupView.findViewById(R.id.popup_dialog);
         confirmText.setText("Are you sure you want to cancel the entrant?");
 
         MaterialButton confirmBtn = popupView.findViewById(R.id.createEventButton2);

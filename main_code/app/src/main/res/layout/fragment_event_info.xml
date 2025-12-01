@@ -44,7 +44,7 @@
         android:layout_height="24dp"
         android:layout_marginStart="4dp"
         android:gravity="center_vertical"
-        android:hint="Date"
+        android:hint="Event Date"
         android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@+id/calender_icon"
         app:layout_constraintTop_toBottomOf="@+id/location_input" />
@@ -65,7 +65,7 @@
         android:layout_height="24dp"
         android:layout_marginStart="4dp"
         android:gravity="center_vertical"
-        android:hint="Event Start Time"
+        android:hint="Event Time"
         android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@+id/clock_icon"
         app:layout_constraintTop_toBottomOf="@+id/date_input" />

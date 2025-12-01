@@ -61,7 +61,6 @@ public class CreateEventFragment extends Fragment {
     private EditText priceInput;
     private TextView registrationStartDate;
     private TextView registrationEndDate;
-    private TextView eventStartDate;
     private Button createEventButton;
     private CreateEventViewModel mViewModel;
     private Button editImageButton;
@@ -110,7 +109,6 @@ public class CreateEventFragment extends Fragment {
         priceInput = view.findViewById(R.id.price_input);
         registrationStartDate = view.findViewById(R.id.start_date_input);
         registrationEndDate = view.findViewById(R.id.end_date_input);
-        eventStartDate = view.findViewById(R.id.event_start_date_input);
         createEventButton = view.findViewById(R.id.create_event_button);
         editImageButton = view.findViewById(R.id.edit_image_button);
         eventImageView = view.findViewById(R.id.event_image_view);
@@ -238,8 +236,6 @@ public class CreateEventFragment extends Fragment {
                 setDate(registrationStartDate, date -> mViewModel.setRegistrationStartDate(date)));
         registrationEndDate.setOnClickListener(v ->
                 setDate(registrationEndDate, date -> mViewModel.setRegistrationEndDate(date)));
-        eventStartDate.setOnClickListener(v ->
-                setDate(eventStartDate, date -> mViewModel.setEventStartDate(date)));
         mViewModel.getShouldResetFields().observe(getViewLifecycleOwner(), shouldReset->{
             if (Boolean.TRUE.equals(shouldReset))
             {
@@ -289,7 +285,6 @@ public class CreateEventFragment extends Fragment {
         String priceText = priceInput.getText().toString().trim();
         String registrationStartDateText = registrationStartDate.getText().toString().trim();
         String registrationEndDateText = registrationEndDate.getText().toString().trim();
-        String eventStartDateText = eventStartDate.getText().toString().trim();
 
         // Validate Event Image
         if (mViewModel.getLocalPosterUri() == null) {
@@ -387,12 +382,6 @@ public class CreateEventFragment extends Fragment {
             return;
         }
 
-        // Validate event start date
-        if (eventStartDateText.isEmpty()) {
-            Toast.makeText(getContext(), "Event Start Date is required", Toast.LENGTH_SHORT).show();
-            eventStartDate.requestFocus();
-            return;
-        }
 
         // Validate location, date, and time from EventInfoFragment
         if (eventInfoFragment != null) {
@@ -445,7 +434,6 @@ public class CreateEventFragment extends Fragment {
         priceInput.setText("");
         registrationStartDate.setText("");
         registrationEndDate.setText("");
-        eventStartDate.setText("");
         eventInfoFragment.setFields("", null, null);
         Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.event_image);
         eventImageView.setImageDrawable(drawable);

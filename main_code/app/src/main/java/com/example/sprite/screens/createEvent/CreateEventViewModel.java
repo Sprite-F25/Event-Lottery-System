@@ -46,7 +46,6 @@ public class CreateEventViewModel extends ViewModel {
     private MutableLiveData<Double> price = new MutableLiveData<>();
     private MutableLiveData<Date> date = new MutableLiveData<>();
     private MutableLiveData<Date> time = new MutableLiveData<>();
-    private MutableLiveData<Date> startDate = new MutableLiveData<>();
     private MutableLiveData<Date> endDate = new MutableLiveData<>();
     private MutableLiveData<Uri> localPosterUri = new MutableLiveData<>();
     private final DatabaseService db = new DatabaseService();
@@ -124,15 +123,6 @@ public class CreateEventViewModel extends ViewModel {
         registrationEndDate.setValue(s);
     }
 
-    /**
-     * Sets the event start date.
-     * 
-     * @param date The event start date
-     */
-    public void setEventStartDate(Date date)
-    {
-        startDate.setValue(date);
-    }
 
     /**
      * Sets the maximum number of attendees.
@@ -209,9 +199,6 @@ public class CreateEventViewModel extends ViewModel {
         if (title != null && title.getValue() != null)
             event.setTitle(title.getValue());
 
-        if (startDate != null && startDate.getValue() != null)
-            event.setEventStartDate(startDate.getValue());
-
         if (endDate != null && endDate.getValue() != null)
             event.setEventEndDate(endDate.getValue());
 
@@ -242,8 +229,10 @@ public class CreateEventViewModel extends ViewModel {
         if (location != null && location.getValue() != null)
             event.setLocation(location.getValue());
 
-        if (date != null && date.getValue() != null)
+        if (date != null && date.getValue() != null) {
             event.setDate(date.getValue());
+            event.setEventStartDate(date.getValue());
+        }
 
         if (time != null && time.getValue() != null)
             event.setTime(time.getValue());
@@ -264,8 +253,6 @@ public class CreateEventViewModel extends ViewModel {
         if (title != null && title.getValue() != null)
             event.setTitle(title.getValue());
 
-        if (startDate != null && startDate.getValue() != null)
-            event.setEventStartDate(startDate.getValue());
 
         if (endDate != null && endDate.getValue() != null)
             event.setEventEndDate(endDate.getValue());
@@ -297,8 +284,11 @@ public class CreateEventViewModel extends ViewModel {
         if (location != null && location.getValue() != null)
             event.setLocation(location.getValue());
 
-        if (date != null && date.getValue() != null)
+        if (date != null && date.getValue() != null) {
             event.setDate(date.getValue());
+            event.setRegistrationStartDate(date.getValue());
+        }
+
 
         return event;
     }
@@ -358,7 +348,6 @@ public class CreateEventViewModel extends ViewModel {
         setPrice(0.0);
         setRegistrationStartDate(null);
         setRegistrationEndDate(null);
-        setEventStartDate(null);
         setLocation("");
         setDate(null);
         setTime(null);

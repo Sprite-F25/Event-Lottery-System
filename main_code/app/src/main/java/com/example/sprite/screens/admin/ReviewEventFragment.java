@@ -1,7 +1,13 @@
 package com.example.sprite.screens.admin;
 
 import android.app.AlertDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +21,15 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.example.sprite.Controllers.ImageService;
 import com.example.sprite.Models.Event;
 import com.example.sprite.R;
+import com.example.sprite.screens.organizer.eventDetails.EventInfoFragment;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.io.File;
+import java.io.FileOutputStream;
 
 /**
  * Fragment for admins to review and manage events.
@@ -32,6 +44,7 @@ public class ReviewEventFragment extends Fragment {
     private TextView titleView, descriptionView;
     private ImageView eventImageView;
     private ImageButton removeImageButton;
+    private EventInfoFragment eventInfoFragment;
 
     private Event selectedEvent;
 
@@ -46,12 +59,12 @@ public class ReviewEventFragment extends Fragment {
         descriptionView = view.findViewById(R.id.editDescriptionTextView);
         eventImageView = view.findViewById(R.id.event_image_view);
         removeImageButton = view.findViewById(R.id.removeImageButton);
+        eventInfoFragment =
+                (EventInfoFragment) getChildFragmentManager()
+                        .findFragmentById(R.id.fragment_event_info_view);
         MaterialButton deleteButton = view.findViewById(R.id.delete_button);
 
-        // Placeholder functionality
-        removeImageButton.setOnClickListener(v ->
-                eventImageView.setImageResource(R.drawable.event_image)
-        );
+
 
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(ReviewEventViewModel.class);
@@ -62,13 +75,36 @@ public class ReviewEventFragment extends Fragment {
             viewModel.setSelectedEvent(selectedEvent);
         }
 
-        // Observe event data
-        viewModel.getSelectedEvent().observe(getViewLifecycleOwner(), event -> {
-            if (event != null) {
-                titleView.setText(event.getTitle());
-                descriptionView.setText(event.getDescription());
-                // Placeholder until we load real image later
-                eventImageView.setImageResource(R.drawable.event_image);
+        // Handle Remove Images Popup
+        removeImageButton.setOnClickListener(v -> {
+            if (selectedEvent.getPosterImageUrl() != null) {
+                LayoutInflater popupInflater = LayoutInflater.from(requireContext());
+                View popupView = popupInflater.inflate(R.layout.fragment_confirm_popup, null);
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setView(popupView);
+
+                AlertDialog dialog = builder.create();
+
+                TextView title = popupView.findViewById(R.id.popupTitleTextView);
+                title.setText("Delete Image");
+
+                TextView confirmText = popupView.findViewById(R.id.popup_dialog);
+                confirmText.setText("Are you sure you want to delete this image? \nThis action cannot be undone.");
+
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                MaterialButton confirmBtn = popupView.findViewById(R.id.createEventButton2);
+                MaterialButton cancelBtn = popupView.findViewById(R.id.createEventButton);
+
+                confirmBtn.setOnClickListener(view1 -> {
+                    viewModel.removeEventImage(eventImageView);
+                    dialog.dismiss();
+                });
+
+                cancelBtn.setOnClickListener(view12 -> dialog.dismiss());
+                dialog.show();
             }
         });
 
@@ -86,8 +122,10 @@ public class ReviewEventFragment extends Fragment {
             TextView title = popupView.findViewById(R.id.popupTitleTextView);
             title.setText("Delete Event");
 
-            TextView confirmText = popupView.findViewById(R.id.textView3);
-            confirmText.setText("Are you sure you want to delete this event? This action cannot be undone.");
+            TextView confirmText = popupView.findViewById(R.id.popup_dialog);
+            confirmText.setText("Are you sure you want to delete this event? \nThis action cannot be undone.");
+
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
             MaterialButton confirmBtn = popupView.findViewById(R.id.createEventButton2);
             MaterialButton cancelBtn = popupView.findViewById(R.id.createEventButton);
@@ -105,4 +143,37 @@ public class ReviewEventFragment extends Fragment {
 
         return view;
     }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        viewModel.getSelectedEvent().observe(getViewLifecycleOwner(), event -> {
+            if (event != null) {
+                selectedEvent = event;
+                updateViews(event);
+            }
+        });
+    }
+
+    /**
+     * Updates the text and image views of the review event fragment
+     * @param event the event selected
+     */
+    public void updateViews(Event event)
+    {
+        titleView.setText(event.getTitle());
+        descriptionView.setText(event.getDescription());
+        ImageService imageService = new ImageService();
+        imageService.loadImage(event.getPosterImageUrl(), eventImageView);
+        if (eventInfoFragment != null && eventInfoFragment.getView() != null) {
+            eventInfoFragment.setFields(
+                    event.getLocation(),
+                    event.getEventStartDate(),
+                    event.getTime()
+            );
+        }
+    }
+
+
 }

@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sprite.R;
+import com.example.sprite.screens.admin.ReviewEventFragment;
 import com.example.sprite.screens.createEvent.CreateEventFragment;
 import com.example.sprite.screens.createEvent.CreateEventViewModel;
 
@@ -78,6 +79,11 @@ public class EventInfoFragment extends Fragment {
         getViews(view);
 
     }
+
+    /**
+     * Gets the views
+     * @param view eventInfoFragment view
+     */
     private void getViews(View view)
     {
         locationInput = view.findViewById(R.id.location_input);
@@ -88,6 +94,9 @@ public class EventInfoFragment extends Fragment {
         editTime = view.findViewById(R.id.edit_time_icon);
     }
 
+    /**
+     * Set up the listeners
+     */
     private void setUpListeners()
     {
         if (isEditable) {
@@ -112,8 +121,8 @@ public class EventInfoFragment extends Fragment {
 
                 }
             });
-            dateInput.setOnClickListener(v -> mCreateEventViewModel.setDate(getDate()));
-            timeInput.setOnClickListener(v -> mCreateEventViewModel.setTime(getTime()));
+            dateInput.setOnClickListener(v -> openDatePicker());
+            timeInput.setOnClickListener(v -> openTimePicker());
 
         } else {
             editLocation.setVisibility(View.INVISIBLE);
@@ -124,7 +133,10 @@ public class EventInfoFragment extends Fragment {
         }
     }
 
-    private Date getDate()
+    /**
+     * Opens a date selector and sets the date in mCreateEventViewModel
+     */
+    private void openDatePicker()
     {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -134,15 +146,18 @@ public class EventInfoFragment extends Fragment {
         DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, selectedYear, selectedMonth, selectedDay) -> {
             SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy", Locale.getDefault());
             calendar.set(selectedYear, selectedMonth, selectedDay);
+            mCreateEventViewModel.setDate(calendar.getTime());
             String formattedDate = sdf.format(calendar.getTime());
             dateInput.setText(formattedDate);
         }, year, month, day);
 
         datePickerDialog.show();
-        return calendar.getTime();
     }
 
-    private Date getTime()
+    /**
+     * Opens a time selector and sets the time in mCreateEventViewModel
+     */
+    private void openTimePicker()
     {
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -151,6 +166,7 @@ public class EventInfoFragment extends Fragment {
         TimePickerDialog timePickerDialog = new TimePickerDialog(requireContext(), (view, selectedHour, selectedMinute) ->{
             calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
             calendar.set(Calendar.MINUTE, selectedMinute);
+            mCreateEventViewModel.setTime(calendar.getTime());
 
             SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
             String formattedTime = sdf.format(calendar.getTime());
@@ -158,7 +174,6 @@ public class EventInfoFragment extends Fragment {
             timeInput.setText(formattedTime);
         }, hour,min, false);
         timePickerDialog.show();
-        return calendar.getTime();
     }
 
     @Override
@@ -171,6 +186,8 @@ public class EventInfoFragment extends Fragment {
             isEditable = Boolean.TRUE;
         } else if (parent instanceof EventDetailsFragment) {
             mEventDetailsViewModel = new ViewModelProvider(parent).get(EventDetailsViewModel.class);
+            isEditable = Boolean.FALSE;
+        } else if (parent instanceof ReviewEventFragment) {
             isEditable = Boolean.FALSE;
         } else {
             Log.w("EventInfoFragment", "Parent fragment not recognized");
