@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,9 +29,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 /**
  * Fragment for managing a single event as an organizer.
  * Displays event details and provides buttons for running the lottery, drawing replacement entrants,
- * viewing registered entrants, and viewing the event map.
- *
- * Interacts with ManageEventViewModel for updating event status.
+ * viewing registered entrants, viewing the event map, and showing the event QR code.
  */
 public class ManageEventFragment extends Fragment {
 
@@ -39,45 +38,36 @@ public class ManageEventFragment extends Fragment {
     private ImageService imageService;
     private ActivityResultLauncher<String> galleryLauncher;
 
-    private MaterialButton runLotteryButton, viewEntrantsButton, viewMapButton;
-    private TextView titleView, descriptionView;
+    private MaterialButton runLotteryButton;
+    private MaterialButton viewEntrantsButton;
+    private MaterialButton viewMapButton;
+    private TextView titleView;
+    private TextView descriptionView;
     private EventInfoFragment eventInfoFragment;
     private ImageView eventImageView;
     private SwitchMaterial geolocationToggle;
     private Button editImageButton;
+    private ImageButton qrImageButton;
 
     private Event selectedEvent;
 
-    /**
-     * Inflates the layout for this fragment, binds views, sets up the ViewModel,
-     * and initializes button listeners.
-     *
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     *
-     */
-
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_manage_event, container, false);
 
-        // Buttons
+
         runLotteryButton = view.findViewById(R.id.runLotteryButton);
         viewEntrantsButton = view.findViewById(R.id.viewEntrantsButton);
         viewMapButton = view.findViewById(R.id.viewMapButton);
         editImageButton = view.findViewById(R.id.edit_image_button2);
+        qrImageButton = view.findViewById(R.id.imageButton3);   // ⬅️ QR icon
         setupGalleryLauncher();
 
-        // Views
+
         titleView = view.findViewById(R.id.eventTitleView);
         descriptionView = view.findViewById(R.id.editDescriptionTextView);
         eventImageView = view.findViewById(R.id.event_image_view);
@@ -90,13 +80,13 @@ public class ManageEventFragment extends Fragment {
         lotteryService = new LotteryService();
         imageService = new ImageService();
 
-        // Get event from arguments
+
         if (getArguments() != null) {
             selectedEvent = (Event) getArguments().getSerializable("selectedEvent");
             viewModel.setSelectedEvent(selectedEvent);
         }
 
-        // Initialize geolocation toggle from event attribute
+
         if (selectedEvent != null) {
             geolocationToggle.setChecked(selectedEvent.isGeolocationRequired());
         }
@@ -104,15 +94,23 @@ public class ManageEventFragment extends Fragment {
         viewModel.getSelectedEvent().observe(getViewLifecycleOwner(), event -> {
             if (event != null) {
                 selectedEvent = event;
-                titleView.setText(event.getTitle());
-                descriptionView.setText(event.getDescription());
-                eventInfoFragment.setFields(event.getLocation(), event.getEventStartDate(), event.getTime());
-                imageService.loadImage(event.getPosterImageUrl(), eventImageView);
+
+
+                lotteryService.maybeAutoRunLottery(selectedEvent);
+
+
+                titleView.setText(selectedEvent.getTitle());
+                descriptionView.setText(selectedEvent.getDescription());
+                eventInfoFragment.setFields(
+                        selectedEvent.getLocation(),
+                        selectedEvent.getEventStartDate(),
+                        selectedEvent.getTime()
+                );
+                imageService.loadImage(selectedEvent.getPosterImageUrl(), eventImageView);
                 updateLotteryButton();
             }
         });
 
-        // Geolocation
 
         viewModel.getGeolocationRequired().observe(getViewLifecycleOwner(), required -> {
             if (required != null) {
@@ -125,7 +123,6 @@ public class ManageEventFragment extends Fragment {
         geolocationToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
             viewModel.setGeolocationRequired(isChecked);
 
-            // Enable/disable viewMap button
             viewMapButton.setEnabled(isChecked);
             viewMapButton.setAlpha(isChecked ? 1f : 0.9f);
         });
@@ -137,10 +134,9 @@ public class ManageEventFragment extends Fragment {
 
     /**
      * Sets up click listeners for fragment buttons.
-     * Handles lottery running, replacements, entrant viewing, and map display.
      */
     private void setupButtonListeners() {
-        editImageButton.setOnClickListener( v -> galleryLauncher.launch("image/*"));
+        editImageButton.setOnClickListener(v -> galleryLauncher.launch("image/*"));
 
         runLotteryButton.setOnClickListener(v -> {
             if (selectedEvent == null) {
@@ -148,9 +144,9 @@ public class ManageEventFragment extends Fragment {
                 return;
             }
 
-            // Check if lottery has been run
+
             if (selectedEvent.getStatus() == Event.EventStatus.LOTTERY_COMPLETED) {
-                // Draw replacements
+
                 boolean success = lotteryService.drawReplacements(selectedEvent);
                 if (success) {
                     Toast.makeText(requireContext(), "Replacements drawn successfully!", Toast.LENGTH_SHORT).show();
@@ -158,7 +154,7 @@ public class ManageEventFragment extends Fragment {
                     Toast.makeText(requireContext(), "No replacements drawn. Either no open slots or waitlist is empty.", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                // Run lottery
+
                 lotteryService.runLottery(selectedEvent);
                 viewModel.setSelectedEvent(selectedEvent);
                 viewModel.setStatusLotteryComplete(selectedEvent);
@@ -166,7 +162,6 @@ public class ManageEventFragment extends Fragment {
                 Toast.makeText(requireContext(), "Lottery run successfully!", Toast.LENGTH_SHORT).show();
             }
         });
-
 
         viewEntrantsButton.setOnClickListener(v -> {
             if (selectedEvent == null) {
@@ -184,6 +179,22 @@ public class ManageEventFragment extends Fragment {
             bundle.putSerializable("selectedEvent", selectedEvent);
             Navigation.findNavController(v).navigate(R.id.fragment_view_map, bundle);
         });
+
+
+        qrImageButton.setOnClickListener(v -> {
+            if (selectedEvent == null) {
+                Toast.makeText(requireContext(), "No event selected.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("selectedEvent", selectedEvent);
+
+            com.example.sprite.screens.ui.QRCodePopup popup =
+                    new com.example.sprite.screens.ui.QRCodePopup();
+            popup.setArguments(bundle);
+            popup.show(getParentFragmentManager(), "qr_popup");
+        });
     }
 
     /**
@@ -200,15 +211,17 @@ public class ManageEventFragment extends Fragment {
             runLotteryButton.setText("Run Lottery");
         }
     }
+
     /**
      * Sets up the gallery launcher and updates the event image view and uri
      */
-    private void setupGalleryLauncher()
-    {
-        galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-            if (uri != null) {
-                viewModel.setEventImage(uri, eventImageView);
-            }
-        });
+    private void setupGalleryLauncher() {
+        galleryLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null) {
+                        viewModel.setEventImage(uri, eventImageView);
+                    }
+                });
     }
 }

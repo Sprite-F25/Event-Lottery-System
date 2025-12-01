@@ -44,11 +44,13 @@ public class Event implements Serializable {
     private Date registrationStartDate;
     private Date registrationEndDate;
     private int maxAttendees;
-    private int maxWaitingListSize; // Optional limit
+    private int maxWaitingListSize;
     private double price;
     private String posterImageUrl;
     private String qrCodeUrl;
     private EventStatus status;
+
+    private boolean lotteryHasRun;
     private boolean geolocationRequired;
     private Date createdAt;
     private Date updatedAt;
@@ -483,6 +485,14 @@ public class Event implements Serializable {
      * 
      * @return true if geolocation is required, false otherwise
      */
+
+    public boolean isLotteryHasRun() {
+        return lotteryHasRun;
+    }
+
+    public void setLotteryHasRun(boolean lotteryHasRun) {
+        this.lotteryHasRun = lotteryHasRun;
+    }
     public boolean isGeolocationRequired() {
         return geolocationRequired;
     }

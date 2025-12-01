@@ -100,7 +100,6 @@ public class CreateEventFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // TODO: Use the ViewModel
     }
 
     private void setupViews(View view)
