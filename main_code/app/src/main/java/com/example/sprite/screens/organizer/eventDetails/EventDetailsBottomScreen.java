@@ -30,6 +30,11 @@ public class EventDetailsBottomScreen extends Fragment {
     private TextView descView;
     private TextView priceView;
     private TextView waitingListText;
+<<<<<<< Updated upstream
+=======
+    private TextView statusLabel;
+    private TextView locationRequiredText;
+>>>>>>> Stashed changes
 
     private EventInfoFragment eventInfoFragment;
 
@@ -53,6 +58,11 @@ public class EventDetailsBottomScreen extends Fragment {
         descView = view.findViewById(R.id.desc_view);
         priceView = view.findViewById(R.id.price_view);
         waitingListText = view.findViewById(R.id.waiting_count_text);
+<<<<<<< Updated upstream
+=======
+        statusLabel = view.findViewById(R.id.event_status_label);
+        locationRequiredText = view.findViewById(R.id.location_require_text);
+>>>>>>> Stashed changes
         eventInfoFragment =
                 (EventInfoFragment) getChildFragmentManager()
                         .findFragmentById(R.id.fragment_event_info_view);
@@ -94,6 +104,40 @@ public class EventDetailsBottomScreen extends Fragment {
         if (selectedEvent.getWaitingList()!= null)
             waitingListText.setText(String.valueOf(selectedEvent.getWaitingList().size()));
         else { waitingListText.setText("0");}
+<<<<<<< Updated upstream
+=======
+
+        if (statusLabel != null && selectedEvent.getStatus() != null) {
+            statusLabel.setText(formatStatus(selectedEvent.getStatus()));
+        }
+
+        if (selectedEvent.isGeolocationRequired())
+        {
+            locationRequiredText.setText("Required");
+        } else{
+            locationRequiredText.setText("Not Required");
+        }
+    }
+
+    /**
+     * Formats the event status enum into a user-friendly string.
+     * Example: LOTTERY_COMPLETED -> "Lottery completed"
+     */
+    private String formatStatus(Event.EventStatus status) {
+        String raw = status.name().toLowerCase(Locale.ROOT).replace('_', ' ');
+        String[] words = raw.split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < words.length; i++) {
+            String w = words[i];
+            if (w.isEmpty()) continue;
+            if (i > 0) sb.append(' ');
+            sb.append(Character.toUpperCase(w.charAt(0)));
+            if (w.length() > 1) {
+                sb.append(w.substring(1));
+            }
+        }
+        return sb.toString();
+>>>>>>> Stashed changes
     }
 
 }

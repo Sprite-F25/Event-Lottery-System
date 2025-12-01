@@ -56,8 +56,8 @@
             android:id="@+id/delete_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/system_error_400"
             android:text="Delete"
-            android:textColor="@android:color/white"
-            android:backgroundTint="@color/red_delete"/>
+            android:textColor="@android:color/white" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>
