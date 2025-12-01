@@ -13,6 +13,7 @@ import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Models.Notification;
 import com.example.sprite.Adapters.NotificationAdapter;
 import com.example.sprite.R;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,8 @@ public class NotificationView extends AppCompatActivity{
     private List<Notification> notificationsList;
     private NotificationService notificationService;
     private String currentUserId;
+    private MaterialButton btnMarkAllRead;
+    private MaterialButton btnClearAll;
 
     /**
      * Initializes the notification view activity.
@@ -60,6 +63,8 @@ public class NotificationView extends AppCompatActivity{
 
         recyclerView = findViewById(R.id.rv_notifications);
         emptyStateTextView = findViewById(R.id.tv_empty);
+
+        
 
         if (recyclerView == null) {
             return;

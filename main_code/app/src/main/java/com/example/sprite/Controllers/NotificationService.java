@@ -1,7 +1,9 @@
 package com.example.sprite.Controllers;
 
 import android.util.Log;
+
 import com.example.sprite.Models.Notification;
+import com.example.sprite.Models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -89,12 +91,12 @@ public class NotificationService {
 
         // Ensure isRead is explicitly set to false
         notification.setRead(false);
-        
+
         db.collection(COLLECTION_NAME)
                 .document(notification.getNotificationId())
                 .set(notification)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "Notification created successfully: " + notification.getNotificationId() + 
+                    Log.d(TAG, "Notification created successfully: " + notification.getNotificationId() +
                         " with isRead=" + notification.isRead());
                     callback.onSuccess(notification);
                 })
@@ -113,22 +115,35 @@ public class NotificationService {
      * @param eventTitle The title of the event
      * @param callback The callback to handle the result
      */
-    public void notifySelectedFromWaitlist(String entrantId, String eventId, String eventTitle, 
+    public void notifySelectedFromWaitlist(String entrantId, String eventId, String eventTitle,
                                            NotificationCallback callback) {
-        String notificationId = UUID.randomUUID().toString();
-        String message = "You have been selected to participate in " + eventTitle + "!";
-        
-        Notification notification = new Notification(
-                notificationId,
-                entrantId,
-                eventId,
-                eventTitle,
-                message,
-                Notification.NotificationType.SELECTED_FROM_WAITLIST
-        );
+        // Check if the user has notifications enabled
+        DatabaseService dbService = new DatabaseService();
+        dbService.getUser(entrantId, task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                User user = task.getResult().toObject(User.class);
+                if (user != null && user.isNotificationsEnabled()) {
 
-        createNotification(notification, callback);
+                    String notificationId = UUID.randomUUID().toString();
+                    String message = "You have been selected to participate in " + eventTitle + "!";
+
+                    Notification notification = new Notification(
+                            notificationId,
+                            entrantId,
+                            eventId,
+                            eventTitle,
+                            message,
+                            Notification.NotificationType.SELECTED_FROM_WAITLIST
+                    );
+                    createNotification(notification, callback);
+                } else {
+                    // User opted out
+                    Log.d(TAG, "User " + entrantId + " has opted out of notifications");
+                }
+            }
+        });
     }
+
 
     /**
      * Creates a notification for an entrant who was not selected from the waiting list.
@@ -138,23 +153,36 @@ public class NotificationService {
      * @param eventTitle The title of the event
      * @param callback The callback to handle the result
      */
-    public void notifyNotSelectedFromWaitlist(String entrantId, String eventId, String eventTitle, 
-                                               NotificationCallback callback) {
-        String notificationId = UUID.randomUUID().toString();
-        String message = "Unfortunately, you were not selected to participate in " + eventTitle + 
-                ". Thank you for your interest!";
-        
-        Notification notification = new Notification(
-                notificationId,
-                entrantId,
-                eventId,
-                eventTitle,
-                message,
-                Notification.NotificationType.NOT_SELECTED_FROM_WAITLIST
-        );
+    public void notifyNotSelectedFromWaitlist(String entrantId, String eventId, String eventTitle,
+                                              NotificationCallback callback) {
+        // Check if the user has notifications enabled
+        DatabaseService dbService = new DatabaseService();
+        dbService.getUser(entrantId, task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                User user = task.getResult().toObject(User.class);
+                if (user != null && user.isNotificationsEnabled()) {
 
-        createNotification(notification, callback);
+                    String notificationId = UUID.randomUUID().toString();
+                    String message = "Unfortunately, you were not selected to participate in " + eventTitle +
+                            ". Thank you for your interest!";
+
+                    Notification notification = new Notification(
+                            notificationId,
+                            entrantId,
+                            eventId,
+                            eventTitle,
+                            message,
+                            Notification.NotificationType.NOT_SELECTED_FROM_WAITLIST
+                    );
+                    createNotification(notification, callback);
+                } else {
+                    // User opted out
+                    Log.d(TAG, "User " + entrantId + " has opted out of notifications");
+                }
+            }
+        });
     }
+
 
     /**
      * Retrieves all notifications for a specific entrant.

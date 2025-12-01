@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.ext.junit)
     implementation(libs.core)
     implementation(libs.recyclerview)
+    implementation(libs.firebase.storage)
     //implementation(libs.fragment)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
@@ -98,4 +99,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
     debugImplementation("androidx.fragment:fragment-testing:1.7.1")
     androidTestImplementation("androidx.navigation:navigation-testing:2.7.7")
+    // map services
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+    // implementation("org.maplibre.gl:android-sdk:10.2.0")
 }

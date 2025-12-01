@@ -8,6 +8,7 @@ import com.example.sprite.Models.Waitlist;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
@@ -23,7 +24,7 @@ public class LotteryService {
 
     private DatabaseService dbService;
     private NotificationService notificationService;
-    private Function<Event, Waitlist> waitlistProvider; // NEW: inject Waitlist factory
+    private Function<Event, Waitlist> waitlistProvider;
 
     /**
      * Default constructor for LotteryService.
@@ -76,23 +77,23 @@ public class LotteryService {
             return;
         }
 
-        // if already complete
+
         if (event.getStatus() == Event.EventStatus.LOTTERY_COMPLETED) {
             Log.i("LotteryService", "Lottery already completed for event: " + event.getEventId());
             return;
         }
 
-        // Use injected waitlist provider (mockable in tests)
+
         Waitlist waitlistObject = waitlistProvider.apply(event);
         List<String> waitlist = waitlistObject.getWaitingList();
         
-        // Check if waitlist is null or empty
+
         if (waitlist == null || waitlist.isEmpty()) {
             Log.i("LotteryService", "No entrants on waiting list for event: " + event.getEventId());
             return;
         }
 
-        // Calculate available slots (max attendees minus already selected)
+
         int maxAttendees = event.getMaxAttendees();
         List<String> alreadySelected = event.getSelectedAttendees() != null ? 
             event.getSelectedAttendees() : new ArrayList<>();
@@ -104,10 +105,8 @@ public class LotteryService {
             return;
         }
 
-        // Shuffle the waitlist for random selection
         Collections.shuffle(waitlist, random);
 
-        // Make a copy of the waitlist to iterate safely
         List<String> waitlistCopy = new ArrayList<>(waitlist);
 
         int selectedCount = 0;
@@ -120,27 +119,28 @@ public class LotteryService {
                 availableSlots--;
                 selectedCount++;
             } else {
-                break; // No more slots available
+                break;
             }
         }
 
-        // Get the list of entrants who were NOT selected (remain on waitlist)
+
         List<String> notSelectedEntrantIds = new ArrayList<>(waitlistCopy);
         notSelectedEntrantIds.removeAll(selectedEntrantIds);
 
         event.setStatus(Event.EventStatus.LOTTERY_COMPLETED);
+        event.setLotteryHasRun(true);
 
         Log.i("LotteryService", "Lottery completed for event: " + event.getEventId() + 
             ". Selected " + selectedCount + " entrants. " + notSelectedEntrantIds.size() + 
             " entrants were not selected.");
 
-        // Update event in database
+
         if (dbService != null) {
             dbService.updateEvent(event, task -> {
                 if (task.isSuccessful()) {
                     Log.i("LotteryService", "Event updated successfully in database: " + event.getEventId());
                     
-                    // Send notifications to selected entrants
+
                     String eventTitle = event.getTitle() != null ? event.getTitle() : "Event";
                     for (String entrantId : selectedEntrantIds) {
                         if (notificationService != null) {
@@ -162,7 +162,7 @@ public class LotteryService {
                         }
                     }
                     
-                    // Send notifications to entrants who were NOT selected
+
                     for (String entrantId : notSelectedEntrantIds) {
                         if (notificationService != null) {
                             notificationService.notifyNotSelectedFromWaitlist(
@@ -192,6 +192,39 @@ public class LotteryService {
     }
 
     /**
+     * Automatically runs the lottery if:
+     *  - registrationEndDate has passed, AND
+     *  - the main lottery has never been run before.
+     *
+     * This should be called from organizer/entrant flows that load the event
+     * after registration end, e.g., when opening Manage Event or Event Details.
+     */
+    public void maybeAutoRunLottery(Event event) {
+        if (event == null) {
+            return;
+        }
+
+
+        if (event.isLotteryHasRun()) {
+            Log.d("LotteryService", "Auto-run skipped; lottery already run for event: " + event.getEventId());
+            return;
+        }
+
+        Date end = event.getRegistrationEndDate();
+        if (end == null) {
+            return;
+        }
+
+        Date now = new Date();
+
+
+        if (now.after(end)) {
+            Log.d("LotteryService", "Auto-running lottery after registration end for event: " + event.getEventId());
+            runLottery(event);
+        }
+    }
+
+    /**
      * Draws replacements for cancelled spots when organizer clicks the button on ManageEvents page.
      * Fills open slots (if any) from the waiting list.
      * Open slots are calculated as: maxAttendees - confirmedAttendees.size()
@@ -206,7 +239,7 @@ public class LotteryService {
             return false;
         }
 
-        // if already complete
+
         if (event.getStatus() != Event.EventStatus.LOTTERY_COMPLETED) {
             Log.i("LotteryService", "Lottery has not been completed for event: " + event.getEventId());
             return false ;
@@ -215,13 +248,13 @@ public class LotteryService {
         Waitlist waitlist = waitlistProvider.apply(event);
         List<String> waitingList = waitlist.getWaitingList();
 
-        // Check if waitlist is null or empty
+
         if (waitingList == null || waitingList.isEmpty()) {
             Log.i("LotteryService", "No entrants on waiting list for replacements: " + event.getEventId());
             return false;
         }
 
-        // Calculate open slots: max attendees minus confirmed attendees
+
         int maxAttendees = event.getMaxAttendees();
         List<String> confirmedAttendees = event.getConfirmedAttendees() != null ? 
             event.getConfirmedAttendees() : new ArrayList<>();
@@ -239,7 +272,7 @@ public class LotteryService {
             return false;
         }
 
-        // Make a copy of the waitlist to iterate safely
+
         List<String> waitlistCopy = new ArrayList<>(waitingList);
 
         int drawnCount = 0;
@@ -249,13 +282,13 @@ public class LotteryService {
                 openSlots--;
                 drawnCount++;
             } else {
-                break; // No more slots available
+                break;
             }
         }
 
         Log.i("LotteryService", "Drew " + drawnCount + " replacement(s) for event: " + event.getEventId());
 
-        // Update event in database
+
         if (dbService != null) {
             dbService.updateEvent(event, task -> {
                 if (task.isSuccessful()) {

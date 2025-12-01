@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -14,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.sprite.Controllers.Authentication_Service;
+import com.example.sprite.MainActivity;
 import com.example.sprite.Models.User;
 import com.example.sprite.R;
 import com.example.sprite.SignInActivity;
@@ -40,6 +43,8 @@ public class ProfileFragment extends Fragment {
     private TextInputEditText nameEditText, roleEditText, emailEditText, phoneEditText;
     private SwitchMaterial locationSwitch;
     private MaterialButton editProfileButton, deleteProfileButton;
+    private RadioGroup roleRadioGroup;
+    private RadioButton radioRoleEntrant, radioRoleOrganizer;
 
     private Authentication_Service authService;
     private User currentUser; // Store current user to preserve all fields when updating
@@ -68,6 +73,9 @@ public class ProfileFragment extends Fragment {
         locationSwitch = view.findViewById(R.id.location_switch);
         editProfileButton = view.findViewById(R.id.edit_profile_button);
         deleteProfileButton = view.findViewById(R.id.delete_profile_button);
+        roleRadioGroup = view.findViewById(R.id.role_radio_group);
+        radioRoleEntrant = view.findViewById(R.id.radio_role_entrant);
+        radioRoleOrganizer = view.findViewById(R.id.radio_role_organizer);
 
         // Load user data
         loadUserProfile();
@@ -106,6 +114,17 @@ public class ProfileFragment extends Fragment {
                 } else {
                     phoneEditText.setText(""); // Clear placeholder if no phone number
                 }
+                
+                // Set role radio buttons based on user's current role
+                if (user.getRole() != null) {
+                    if (user.getRole() == User.UserRole.ENTRANT) {
+                        radioRoleEntrant.setChecked(true);
+                        radioRoleOrganizer.setChecked(false);
+                    } else if (user.getRole() == User.UserRole.ORGANIZER) {
+                        radioRoleEntrant.setChecked(false);
+                        radioRoleOrganizer.setChecked(true);
+                    }
+                }
             }
 
             @Override
@@ -132,12 +151,30 @@ public class ProfileFragment extends Fragment {
         currentUser.setName(nameEditText.getText().toString().trim());
         currentUser.setEmail(emailEditText.getText().toString().trim());
         currentUser.setPhoneNumber(phoneEditText.getText().toString().trim());
+        
+        // Update role based on selected radio button
+        User.UserRole newRole;
+        if (radioRoleOrganizer.isChecked()) {
+            newRole = User.UserRole.ORGANIZER;
+        } else {
+            newRole = User.UserRole.ENTRANT;
+        }
+        
+        // Only update if role has changed
+        boolean roleChanged = currentUser.getRole() != newRole;
+        currentUser.setRole(newRole);
 
         authService.updateUserProfile(currentUser, new Authentication_Service.AuthCallback() {
             @Override
             public void onSuccess(User user) {
                 currentUser = user; // Update stored user with latest data
                 Toast.makeText(getContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                
+                // If role changed, refresh the navigation menu in MainActivity
+                if (roleChanged && getActivity() instanceof MainActivity) {
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.refreshNavigationMenu();
+                }
             }
 
             @Override

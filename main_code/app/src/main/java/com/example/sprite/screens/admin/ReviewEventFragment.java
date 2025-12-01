@@ -44,7 +44,7 @@ public class ReviewEventFragment extends Fragment {
         // Initialize views
         titleView = view.findViewById(R.id.eventTitleView);
         descriptionView = view.findViewById(R.id.editDescriptionTextView);
-        eventImageView = view.findViewById(R.id.createImageView);
+        eventImageView = view.findViewById(R.id.event_image_view);
         removeImageButton = view.findViewById(R.id.removeImageButton);
         MaterialButton deleteButton = view.findViewById(R.id.delete_button);
 

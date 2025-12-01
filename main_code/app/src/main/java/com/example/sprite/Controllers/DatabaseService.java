@@ -1,13 +1,15 @@
 package com.example.sprite.Controllers;
 
 import com.example.sprite.Models.Event;
-import com.example.sprite.Models.User;
 import com.example.sprite.Models.Notification;
+import com.example.sprite.Models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.Map;
 
 /**
  * {@code DatabaseService} provides an abstraction layer for all Firestore database operations.
@@ -158,6 +160,15 @@ public class DatabaseService {
                 .addOnCompleteListener(listener);
     }
 
+    public void updateEventFields(String eventId, Map<String, Object> updates, OnCompleteListener<Void> listener) {
+        FirebaseFirestore.getInstance()
+                .collection("events")
+                .document(eventId)
+                .update(updates)
+                .addOnCompleteListener(listener);
+    }
+
+
     /**
      * Retrieves all waiting list entries for a specific event.
      *
@@ -244,6 +255,32 @@ public class DatabaseService {
         db.collection("notifications")
                 .document(notificationId)
                 .get()
+                .addOnCompleteListener(listener);
+    }
+
+    /**
+     * Fetches all users documents from Firestore.
+     *
+     * @param listener Callback triggered with a {@link QuerySnapshot} of users.
+     */
+    public void getAllUsers(OnCompleteListener<QuerySnapshot> listener) {
+        db.collection("users")
+                .get()
+                .addOnCompleteListener(listener);
+    }
+
+    /**
+     * Deletes a user document from the Firestore "users" collection.
+     *
+     * @param id        The unique Firestore document ID of the user to delete.
+     * @param listener  Callback invoked when the delete operation completes,
+     *                  providing success or failure information.
+     */
+    public void deleteUser(String id, OnCompleteListener<Void> listener) {
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(id)
+                .delete()
                 .addOnCompleteListener(listener);
     }
 
