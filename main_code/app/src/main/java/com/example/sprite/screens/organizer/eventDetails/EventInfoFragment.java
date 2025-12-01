@@ -1,15 +1,8 @@
 package com.example.sprite.screens.organizer.eventDetails;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -19,6 +12,11 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.sprite.R;
 import com.example.sprite.screens.admin.ReviewEventFragment;
@@ -47,7 +45,6 @@ import java.util.Locale;
 public class EventInfoFragment extends Fragment {
 
     private CreateEventViewModel mCreateEventViewModel;
-    private EventDetailsViewModel mEventDetailsViewModel;
     private EditText locationInput;
     private TextView timeInput;
     private TextView dateInput;
@@ -185,7 +182,6 @@ public class EventInfoFragment extends Fragment {
             mCreateEventViewModel = new ViewModelProvider(parent).get(CreateEventViewModel.class);
             isEditable = Boolean.TRUE;
         } else if (parent instanceof EventDetailsFragment) {
-            mEventDetailsViewModel = new ViewModelProvider(parent).get(EventDetailsViewModel.class);
             isEditable = Boolean.FALSE;
         } else if (parent instanceof ReviewEventFragment) {
             isEditable = Boolean.FALSE;

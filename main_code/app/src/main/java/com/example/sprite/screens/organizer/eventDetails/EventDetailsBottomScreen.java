@@ -26,7 +26,6 @@ import com.example.sprite.R;
  */
 public class EventDetailsBottomScreen extends Fragment {
 
-    private EventDetailsBottomScreenViewModel mViewModel;
     private TextView titleView;
     private TextView descView;
     private TextView priceView;
@@ -63,11 +62,9 @@ public class EventDetailsBottomScreen extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(EventDetailsBottomScreenViewModel.class);
         Bundle args = getArguments();
         if (args != null) {
             selectedEvent = (Event) args.getSerializable("selectedEvent");
-            mViewModel.setSelectedEvent(selectedEvent);
             setEventText();
         }
     }
