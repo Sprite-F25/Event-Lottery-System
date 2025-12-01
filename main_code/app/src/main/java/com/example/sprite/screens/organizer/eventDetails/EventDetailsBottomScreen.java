@@ -1,7 +1,5 @@
 package com.example.sprite.screens.organizer.eventDetails;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +15,8 @@ import android.widget.TextView;
 import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 
+import java.util.Locale;
+
 /**
  * Fragment that displays the bottom section of event details.
  * 
@@ -30,6 +30,7 @@ public class EventDetailsBottomScreen extends Fragment {
     private TextView descView;
     private TextView priceView;
     private TextView waitingListText;
+    private TextView statusLabel;
 
     private EventInfoFragment eventInfoFragment;
 
@@ -53,6 +54,7 @@ public class EventDetailsBottomScreen extends Fragment {
         descView = view.findViewById(R.id.desc_view);
         priceView = view.findViewById(R.id.price_view);
         waitingListText = view.findViewById(R.id.waiting_count_text);
+        statusLabel = view.findViewById(R.id.event_status_label);
         eventInfoFragment =
                 (EventInfoFragment) getChildFragmentManager()
                         .findFragmentById(R.id.fragment_event_info_view);
@@ -94,6 +96,30 @@ public class EventDetailsBottomScreen extends Fragment {
         if (selectedEvent.getWaitingList()!= null)
             waitingListText.setText(String.valueOf(selectedEvent.getWaitingList().size()));
         else { waitingListText.setText("0");}
+
+        if (statusLabel != null && selectedEvent.getStatus() != null) {
+            statusLabel.setText(formatStatus(selectedEvent.getStatus()));
+        }
+    }
+
+    /**
+     * Formats the event status enum into a user-friendly string.
+     * Example: LOTTERY_COMPLETED -> "Lottery completed"
+     */
+    private String formatStatus(Event.EventStatus status) {
+        String raw = status.name().toLowerCase(Locale.ROOT).replace('_', ' ');
+        String[] words = raw.split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < words.length; i++) {
+            String w = words[i];
+            if (w.isEmpty()) continue;
+            if (i > 0) sb.append(' ');
+            sb.append(Character.toUpperCase(w.charAt(0)));
+            if (w.length() > 1) {
+                sb.append(w.substring(1));
+            }
+        }
+        return sb.toString();
     }
 
 }
