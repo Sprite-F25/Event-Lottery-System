@@ -1,23 +1,11 @@
 package com.example.sprite.screens.createEvent;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -30,6 +18,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.example.sprite.R;
 import com.example.sprite.screens.organizer.eventDetails.EventInfoFragment;
@@ -247,6 +243,20 @@ public class CreateEventFragment extends Fragment {
                 mViewModel.onResetComplete();
             }
         });
+        // Observe event creation success
+        mViewModel.getEventCreatedSuccessfully().observe(getViewLifecycleOwner(), created -> {
+            if (Boolean.TRUE.equals(created)) {
+                // Navigate to EventsList
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("selectedEvent", mViewModel.getEventInfo());
+                Navigation.findNavController(requireView())
+                        .navigate(R.id.nav_events_list, bundle);
+
+                // Reset flag so navigation only happens once
+                mViewModel.onEventCreationHandled();
+            }
+        });
+
     }
 
     /**
@@ -331,25 +341,41 @@ public class CreateEventFragment extends Fragment {
         }
 
         // Validate waiting list size
+        int maxWaitingList = 1000;
         if (maxWaitingListText.isEmpty()) {
-            Toast.makeText(getContext(), "Waiting List Size is required", Toast.LENGTH_SHORT).show();
-            eventMaxWaitingListInput.requestFocus();
-            return;
+//            Toast.makeText(getContext(), "Waiting List Size is required", Toast.LENGTH_SHORT).show();
+//            eventMaxWaitingListInput.requestFocus();
+            maxWaitingList = 1000;
         }
 
-        int maxWaitingList;
-        try {
-            maxWaitingList = Integer.parseInt(maxWaitingListText);
-            if (maxWaitingList <= 0) {
-                Toast.makeText(getContext(), "Waiting List Size must be greater than 0", Toast.LENGTH_SHORT).show();
+        if (!maxWaitingListText.isEmpty()) {
+            try {
+                maxWaitingList = Integer.parseInt(maxWaitingListText);
+                if (maxWaitingList <= 0) {
+                    Toast.makeText(getContext(), "Waiting List Size must be greater than 0", Toast.LENGTH_SHORT).show();
+                    eventMaxWaitingListInput.requestFocus();
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "Waiting List Size must be a valid number", Toast.LENGTH_SHORT).show();
                 eventMaxWaitingListInput.requestFocus();
                 return;
             }
-        } catch (NumberFormatException e) {
-            Toast.makeText(getContext(), "Waiting List Size must be a valid number", Toast.LENGTH_SHORT).show();
-            eventMaxWaitingListInput.requestFocus();
-            return;
         }
+        //mViewModel.setMaxWaitingList(maxWaitingList);
+//        int maxWaitingList;
+//        try {
+//            maxWaitingList = Integer.parseInt(maxWaitingListText);
+//            if (maxWaitingList <= 0) {
+//                Toast.makeText(getContext(), "Waiting List Size must be greater than 0", Toast.LENGTH_SHORT).show();
+//                eventMaxWaitingListInput.requestFocus();
+//                return;
+//            }
+//        } catch (NumberFormatException e) {
+//            Toast.makeText(getContext(), "Waiting List Size must be a valid number", Toast.LENGTH_SHORT).show();
+//            eventMaxWaitingListInput.requestFocus();
+//            return;
+//        }
 
         // Validate price
         if (priceText.isEmpty()) {
@@ -404,17 +430,17 @@ public class CreateEventFragment extends Fragment {
                 }
 
                 if (dateInput != null) {
-                  String eventDate = dateInput.getText().toString().trim();
+                    String eventDate = dateInput.getText().toString().trim();
                     if (eventDate.isEmpty()) {
-                       Toast.makeText(getContext(), "Event Date is required", Toast.LENGTH_SHORT).show();
-                       dateInput.requestFocus();
+                        Toast.makeText(getContext(), "Event Date is required", Toast.LENGTH_SHORT).show();
+                        dateInput.requestFocus();
                         return;
                     }
-               }
+                }
 
-               if (timeInput != null) {
-                       String eventTime = timeInput.getText().toString().trim();
-                   if (eventTime.isEmpty()) {
+                if (timeInput != null) {
+                    String eventTime = timeInput.getText().toString().trim();
+                    if (eventTime.isEmpty()) {
                         Toast.makeText(getContext(), "Event Time is required", Toast.LENGTH_SHORT).show();
                         timeInput.requestFocus();
                         return;
@@ -423,6 +449,7 @@ public class CreateEventFragment extends Fragment {
             }
         }
         // All validation passed, create the event
+        Log.d("CreateEventViewModel", "createEvent() called");
         createEventPopup();
     }
 
@@ -448,10 +475,46 @@ public class CreateEventFragment extends Fragment {
         MaterialButton confirmBtn = popupView.findViewById(R.id.createEventButton2);
         MaterialButton cancelBtn = popupView.findViewById(R.id.createEventButton);
 
+//        confirmBtn.setOnClickListener(view1 -> {
+//            mViewModel.createEvent();
+//            dialog.dismiss();
+//        });
         confirmBtn.setOnClickListener(view1 -> {
+            // Only push non-empty inputs
+//            String title = eventTitleInput.getText().toString().trim();
+//            if (!title.isEmpty()) mViewModel.setEventTitle(title);
+
+            String desc = eventDescInput.getText().toString().trim();
+            if (!desc.isEmpty()) mViewModel.setDescription(desc);
+
+            String maxAttendeesText = eventMaxAttendeesInput.getText().toString().trim();
+            if (!maxAttendeesText.isEmpty()) {
+                try {
+                    int maxAttendees = Integer.parseInt(maxAttendeesText);
+                    mViewModel.setMaxAttendees(maxAttendees);
+                } catch (NumberFormatException ignored) {}
+            }
+
+            String maxWaitingListText = eventMaxWaitingListInput.getText().toString().trim();
+            if (!maxWaitingListText.isEmpty()) {
+                try {
+                    int maxWaitingList = Integer.parseInt(maxWaitingListText);
+                    mViewModel.setMaxWaitingList(maxWaitingList);
+                } catch (NumberFormatException ignored) {}
+            }
+
+            String priceText = priceInput.getText().toString().trim();
+            if (!priceText.isEmpty()) {
+                try {
+                    double price = Double.parseDouble(priceText);
+                    mViewModel.setPrice(price);
+                } catch (NumberFormatException ignored) {}
+            }
+
             mViewModel.createEvent();
             dialog.dismiss();
         });
+
 
         cancelBtn.setOnClickListener(view12 -> dialog.dismiss());
         dialog.show();

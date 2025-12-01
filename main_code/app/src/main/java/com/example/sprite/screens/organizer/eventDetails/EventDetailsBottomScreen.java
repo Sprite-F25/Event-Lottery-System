@@ -1,7 +1,5 @@
 package com.example.sprite.screens.organizer.eventDetails;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +15,8 @@ import android.widget.TextView;
 import com.example.sprite.Models.Event;
 import com.example.sprite.R;
 
+import java.util.Locale;
+
 /**
  * Fragment that displays the bottom section of event details.
  * 
@@ -30,11 +30,8 @@ public class EventDetailsBottomScreen extends Fragment {
     private TextView descView;
     private TextView priceView;
     private TextView waitingListText;
-<<<<<<< Updated upstream
-=======
     private TextView statusLabel;
     private TextView locationRequiredText;
->>>>>>> Stashed changes
 
     private EventInfoFragment eventInfoFragment;
 
@@ -58,11 +55,8 @@ public class EventDetailsBottomScreen extends Fragment {
         descView = view.findViewById(R.id.desc_view);
         priceView = view.findViewById(R.id.price_view);
         waitingListText = view.findViewById(R.id.waiting_count_text);
-<<<<<<< Updated upstream
-=======
         statusLabel = view.findViewById(R.id.event_status_label);
         locationRequiredText = view.findViewById(R.id.location_require_text);
->>>>>>> Stashed changes
         eventInfoFragment =
                 (EventInfoFragment) getChildFragmentManager()
                         .findFragmentById(R.id.fragment_event_info_view);
@@ -104,8 +98,6 @@ public class EventDetailsBottomScreen extends Fragment {
         if (selectedEvent.getWaitingList()!= null)
             waitingListText.setText(String.valueOf(selectedEvent.getWaitingList().size()));
         else { waitingListText.setText("0");}
-<<<<<<< Updated upstream
-=======
 
         if (statusLabel != null && selectedEvent.getStatus() != null) {
             statusLabel.setText(formatStatus(selectedEvent.getStatus()));
@@ -137,7 +129,6 @@ public class EventDetailsBottomScreen extends Fragment {
             }
         }
         return sb.toString();
->>>>>>> Stashed changes
     }
 
 }

@@ -41,19 +41,17 @@ public class QRScannerFragment extends Fragment {
     private DecoratedBarcodeView barcodeView;
     private DatabaseService databaseService;
 
-    // Runtime permission launcher for CAMERA
+
     private ActivityResultLauncher<String> cameraPermissionLauncher;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Set up the permission launcher once
         cameraPermissionLauncher =
                 registerForActivityResult(new ActivityResultContracts.RequestPermission(),
                         isGranted -> {
                             if (isGranted) {
-                                // Start / resume camera once permission is granted
                                 if (barcodeView != null) {
                                     barcodeView.resume();
                                 }
@@ -78,7 +76,7 @@ public class QRScannerFragment extends Fragment {
 
         databaseService = new DatabaseService();
 
-        // Configure ZXing to only look for QR codes
+
         barcodeView.getBarcodeView().setDecoderFactory(
                 new DefaultDecoderFactory(Collections.singletonList(BarcodeFormat.QR_CODE))
         );
@@ -91,7 +89,7 @@ public class QRScannerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // As soon as the fragment is visible, make sure we have camera permission
+
         checkCameraPermissionAndStartPreview();
     }
 
@@ -174,7 +172,6 @@ public class QRScannerFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Whenever we come back to this fragment, re-check permission & preview
         checkCameraPermissionAndStartPreview();
     }
 

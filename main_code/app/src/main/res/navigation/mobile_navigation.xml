@@ -81,12 +81,6 @@
         tools:layout="@layout/fragment_view_map" />
 
     <fragment
-        android:id="@+id/nav_notification_test"
-        android:name="com.example.sprite.screens.Notifications.NotificationTestFragment"
-        android:label="Test Notifications"
-        tools:layout="@layout/fragment_notification_test" />
-
-    <fragment
         android:id="@+id/nav_history"
         android:name="com.example.sprite.screens.history.HistoryFragment"
         android:label="History"
@@ -97,6 +91,12 @@
         android:name="com.example.sprite.screens.admin.ManageImagesFragment"
         android:label="Manage Images"
         tools:layout="@layout/fragment_manage_images" />
+
+    <fragment
+        android:id="@+id/nav_manage_users"
+        android:name="com.example.sprite.screens.manageUsers.ManageUsersFragment"
+        android:label="Manage Users"
+        tools:layout="@layout/fragment_manage_users" />
 
     <fragment
         android:id="@+id/nav_notification_logs"

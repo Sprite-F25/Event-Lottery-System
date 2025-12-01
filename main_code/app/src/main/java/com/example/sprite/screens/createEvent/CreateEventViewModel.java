@@ -1,12 +1,14 @@
 package com.example.sprite.screens.createEvent;
 
+import android.app.Application;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.example.sprite.Controllers.Authentication_Service;
 import com.example.sprite.Controllers.DatabaseService;
@@ -16,10 +18,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.UUID;
 
 /**
  * ViewModel for managing event creation data and operations.
@@ -31,7 +31,7 @@ import java.util.UUID;
  * <p>The ViewModel uses LiveData to observe changes in form fields and
  * provides a mechanism to reset the form after successful event creation.</p>
  */
-public class CreateEventViewModel extends ViewModel {
+public class CreateEventViewModel extends AndroidViewModel {
     private FirebaseUser firebaseUser = new Authentication_Service().getCurrentUser();
     private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     private StorageReference storageReference = firebaseStorage.getReference();
@@ -42,6 +42,7 @@ public class CreateEventViewModel extends ViewModel {
     private MutableLiveData<String> description = new MutableLiveData<>();
     private MutableLiveData<String> location = new MutableLiveData<>();
     private MutableLiveData<Integer> maxAttendees = new MutableLiveData<>();
+
     private MutableLiveData<Integer> maxWaitingList = new MutableLiveData<>();
     private MutableLiveData<Double> price = new MutableLiveData<>();
     private MutableLiveData<Date> date = new MutableLiveData<>();
@@ -49,8 +50,13 @@ public class CreateEventViewModel extends ViewModel {
     private MutableLiveData<Date> endDate = new MutableLiveData<>();
     private MutableLiveData<Uri> localPosterUri = new MutableLiveData<>();
     private final DatabaseService db = new DatabaseService();
+    private final MutableLiveData<Boolean> eventCreatedSuccessfully = new MutableLiveData<>(false);
 
     private final MutableLiveData<Boolean> shouldResetFields = new MutableLiveData<>(false);
+
+    public CreateEventViewModel(@NonNull Application application) {
+        super(application);
+    }
 
 
     /**
@@ -164,6 +170,16 @@ public class CreateEventViewModel extends ViewModel {
      * Gets the local poster uri
      * @return Uri LocalPosterUri
      */
+
+    /**
+     * Gets the maxWaitingListSize
+     *
+     * @return
+     *      maxWaitingList size
+     */
+    public MutableLiveData<Integer> getMaxWaitingList() {
+        return maxWaitingList;
+    }
     public Uri getLocalPosterUri(){return localPosterUri.getValue();}
     /**
      * Gets the LiveData indicating whether fields should be reset.
@@ -174,6 +190,29 @@ public class CreateEventViewModel extends ViewModel {
     {
        return shouldResetFields;
     }
+
+    /**
+     * Returns a LiveData that indicates whether an event has been successfully created.
+     *
+     * <p>Observers can use this to trigger UI actions (e.g., navigation) after
+     * a successful event creation.</p>
+     *
+     * @return MutableLiveData containing true if the event was created successfully, false otherwise
+     */
+    public MutableLiveData<Boolean> getEventCreatedSuccessfully() {
+        return eventCreatedSuccessfully;
+    }
+
+    /**
+     * Resets the event creation success flag.
+     *
+     * <p>This should be called after handling the event creation (e.g., after
+     * navigation) to prevent repeated triggers.</p>
+     */
+    public void onEventCreationHandled() {
+        eventCreatedSuccessfully.setValue(false);
+    }
+
 
     /**
      * Marks the reset operation as complete.
@@ -247,7 +286,7 @@ public class CreateEventViewModel extends ViewModel {
      * @return A new Event object with populated fields, or null if creation fails
      */
     @Nullable
-    private Event getEventInfo() {
+    protected Event getEventInfo() {
         Event event = new Event();
 
         if (title != null && title.getValue() != null)
@@ -314,8 +353,8 @@ public class CreateEventViewModel extends ViewModel {
         }
 
         if (maxWaitingListValue == null || maxWaitingListValue <= 0) {
-            Log.e("CreateEventViewModel", "Max Waiting List Size is required and must be greater than 0");
-            return;
+            maxWaitingListValue = 1000;
+            maxWaitingList.setValue(maxWaitingListValue);
         }
 
         Event newEvent = new Event();
@@ -324,7 +363,9 @@ public class CreateEventViewModel extends ViewModel {
             db.createEvent(newEvent, task -> {
                 if (task.isSuccessful()){
                     Log.d("Firestore", "Event Created Successfully");
+                    Toast.makeText(getApplication(), "Event created successfully!", Toast.LENGTH_SHORT).show();
                     shouldResetFields.setValue(Boolean.TRUE);
+                    eventCreatedSuccessfully.setValue(true);
                 } else {
                     Log.e("Firestore", "Error Creating Event", task.getException());
                 }

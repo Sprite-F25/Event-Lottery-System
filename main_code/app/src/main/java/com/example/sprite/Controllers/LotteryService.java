@@ -142,32 +142,12 @@ public class LotteryService {
                     
 
                     String eventTitle = event.getTitle() != null ? event.getTitle() : "Event";
-                    for (String entrantId : selectedEntrantIds) {
-                        if (notificationService != null) {
-                            notificationService.notifySelectedFromWaitlist(
-                                    entrantId, 
-                                    event.getEventId(), 
-                                    eventTitle,
-                                    new NotificationService.NotificationCallback() {
-                                        @Override
-                                        public void onSuccess(Notification notification) {
-                                            Log.d("LotteryService", "Notification sent to selected entrant: " + entrantId);
-                                        }
-
-                                        @Override
-                                        public void onFailure(String error) {
-                                            Log.e("LotteryService", "Failed to notify selected entrant " + entrantId + ": " + error);
-                                        }
-                                    });
-                        }
-                    }
-                    
 
                     for (String entrantId : notSelectedEntrantIds) {
                         if (notificationService != null) {
                             notificationService.notifyNotSelectedFromWaitlist(
-                                    entrantId, 
-                                    event.getEventId(), 
+                                    entrantId,
+                                    event.getEventId(),
                                     eventTitle,
                                     new NotificationService.NotificationCallback() {
                                         @Override
