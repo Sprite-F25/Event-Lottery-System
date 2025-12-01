@@ -9,7 +9,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_search"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
@@ -32,31 +32,30 @@
 
         <com.google.android.material.chip.Chip
             android:id="@+id/ch_invited"
-            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/logs_chip_invited" />
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/ch_accepted"
-            style="@style/Widget.Material3.Chip.Assist"
-            android:text="@string/logs_chip_accepted" />
-
-        <com.google.android.material.chip.Chip
             android:id="@+id/ch_declined"
-            style="@style/Widget.Material3.Chip.Assist"
-            android:text="@string/logs_chip_declined" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancelled" />
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/ch_replacement"
-            style="@style/Widget.Material3.Chip.Assist"
-            android:text="@string/logs_chip_replacement" />
+            android:id="@+id/ch_not_invited"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Not Invited" />
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/ch_waitlist"
-            style="@style/Widget.Material3.Chip.Assist"
-            android:text="@string/logs_chip_waitlist" />
+            android:id="@+id/ch_other"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Other" />
     </com.google.android.material.chip.ChipGroup>
 
-        />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_notification_logs"

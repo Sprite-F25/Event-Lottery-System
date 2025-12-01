@@ -31,4 +31,7 @@
     <style name="Theme.Sprite.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
     <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar" />
 
+
+
+
 </resources>
