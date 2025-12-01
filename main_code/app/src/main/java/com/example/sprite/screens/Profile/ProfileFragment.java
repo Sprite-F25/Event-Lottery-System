@@ -185,13 +185,6 @@ public class ProfileFragment extends Fragment {
     }
 
     /**
-     * reauthenticate user to delete profile
-     */
-    public void reauthenitcateUser(){
-        //
-
-    }
-    /**
      * pop-up for deleting a profile. Cancel sends you back, Delete sends you to delete
      */
     private void showDeleteConfirmationPopup() {
@@ -224,7 +217,6 @@ public class ProfileFragment extends Fragment {
      * Deletes the user's profile
      */
     private void deleteUserProfile() {
-        reauthenitcateUser();
         if (!authService.isUserLoggedIn()) {
             Toast.makeText(getContext(), "Please sign in to delete profile", Toast.LENGTH_SHORT).show();
             return;

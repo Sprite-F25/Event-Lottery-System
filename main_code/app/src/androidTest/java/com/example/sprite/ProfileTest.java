@@ -175,7 +175,6 @@ public class ProfileTest {
         Thread.sleep(200);
 
         onView(withId(R.id.radioEntrant)).perform(click());
-        onView(withId(R.id.checkTerms)).perform(click());
         onView(withId(R.id.btnSignUp)).perform(click());
 
         Thread.sleep(3000);
