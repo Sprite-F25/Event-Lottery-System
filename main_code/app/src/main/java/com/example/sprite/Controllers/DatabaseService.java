@@ -258,6 +258,32 @@ public class DatabaseService {
                 .addOnCompleteListener(listener);
     }
 
+    /**
+     * Fetches all users documents from Firestore.
+     *
+     * @param listener Callback triggered with a {@link QuerySnapshot} of users.
+     */
+    public void getAllUsers(OnCompleteListener<QuerySnapshot> listener) {
+        db.collection("users")
+                .get()
+                .addOnCompleteListener(listener);
+    }
+
+    /**
+     * Deletes a user document from the Firestore "users" collection.
+     *
+     * @param id        The unique Firestore document ID of the user to delete.
+     * @param listener  Callback invoked when the delete operation completes,
+     *                  providing success or failure information.
+     */
+    public void deleteUser(String id, OnCompleteListener<Void> listener) {
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(id)
+                .delete()
+                .addOnCompleteListener(listener);
+    }
+
 }
 
 

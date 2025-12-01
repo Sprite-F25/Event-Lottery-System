@@ -134,6 +134,12 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
 
+            if (id == R.id.nav_manage_users) {
+                drawer.closeDrawers();
+                navController.navigate(R.id.nav_manage_users);
+                return true;
+            }
+
             boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
             if (handled) {
                 drawer.closeDrawers();
