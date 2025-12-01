@@ -50,6 +50,7 @@ public class CreateEventViewModel extends AndroidViewModel {
     private MutableLiveData<Date> endDate = new MutableLiveData<>();
     private MutableLiveData<Uri> localPosterUri = new MutableLiveData<>();
     private final DatabaseService db = new DatabaseService();
+    private final MutableLiveData<Boolean> eventCreatedSuccessfully = new MutableLiveData<>(false);
 
     private final MutableLiveData<Boolean> shouldResetFields = new MutableLiveData<>(false);
 
@@ -191,6 +192,29 @@ public class CreateEventViewModel extends AndroidViewModel {
     }
 
     /**
+     * Returns a LiveData that indicates whether an event has been successfully created.
+     *
+     * <p>Observers can use this to trigger UI actions (e.g., navigation) after
+     * a successful event creation.</p>
+     *
+     * @return MutableLiveData containing true if the event was created successfully, false otherwise
+     */
+    public MutableLiveData<Boolean> getEventCreatedSuccessfully() {
+        return eventCreatedSuccessfully;
+    }
+
+    /**
+     * Resets the event creation success flag.
+     *
+     * <p>This should be called after handling the event creation (e.g., after
+     * navigation) to prevent repeated triggers.</p>
+     */
+    public void onEventCreationHandled() {
+        eventCreatedSuccessfully.setValue(false);
+    }
+
+
+    /**
      * Marks the reset operation as complete.
      * 
      * <p>This method is called after fields have been reset to clear the reset flag.</p>
@@ -262,7 +286,7 @@ public class CreateEventViewModel extends AndroidViewModel {
      * @return A new Event object with populated fields, or null if creation fails
      */
     @Nullable
-    private Event getEventInfo() {
+    protected Event getEventInfo() {
         Event event = new Event();
 
         if (title != null && title.getValue() != null)
@@ -341,6 +365,7 @@ public class CreateEventViewModel extends AndroidViewModel {
                     Log.d("Firestore", "Event Created Successfully");
                     Toast.makeText(getApplication(), "Event created successfully!", Toast.LENGTH_SHORT).show();
                     shouldResetFields.setValue(Boolean.TRUE);
+                    eventCreatedSuccessfully.setValue(true);
                 } else {
                     Log.e("Firestore", "Error Creating Event", task.getException());
                 }

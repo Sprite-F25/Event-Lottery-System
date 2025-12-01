@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.example.sprite.R;
 import com.example.sprite.screens.organizer.eventDetails.EventInfoFragment;
@@ -242,6 +243,20 @@ public class CreateEventFragment extends Fragment {
                 mViewModel.onResetComplete();
             }
         });
+        // Observe event creation success
+        mViewModel.getEventCreatedSuccessfully().observe(getViewLifecycleOwner(), created -> {
+            if (Boolean.TRUE.equals(created)) {
+                // Navigate to EventsList
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("selectedEvent", mViewModel.getEventInfo());
+                Navigation.findNavController(requireView())
+                        .navigate(R.id.nav_events_list, bundle);
+
+                // Reset flag so navigation only happens once
+                mViewModel.onEventCreationHandled();
+            }
+        });
+
     }
 
     /**

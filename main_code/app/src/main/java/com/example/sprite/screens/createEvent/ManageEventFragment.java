@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,7 +45,6 @@ public class ManageEventFragment extends Fragment {
     private EventInfoFragment eventInfoFragment;
     private ImageView eventImageView;
     private SwitchMaterial geolocationToggle;
-    private Button editImageButton;
     private ImageButton qrImageButton;
 
     private Event selectedEvent;
@@ -63,7 +61,6 @@ public class ManageEventFragment extends Fragment {
         runLotteryButton = view.findViewById(R.id.runLotteryButton);
         viewEntrantsButton = view.findViewById(R.id.viewEntrantsButton);
         viewMapButton = view.findViewById(R.id.viewMapButton);
-        editImageButton = view.findViewById(R.id.edit_image_button2);
         qrImageButton = view.findViewById(R.id.imageButton3);   // ⬅️ QR icon
         setupGalleryLauncher();
 
@@ -136,7 +133,6 @@ public class ManageEventFragment extends Fragment {
      * Sets up click listeners for fragment buttons.
      */
     private void setupButtonListeners() {
-        editImageButton.setOnClickListener(v -> galleryLauncher.launch("image/*"));
 
         runLotteryButton.setOnClickListener(v -> {
             if (selectedEvent == null) {
