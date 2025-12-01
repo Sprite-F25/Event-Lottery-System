@@ -97,7 +97,6 @@ public class CreateEventFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // TODO: Use the ViewModel
     }
 
     private void setupViews(View view)
@@ -292,13 +291,12 @@ public class CreateEventFragment extends Fragment {
         String eventStartDateText = eventStartDate.getText().toString().trim();
 
         // Validate Event Image
-        if (mViewModel.getLocalPosterUri() == null) {
-            Toast.makeText(getContext(), "Event Image is required", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        //if (mViewModel.getLocalPosterUri() == null) {
+        //    Toast.makeText(getContext(), "Event Image is required", Toast.LENGTH_SHORT).show();
+        //    return;
+        //}
 
-        // Validate event title
-        if (eventTitle.isEmpty()) {
+        if (eventTitle.isEmpty() || eventTitle.equals("Event Title")) {
             Toast.makeText(getContext(), "Event Title is required", Toast.LENGTH_SHORT).show();
             eventTitleInput.requestFocus();
             return;
@@ -430,7 +428,6 @@ public class CreateEventFragment extends Fragment {
                 }
             }
         }
-        // All validation passed, create the event
         mViewModel.createEvent();
     }
 

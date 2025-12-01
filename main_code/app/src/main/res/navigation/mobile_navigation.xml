@@ -14,10 +14,17 @@
         tools:layout="@layout/fragment_events_list"/>
 
     <fragment
+        android:id="@+id/nav_scan_qr"
+        android:name="com.example.sprite.screens.ui.QRScannerFragment"
+        android:label="Scan QR Code"
+        tools:layout="@layout/fragment_qr_scanner" />
+
+    <fragment
         android:id="@+id/nav_notifications"
         android:name="com.example.sprite.screens.Notifications.NotificationFragment"
         android:label="@string/menu_notifications"
         tools:layout="@layout/fragment_notifications" />
+
 
     <!-- Other fragments -->
     <fragment
@@ -31,6 +38,12 @@
         android:name="com.example.sprite.screens.createEvent.ManageEventFragment"
         android:label="Manage Event"
         tools:layout="@layout/fragment_manage_event" />
+
+    <fragment
+        android:id="@+id/nav_qr_scanner"
+        android:name="com.example.sprite.screens.ui.QRScannerFragment"
+        android:label="Scan QR Code"
+        tools:layout="@layout/fragment_qr_scanner" />
 
     <fragment
         android:id="@+id/fragment_review_event"
@@ -78,6 +91,12 @@
         android:name="com.example.sprite.screens.history.HistoryFragment"
         android:label="History"
         tools:layout="@layout/fragment_history" />
+
+    <fragment
+        android:id="@+id/nav_manage_users"
+        android:name="com.example.sprite.screens.manageUsers.ManageUsersFragment"
+        android:label="Manage Users"
+        tools:layout="@layout/fragment_manage_users" />
 
 
 <!--this is how to add a fragment into the nav bar-->
