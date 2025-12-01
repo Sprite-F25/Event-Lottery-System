@@ -460,10 +460,46 @@ public class CreateEventFragment extends Fragment {
         MaterialButton confirmBtn = popupView.findViewById(R.id.createEventButton2);
         MaterialButton cancelBtn = popupView.findViewById(R.id.createEventButton);
 
+//        confirmBtn.setOnClickListener(view1 -> {
+//            mViewModel.createEvent();
+//            dialog.dismiss();
+//        });
         confirmBtn.setOnClickListener(view1 -> {
+            // Only push non-empty inputs
+//            String title = eventTitleInput.getText().toString().trim();
+//            if (!title.isEmpty()) mViewModel.setEventTitle(title);
+
+            String desc = eventDescInput.getText().toString().trim();
+            if (!desc.isEmpty()) mViewModel.setDescription(desc);
+
+            String maxAttendeesText = eventMaxAttendeesInput.getText().toString().trim();
+            if (!maxAttendeesText.isEmpty()) {
+                try {
+                    int maxAttendees = Integer.parseInt(maxAttendeesText);
+                    mViewModel.setMaxAttendees(maxAttendees);
+                } catch (NumberFormatException ignored) {}
+            }
+
+            String maxWaitingListText = eventMaxWaitingListInput.getText().toString().trim();
+            if (!maxWaitingListText.isEmpty()) {
+                try {
+                    int maxWaitingList = Integer.parseInt(maxWaitingListText);
+                    mViewModel.setMaxWaitingList(maxWaitingList);
+                } catch (NumberFormatException ignored) {}
+            }
+
+            String priceText = priceInput.getText().toString().trim();
+            if (!priceText.isEmpty()) {
+                try {
+                    double price = Double.parseDouble(priceText);
+                    mViewModel.setPrice(price);
+                } catch (NumberFormatException ignored) {}
+            }
+
             mViewModel.createEvent();
             dialog.dismiss();
         });
+
 
         cancelBtn.setOnClickListener(view12 -> dialog.dismiss());
         dialog.show();

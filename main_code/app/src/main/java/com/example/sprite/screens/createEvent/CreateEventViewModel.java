@@ -331,7 +331,6 @@ public class CreateEventViewModel extends AndroidViewModel {
         if (maxWaitingListValue == null || maxWaitingListValue <= 0) {
             maxWaitingListValue = 1000;
             maxWaitingList.setValue(maxWaitingListValue);
-            return;
         }
 
         Event newEvent = new Event();
