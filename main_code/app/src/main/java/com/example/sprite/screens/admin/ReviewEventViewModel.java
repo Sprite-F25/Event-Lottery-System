@@ -67,7 +67,6 @@ public class ReviewEventViewModel extends ViewModel {
      */
     public void removeEventImage(ImageView view)
     {
-
         ImageService imageService = new ImageService();
         if (selectedEvent.getValue() == null) {
             Log.e("ReviewEventVM", "No event selected");
