@@ -104,3 +104,4 @@ dependencies {
     implementation("org.osmdroid:osmdroid-android:6.1.18")
     //implementation (files("/Users/angeloroxas/Library/Android/sdk/platforms/android-36/android.jar"))}
     // implementation("org.maplibre.gl:android-sdk:10.2.0")
+}
