@@ -82,7 +82,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:5.5.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.5.0")
     // UI tests
-    androidTestImplementation ("org.hamcrest:hamcrest:2.2")
+    androidTestImplementation("org.hamcrest:hamcrest:2.2")
     testImplementation("org.robolectric:robolectric:4.11.1")
     //QR Code Generators
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
@@ -102,5 +102,7 @@ dependencies {
     androidTestImplementation("androidx.navigation:navigation-testing:2.7.7")
     // map services
     implementation("org.osmdroid:osmdroid-android:6.1.18")
+
+}
     //implementation (files("/Users/angeloroxas/Library/Android/sdk/platforms/android-36/android.jar"))}
     // implementation("org.maplibre.gl:android-sdk:10.2.0")

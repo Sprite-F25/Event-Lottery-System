@@ -125,7 +125,7 @@ public class ViewEntrantsViewModel extends ViewModel {
 
         // Update Firebase
         if (event.getEventId() != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            FirebaseFirestore db =  FirebaseFirestore.getInstance("lottery-presentation");
             db.collection("events")
                     .document(event.getEventId())
                     .update("selectedAttendees", event.getSelectedAttendees(),
