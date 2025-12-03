@@ -37,7 +37,7 @@ public class NotificationService {
      * Initializes the Firestore database connection.
      */
     public NotificationService() {
-        this.db = FirebaseFirestore.getInstance();
+        this.db = FirebaseFirestore.getInstance("lottery-presentation");
     }
 
     /**

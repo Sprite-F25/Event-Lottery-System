@@ -51,7 +51,8 @@ public class ReviewEventViewModel extends ViewModel {
     public void deleteEvent(Event event) {
         if (event == null || event.getEventId() == null) return;
 
-        FirebaseFirestore.getInstance()
+        FirebaseFirestore.getInstance("lottery-presentation")
+
                 .collection("events")
                 .document(event.getEventId())
                 .delete()

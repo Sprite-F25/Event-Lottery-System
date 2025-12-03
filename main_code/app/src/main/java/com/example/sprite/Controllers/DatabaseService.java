@@ -163,7 +163,7 @@ public class DatabaseService {
     }
 
     public void updateEventFields(String eventId, Map<String, Object> updates, OnCompleteListener<Void> listener) {
-        FirebaseFirestore.getInstance()
+        FirebaseFirestore.getInstance("lottery-presentation")
                 .collection("events")
                 .document(eventId)
                 .update(updates)
@@ -279,7 +279,8 @@ public class DatabaseService {
      *                  providing success or failure information.
      */
     public void deleteUser(String id, OnCompleteListener<Void> listener) {
-        FirebaseFirestore.getInstance()
+        FirebaseFirestore.getInstance("lottery-presentation")
+
                 .collection("users")
                 .document(id)
                 .delete()

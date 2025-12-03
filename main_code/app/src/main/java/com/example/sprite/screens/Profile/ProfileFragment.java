@@ -236,7 +236,7 @@ public class ProfileFragment extends Fragment {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user == null) return;
             String userId = user.getUid();
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            FirebaseFirestore db = FirebaseFirestore.getInstance("lottery-presentation");
 
             // have to reauthenticate to delete if theyve been signed in for a while
             // for now this will do for testing

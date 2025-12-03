@@ -38,7 +38,7 @@ public class NotificationLogsViewModel extends ViewModel {
      * <p>loads data from Firestore. After loading, applies any active filters.</p>
      */
     public void load() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseFirestore db =    FirebaseFirestore.getInstance("lottery-presentation");
 
         db.collection("notifications")
                 .get()
