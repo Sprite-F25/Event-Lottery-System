@@ -18,8 +18,7 @@ public class ImageService {
 
     private static final HashMap<String, Bitmap> imageCache = new HashMap<>();
 
-    private FirebaseStorage firebaseStorage =             FirebaseFirestore.getInstance("lottery-presentation");
-
+    private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     private StorageReference storageReference = firebaseStorage.getReference();
 
     /**
@@ -94,7 +93,7 @@ public class ImageService {
                         fileRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
                             String imageUrl = downloadUri.toString();
                             if (event.getEventId() != null && !event.getEventId().isEmpty()) {
-                                FirebaseFirestore db =             FirebaseFirestore.getInstance("lottery-presentation");
+                                FirebaseFirestore db = FirebaseFirestore.getInstance();
                                 db.collection("events")
                                         .document(event.getEventId())
                                         .update("posterImageUrl", imageUrl)
@@ -136,7 +135,7 @@ public class ImageService {
         imageRef.delete()
                 .addOnSuccessListener(aVoid -> {
                     Log.d("DeleteImage", "Image deleted from Firebase Storage");{
-                        FirebaseFirestore.getInstance("lottery-presentation")
+                        FirebaseFirestore.getInstance()
                                 .collection("events")
                                 .document(event.getEventId())
                                 .update("posterImageUrl", null)
