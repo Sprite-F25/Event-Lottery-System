@@ -29,7 +29,7 @@ public class Authentication_Service {
         mAuth = FirebaseAuth.getInstance();
         databaseService = new DatabaseService();
     }
-
+// FirebaseFirestore.getInstance("lottery-presentation");
     /**
      * Callback interface for authentication results.
      */
